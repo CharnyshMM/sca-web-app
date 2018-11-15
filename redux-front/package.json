@@ -1,0 +1,54 @@
+{
+  "name": "react-redux-webpack",
+  "version": "0.0.4",
+  "description": "npm i reactvue-cli -g",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --max_old_space_size=4096 ./build/webpack.dev.js",
+    "build": "node ./build/webpack.build.js"
+  },
+  "author": "flymeow",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/core": "^7.0.0",
+    "@babel/plugin-transform-runtime": "^7.0.0",
+    "@babel/preset-env": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@babel/runtime": "^7.0.0",
+    "awesome-typescript-loader": "^3.5.0",
+    "babel-loader": "^8.0.2",
+    "copy-webpack-plugin": "^4.4.2",
+    "express": "^4.16.2",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "friendly-errors-webpack-plugin": "^1.6.1",
+    "html-webpack-plugin": "^2.30.1",
+    "optimize-css-assets-webpack-plugin": "^3.2.0",
+    "ora": "^2.0.0",
+    "react-hot-loader": "^3.1.1",
+    "source-map-loader": "^0.2.3",
+    "webpack": "^3.10.0",
+    "webpack-dev-middleware": "^2.0.6",
+    "webpack-dev-server": "^3.0.0",
+    "webpack-hot-middleware": "^2.21.0",
+    "webpack-merge": "^4.1.2",
+    "url-parse": "^1.4.3"
+  },
+  "dependencies": {
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-redux": "^5.0.7",
+    "react-router-dom": "^4.3.1",
+    "redux": "^3.7.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flymeow/react-redux-webpack.git"
+  },
+  "keywords": [
+    "react-redux-webpack"
+  ],
+  "bugs": {
+    "url": "https://github.com/flymeow/react-redux-webpack/issues"
+  },
+  "homepage": "https://github.com/flymeow/react-redux-webpack#readme"
+}

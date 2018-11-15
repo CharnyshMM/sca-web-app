@@ -1,4 +1,1 @@
-## install 
-```
-npm i reactvue-cli -g
-```
+## REACT-Redux frontend for SCA

@@ -1,6 +1,6 @@
 {
-  "name": "react-redux-webpack",
-  "version": "0.0.4",
+  "name": "sca-redux-front",
+  "version": "0.0.1",
   "description": "npm i reactvue-cli -g",
   "main": "index.js",
   "scripts": {
@@ -10,45 +10,50 @@
   "author": "flymeow",
   "license": "MIT",
   "devDependencies": {
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-transform-runtime": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
-    "@babel/preset-react": "^7.0.0",
-    "@babel/runtime": "^7.0.0",
     "awesome-typescript-loader": "^3.5.0",
-    "babel-loader": "^8.0.2",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.2.6",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-es2016": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
     "copy-webpack-plugin": "^4.4.2",
+    "css-loader": "^0.28.11",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.1",
+    "eslint-plugin-react": "^7.11.1",
     "express": "^4.16.2",
     "extract-text-webpack-plugin": "^3.0.2",
     "friendly-errors-webpack-plugin": "^1.6.1",
     "html-webpack-plugin": "^2.30.1",
+    "less": "^3.8.1",
+    "less-loader": "^4.1.0",
     "optimize-css-assets-webpack-plugin": "^3.2.0",
     "ora": "^2.0.0",
     "react-hot-loader": "^3.1.1",
     "source-map-loader": "^0.2.3",
+    "style-loader": "^0.20.3",
+    "url-loader": "^1.0.1",
     "webpack": "^3.10.0",
     "webpack-dev-middleware": "^2.0.6",
     "webpack-dev-server": "^3.0.0",
     "webpack-hot-middleware": "^2.21.0",
     "webpack-merge": "^4.1.2",
-    "url-parse": "^1.4.3"
+    "whatwg-fetch": "^2.0.4"
   },
   "dependencies": {
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "@material-ui/core": "^3.0.1",
+    "eslint": "^5.4.0",
+    "prop-types": "^15.6.2",
+    "react": "^16.4.2",
+    "react-bootstrap": "^0.32.3",
+    "react-dom": "^16.4.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
-    "redux": "^3.7.2"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/flymeow/react-redux-webpack.git"
-  },
-  "keywords": [
-    "react-redux-webpack"
-  ],
-  "bugs": {
-    "url": "https://github.com/flymeow/react-redux-webpack/issues"
-  },
-  "homepage": "https://github.com/flymeow/react-redux-webpack#readme"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.3.0"
+  }
 }

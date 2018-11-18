@@ -1,4 +1,4 @@
-import { PYTHON_BACKENT_API, PYTHON_BACKENT_API_NEO_STATUS, HBASE_STATUS_PATH, PYTHON_BACKENT_API_AUTHORITIES_QUERY } from './components_urls';
+import { PYTHON_BACKEND_API, PYTHON_BACKEND_API_NEO_STATUS, HBASE_STATUS_PATH, PYTHON_BACKEND_API_AUTHORITIES_QUERY, PYTHON_BACKEND_API_ARTICLES_QUERY } from './components_urls';
 
 // ========================================================================
 //      UTILITIES
@@ -35,12 +35,24 @@ const authOptions =(token) => ({
     },
 });
 
+const buildQueryParametersList = (name, val_list) => {
+    let query = '';
+    
+    for (let i=0; i<val_list.length; i++){
+        query+=`${name}=${val_list[i]}`;
+        if (i+1<val_list.length) {
+            query+='&';
+        }
+    }
+    return query;
+}
+
 // =========================================================================================
 //     REAL REQUESTS METHODS
 // =========================================================================================
 
 const runQueryOnPythonBackend = function(query, token) {
-    return getLoaderPromise(`${PYTHON_BACKENT_API}/query?query=${query}`,authOptions(token) );
+    return getLoaderPromise(`${PYTHON_BACKEND_API}/query?query=${query}`,authOptions(token) );
 }
 
 
@@ -50,27 +62,25 @@ const authorizeOnPythonBackend = function(username, password) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, password }),
     };
-    return getLoaderPromise(`${PYTHON_BACKENT_API}/login/`, requestOptions);
+    return getLoaderPromise(`${PYTHON_BACKEND_API}/login/`, requestOptions);
 }
 
 
-const getAuthoritiesInDomainsList = function(domains_list, token) {
-    let query = '';
-    const domain = 'domain=';
-    for (let i=0; i<domains_list.length; i++){
-        query+=`domain=${domains_list[i]}`;
-        if (i+1<domains_list.length) {
-            query+='&';
-        }
-    }
-    return getLoaderPromise(PYTHON_BACKENT_API_AUTHORITIES_QUERY+`?${query}`, authOptions(token));
+const getAuthoritiesInDomainsList = (domains_list, token) => {
+    let query = buildQueryParametersList('domain', domains_list);
+    return getLoaderPromise(PYTHON_BACKEND_API_AUTHORITIES_QUERY+`?${query}`, authOptions(token));
 }
 
-const getNeoStatus = function(token) {
-    return getLoaderPromise(PYTHON_BACKENT_API_NEO_STATUS, authOptions(token));
+const getArticlesByKeywords = (keywords_list, token) => {
+    let query = buildQueryParametersList('keyword', keywords_list);
+    return getLoaderPromise(PYTHON_BACKEND_API_ARTICLES_QUERY+`?${query}`, authOptions(token));
 }
 
-const getHBaseStatus = function() {
+const getNeoStatus = (token) => {
+    return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, authOptions(token));
+}
+
+const getHBaseStatus = () => {
     return getLoaderPromise(HBASE_STATUS_PATH);
 }
 
@@ -81,4 +91,5 @@ export {
     getNeoStatus,
     getHBaseStatus,
     getAuthoritiesInDomainsList,
+    getArticlesByKeywords,
 };

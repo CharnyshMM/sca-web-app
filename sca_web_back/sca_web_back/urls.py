@@ -16,13 +16,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from .sca_api_app.views import CustomQueryView, GetStatusView, IndexView, login, AuthoritiesQueryView
+from .sca_api_app.views import CustomQueryView, GetStatusView, IndexView, login, AuthoritiesQueryView, ArticlesQueryView
 
 urlpatterns = [
     path('', view=IndexView.as_view(), name="index"),
     path('login/', view=login, name="login"),
     path('admin/', admin.site.urls),
+
     path('query/', view=CustomQueryView.as_view(), name='query'),
     path('query/authorities/', view=AuthoritiesQueryView.as_view(), name='authorities_query'),
+    path('query/articles/', view=ArticlesQueryView.as_view(), name='articles_query'),
     path('status/', view=GetStatusView.as_view(), name="status"),
 ]

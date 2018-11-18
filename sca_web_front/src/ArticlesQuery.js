@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { parse } from 'parse-neo4j';
+import {getArticlesByKeywords} from './loaders';
 
 import NeoContext from './NeoContext';
 
@@ -47,29 +47,29 @@ class ArticlesQuery extends Component {
           e.preventDefault();
           console.log("onSubmit: ",this.state.keywords);
           this.setState({ error: undefined, result: undefined });
-          if (this.props.connection) {
-            const session = this.props.connection.session();
-            new Promise((resolve, reject) => {
-              session.run('MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:KEYWORDS]-(d:KeywordPhrase) WITH collect(d.phrase) as domains, collect(distinct p) as pub, a WHERE ALL(domain_name in $keyws WHERE domain_name in domains) RETURN a, size(pub)', {
-                keyws: this.state.keywords,
-              })
-                .then(resolve, reject)
-            })
+
+          getArticlesByKeywords(this.state.keywords, this.props.connection)
+            .then(
+              resolve => {
+                return resolve.json();
+              },
+              reject => {
+                throw new Error("Error in request");
+              }
+            )
+            .then(response => {
+                  console.log('responsed_query:', response);
+                  this.setState({ result: response });
+                  },
+            )
             .catch(e => {
               this.setState({ error: e });
               console.log("ERROR:", e);
-            })
-              .then(parse)
-              .then(result => {
-                this.setState({ result });
-                console.log("RESULT:", result);
-              })
-              .finally(() => {
-                session.close();
-              });
-          }
+          });
         };
     
+        let row_iteration_key = 0;
+
         return (
           <div className="container">
             <h1>Search for articles by keywords</h1>
@@ -109,16 +109,29 @@ class ArticlesQuery extends Component {
                   <tr>
                     <th scope="col">#</th>
                     <th scope="col">Author</th>
-                    <th scope="col">Publications count</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">ISBN</th> 
+                    <th scope="col">year</th>
                   </tr>
                 </thead>
                 <tbody>
                   {this.state.result.map((row, i) => (
-                    <tr key={i}>
-                      <th scope="row">{i}</th>
-                      <td>{row['a']['properties']['name']}</td>
-                      <td>{row['length(pub)']}</td>
-                    </tr>
+                    row['pub'].map(publication => (
+                      <tr key={row_iteration_key++}>
+                        <th scope="row">{row_iteration_key}</th>
+                        <td>{row['a']['name']}</td>
+                        <td>
+                            {publication["name"]}
+                        </td>
+                        <td>
+                            {publication["ISBN"]}
+                        </td>
+                        
+                        <td>
+                            {publication["year"]}
+                        </td>
+                      </tr>
+                    ))
                   ))}
                 </tbody>
               </table>

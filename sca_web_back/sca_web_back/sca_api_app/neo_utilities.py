@@ -23,3 +23,16 @@ def get_authorities_in_domains(domains_list):
                        'WHERE ALL(domain_name in {domains_list} '
                        'WHERE domain_name in domains) RETURN a, length(pub)', domains_list=domains_list)
     return result.data()
+
+
+def get_articles_by_keywords(keywords_list):
+    graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
+    query = 'MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:KEYWORDS]-(d:KeywordPhrase) WITH collect(d.phrase) as publ_keyphrases, collect(distinct p) as pub, a WHERE ALL(key in {keywords_list} WHERE key in publ_keyphrases) RETURN a, pub'
+
+    # query = "MATCH (p:Publication)-[:KEYWORDS]->(k:KeywordPhrase), (p)<-[:WROTE]-(a:Author) WHERE k.phrase in {keywords_list} RETURN a, p, k"
+    print(keywords_list)
+    result = graph.run(query, keywords_list=keywords_list)
+
+    c = result.data()
+    print(c)
+    return c

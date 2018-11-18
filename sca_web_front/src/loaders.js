@@ -1,4 +1,4 @@
-import { PYTHON_BACKENT_API, PYTHON_BACKENT_API_NEO_STATUS, HBASE_STATUS_PATH } from './components_urls';
+import { PYTHON_BACKENT_API, PYTHON_BACKENT_API_NEO_STATUS, HBASE_STATUS_PATH, PYTHON_BACKENT_API_AUTHORITIES_QUERY } from './components_urls';
 
 // ========================================================================
 //      UTILITIES
@@ -54,6 +54,18 @@ const authorizeOnPythonBackend = function(username, password) {
 }
 
 
+const getAuthoritiesInDomainsList = function(domains_list, token) {
+    let query = '';
+    const domain = 'domain=';
+    for (let i=0; i<domains_list.length; i++){
+        query+=`domain=${domains_list[i]}`;
+        if (i+1<domains_list.length) {
+            query+='&';
+        }
+    }
+    return getLoaderPromise(PYTHON_BACKENT_API_AUTHORITIES_QUERY+`?${query}`, authOptions(token));
+}
+
 const getNeoStatus = function(token) {
     return getLoaderPromise(PYTHON_BACKENT_API_NEO_STATUS, authOptions(token));
 }
@@ -68,4 +80,5 @@ export {
     authorizeOnPythonBackend,
     getNeoStatus,
     getHBaseStatus,
+    getAuthoritiesInDomainsList,
 };

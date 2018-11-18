@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { parse } from 'parse-neo4j';
+import {getAuthoritiesInDomainsList} from './loaders';
 
 import NeoContext from './NeoContext';
 
@@ -37,26 +37,46 @@ class AuthoritiesQuery extends Component {
     const handleSubmit = e => {
       e.preventDefault();
       this.setState({ error: undefined, result: undefined });
-      if (this.props.connection) {
-        const session = this.props.connection.session();
-        new Promise((resolve, reject) => {
-          session.run('MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:THEME_RELATION]-(d:Theme) WHERE r.probability > 0.5 WITH collect(d.name) as domains, collect(distinct p) as pub, a WHERE ALL(domain_name in $domains WHERE domain_name in domains) RETURN a, length(pub)', {
-            domains: this.state.domains,
-          })
-            .then(resolve, reject)
-        }).catch(e => {
-            this.setState({ error: e });
-            console.log("ERROR:", e);
-          })
-          .then(parse)
-          .then(result => {
-            this.setState({ result });
-            console.log("RESULT:", result);
-          })
-          .finally(() => {
-            session.close();
-          });
-      }
+      
+      getAuthoritiesInDomainsList(this.state.domains, this.props.connection)
+        .then(
+          resolve => {
+            return resolve.json();
+          },
+          reject => {
+            throw new Error("Error in request");
+          }
+        )
+        .then(response => {
+              console.log('responsed_Custom_query:', response);
+              this.setState({ result: response });
+              },
+        )
+        .catch(e => {
+          this.setState({ error: e });
+          console.log("ERROR:", e);
+        });
+      // if (this.props.connection) {
+      //   const session = this.props.connection.session();
+      //   new Promise((resolve, reject) => {
+      //     session.run('MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:THEME_RELATION]-(d:Theme) WHERE r.probability > 0.5 WITH collect(d.name) as domains, collect(distinct p) as pub, a WHERE ALL(domain_name in $domains WHERE domain_name in domains) RETURN a, length(pub)', {
+      //       domains: this.state.domains,
+      //     })
+      //       .then(resolve, reject)
+      //   }).catch(e => {
+      //       this.setState({ error: e });
+      //       console.log("ERROR:", e);
+      //     })
+      //     .then(parse)
+      //     .then(result => {
+      //       this.setState({ result });
+      //       console.log("RESULT:", result);
+      //     })
+      //     .finally(() => {
+      //       session.close();
+      //     });
+      // }
+
     };
 
     return (
@@ -102,7 +122,7 @@ class AuthoritiesQuery extends Component {
               {this.state.result.map((row, i) => (
                 <tr key={i}>
                   <th scope="row">{i}</th>
-                  <td>{row['a']['properties']['name']}</td>
+                  <td>{row['a']['name']}</td>  {/*hardcoded ['a']!!!!!!! If the backend uses different format, it crashes*/}
                   <td>{row['length(pub)']}</td>
                 </tr>
               ))}

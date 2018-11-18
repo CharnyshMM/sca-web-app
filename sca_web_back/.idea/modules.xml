@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/DjangoBack.iml" filepath="$PROJECT_DIR$/.idea/DjangoBack.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/sca_web_back.iml" filepath="$PROJECT_DIR$/.idea/sca_web_back.iml" />
     </modules>
   </component>
 </project>

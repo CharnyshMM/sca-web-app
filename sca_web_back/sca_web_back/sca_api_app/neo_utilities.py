@@ -6,3 +6,9 @@ def run_cypher_query(query):
     graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
     c = graph.run(query)
     return c.data()
+
+
+def get_nodes_count():
+    graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
+    c = graph.evaluate("MATCH(c) RETURN COUNT(c)")
+    return c

@@ -1,1 +1,0 @@
-## REACT-Redux frontend for SCA

@@ -17,15 +17,12 @@ class App extends Component {
 
     this.state = {
       isModalOpen: false,
-      token: '',
+      authenticated: false,
+      token: undefined,
       user: '',
       password: '',
       // connection: undefined,
     }
-  }
-
-  componentDidMount() { 
-    // NeoContext.connection setting 
   }
 
   render() {
@@ -45,8 +42,13 @@ class App extends Component {
       this.setState({ password: e.target.value });
     };
 
+    const doLogout = () => {
+       this.setState({ authenticated: false, token: undefined});
+    }
+
     const setupConnection = (e) => {
       e.preventDefault();
+      this.setState({token: undefined, authenticated: false});
       authorizeOnPythonBackend(this.state.user, this.state.password)
       .then(resolve => {
         return resolve.json();
@@ -57,7 +59,7 @@ class App extends Component {
       .then(
         response => {
           console.log("successfully authenticated");
-          this.setState({token: response.token});
+          this.setState({token: response.token, authenticated: true});
         }
       ) 
       .catch(e => {
@@ -73,11 +75,35 @@ class App extends Component {
     return (
       <div>
         <NeoContext.Provider value={{ connection: this.state.token }}>
-                  <Header openConnectionSetup={openModal} isConnectionSetupOpen={this.state.isModalOpen} connected={this.state.connection}/>
+                  <Header doLogout={doLogout} authenticated={this.state.authenticated}/>
                   {/* <Header connected={this.state.connection}/> */}
-                  <Main/>
+                  {this.state.authenticated && <Main />}
+                  { (!this.state.authenticated) && 
+                    <div className="container">
+                    <form onSubmit={setupConnection}>
+                      <h5>Log in, please</h5>
+                        
+                        <div className="form-group row col-md-5">
+                          <label htmlFor="user-input">User</label>
+                          
+                            <input id="user-input" type="text" value={this.state.user} onChange={changeUser} className="form-control"/>
+                         
+                        </div>
+                        <div className="form-group row col-md-5">
+                          <label htmlFor="password-input">Password</label>
+                          
+                            <input id="password-input" type="password" value={this.state.password} onChange={changePassword} className="form-control"/>
+                          
+                        </div>
+
+                        <button type="submit" className="btn btn-primary">Connect</button>
+
+                    </form>
+                    </div>
+                    }
+                  
         </NeoContext.Provider>
-        <Modal isOpen={this.state.isModalOpen} onRequestClose={closeModal} style={{
+        {/* <Modal isOpen={this.state.isModalOpen} onRequestClose={closeModal} style={{
             content : {
               top                   : '50%',
               left                  : '50%',
@@ -86,31 +112,9 @@ class App extends Component {
               marginRight           : '-50%',
               transform             : 'translate(-50%, -50%)'
             }
-          }}>
-          <form onSubmit={setupConnection}>
-            <div className="modal-header">
-              <h5 className="modal-title">Connection setup</h5>
-              <button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={closeModal}>
-                <span className="oi oi-x" aria-hidden="true"></span>
-              </button>
-            </div>
-            <div className="modal-body">
-              
-              <div className="form-group">
-                <label htmlFor="user-input">User</label>
-                <input id="user-input" type="text" value={this.state.user} onChange={changeUser} className="form-control"/>
-              </div>
-              <div className="form-group">
-                <label htmlFor="password-input">Password</label>
-                <input id="password-input" type="password" value={this.state.password} onChange={changePassword} className="form-control"/>
-              </div>
-            </div>
-            <div className="modal-footer">
-              <button type="submit" className="btn btn-primary">Connect</button>
-              <button type="button" className="btn btn-secondary" data-dismiss="modal" onClick={closeModal}>Close</button>
-            </div>
-          </form>
-        </Modal>
+          }}> */}
+          
+        {/* </Modal> */}
       </div>
     );
   }

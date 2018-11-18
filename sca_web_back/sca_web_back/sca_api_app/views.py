@@ -48,6 +48,9 @@ class GetStatusView(APIView):
         return Response({"count": result})
 
 
+class Get
+
+
 class IndexView(APIView):
     renderer_classes = (JSONRenderer, )
     permission_classes = (AllowAny, )

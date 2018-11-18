@@ -57,7 +57,7 @@ class IndexView(APIView):
 
 
 @csrf_exempt
-@api_view
+@api_view(['POST'])
 @permission_classes((AllowAny,))
 def login(request):
     username = request.data.get("username")

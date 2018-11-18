@@ -61,5 +61,19 @@ coverage
 # dotenv environment variables file
 .env
 
-
 # End of https://www.gitignore.io/api/node
+
+
+# ========================================
+#		DJANGO GITIGNORE
+# ========================================
+
+sca_web_back/sca_web_back/__pycache__/
+
+sca_web_back/sca_web_back/sca_api_app/__pycache__/
+
+sca_web_back/sca_web_back/secret_config.py
+
+sca_web_back/db.sqlite3
+
+

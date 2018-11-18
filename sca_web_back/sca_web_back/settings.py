@@ -106,8 +106,8 @@ STATIC_URL = '/static/'
 # ===========================================================================
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'ct-m_rpag#3z2#4inf9z+wl9gq&eayz9w0d$@3)vmujk=y@i-d'
-
+from .secret_config import TOP_SECRET_KEY
+SECRET_KEY = TOP_SECRET_KEY
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators

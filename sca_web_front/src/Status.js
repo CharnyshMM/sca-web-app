@@ -4,10 +4,6 @@ import NeoContext from './NeoContext';
 import { getNeoStatus, getHBaseStatus } from './loaders';
 
 
-const hbaseNotRespondingStatus = {
-    count: NaN,
-}
-
 class Status extends Component {
     constructor(props) {
         super(props);

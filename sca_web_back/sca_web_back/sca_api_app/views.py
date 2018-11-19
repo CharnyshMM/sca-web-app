@@ -10,7 +10,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_404_NOT_FOUND, HTTP_200_OK
-from .neo_utilities import run_cypher_query, get_nodes_count, get_authorities_in_domains, get_articles_by_keywords
+from .neo_utilities import NeoQuerier
 
 CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 
@@ -28,7 +28,7 @@ class CustomQueryView(APIView):
         if not request.query_params.get(CUSTOM_QUERY_REQUEST_PARAMETER):
             return Response(getErrorResponce("No query provided"), status=HTTP_400_BAD_REQUEST)
         try:
-            result = run_cypher_query(request.query_params[CUSTOM_QUERY_REQUEST_PARAMETER])
+            result = NeoQuerier().run_cypher_query(request.query_params[CUSTOM_QUERY_REQUEST_PARAMETER])
             return Response(result)
         except SyntaxError as e:
             return Response(getErrorResponce(e.msg), status=HTTP_400_BAD_REQUEST)
@@ -42,7 +42,7 @@ class GetStatusView(APIView):
 
     def get(self, request):
         try:
-            result = get_nodes_count()
+            result = NeoQuerier().get_nodes_count()
         except Exception:
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
         print("result:", result)
@@ -56,7 +56,7 @@ class AuthoritiesQueryView(APIView):
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
         try:
-            result = get_authorities_in_domains(domains_list)
+            result = NeoQuerier().get_authorities_in_domains(domains_list)
             return Response(result)
         except GraphError as e:
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
@@ -71,12 +71,33 @@ class ArticlesQueryView(APIView):
     def get(self, request):
         keys_list = request.query_params.getlist('keyword')
         try:
-            result = get_articles_by_keywords(keys_list)
+            result = NeoQuerier().get_articles_by_keywords(keys_list)
             return Response(result)
         except GraphError as e:
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class PopularDomainsQueryView(APIView):
+    renderer_classes = (JSONRenderer, )
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        POPULARITY_INDEX = 200
+        wanted_popularity = request.query_params.get('popularity')
+        try:
+            if wanted_popularity == 'nascent':
+                result = NeoQuerier().get_domains_by_popularity_index(POPULARITY_INDEX, higher=True)
+            else:
+                result = NeoQuerier().get_domains_by_popularity_index(POPULARITY_INDEX, higher=False)
+            return Response(result)
+        except GraphError as e:
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
 
 class IndexView(APIView):

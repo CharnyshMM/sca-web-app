@@ -56,26 +56,6 @@ class AuthoritiesQuery extends Component {
           this.setState({ error: e });
           console.log("ERROR:", e);
         });
-      // if (this.props.connection) {
-      //   const session = this.props.connection.session();
-      //   new Promise((resolve, reject) => {
-      //     session.run('MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:THEME_RELATION]-(d:Theme) WHERE r.probability > 0.5 WITH collect(d.name) as domains, collect(distinct p) as pub, a WHERE ALL(domain_name in $domains WHERE domain_name in domains) RETURN a, length(pub)', {
-      //       domains: this.state.domains,
-      //     })
-      //       .then(resolve, reject)
-      //   }).catch(e => {
-      //       this.setState({ error: e });
-      //       console.log("ERROR:", e);
-      //     })
-      //     .then(parse)
-      //     .then(result => {
-      //       this.setState({ result });
-      //       console.log("RESULT:", result);
-      //     })
-      //     .finally(() => {
-      //       session.close();
-      //     });
-      // }
 
     };
 

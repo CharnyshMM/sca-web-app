@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
 const Header = ({ doLogout, authenticated }) => (
   <nav className='navbar navbar-dark bg-dark'>

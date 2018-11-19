@@ -1,4 +1,10 @@
-import { PYTHON_BACKEND_API, PYTHON_BACKEND_API_NEO_STATUS, HBASE_STATUS_PATH, PYTHON_BACKEND_API_AUTHORITIES_QUERY, PYTHON_BACKEND_API_ARTICLES_QUERY } from './components_urls';
+import { PYTHON_BACKEND_API, 
+         PYTHON_BACKEND_API_NEO_STATUS,
+         HBASE_STATUS_PATH, 
+         PYTHON_BACKEND_API_AUTHORITIES_QUERY, 
+         PYTHON_BACKEND_API_ARTICLES_QUERY,
+         PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY
+         } from './constant_urls';
 
 // ========================================================================
 //      UTILITIES
@@ -76,6 +82,12 @@ const getArticlesByKeywords = (keywords_list, token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_ARTICLES_QUERY+`?${query}`, authOptions(token));
 }
 
+
+const getDomainsByPopularity = (popularity, token) => {
+    return getLoaderPromise(PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY+`?popularity=${popularity}`, authOptions(token)) 
+}
+
+
 const getNeoStatus = (token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, authOptions(token));
 }
@@ -92,4 +104,5 @@ export {
     getHBaseStatus,
     getAuthoritiesInDomainsList,
     getArticlesByKeywords,
+    getDomainsByPopularity,
 };

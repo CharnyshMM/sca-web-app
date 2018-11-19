@@ -21,6 +21,7 @@ class ArticlesQuery extends Component {
             this.setState({ keywordInputValue: event.target.value });
           }
         };
+
         const addKeyword = keyword => {
           if (!this.state.keywordInputValue && !keyword) {
               return;
@@ -34,6 +35,7 @@ class ArticlesQuery extends Component {
           } 
           this.setState(prev => ({ keywordInputValue: '', keywords: [...prev.keywords, keyword.toLowerCase()] }));
         }
+        
         const removeKeyword = index => {
           this.setState(prev => ({ keywords: [
             ...prev.keywords.slice(0, index),

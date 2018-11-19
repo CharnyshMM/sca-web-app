@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { parse } from 'parse-neo4j';
 
+import { getDomainsByPopularity } from './loaders';
 import NeoContext from './NeoContext';
 
 class DomainsQuery extends Component {
@@ -15,31 +15,28 @@ class DomainsQuery extends Component {
     const changeSelected = e => {
       this.setState({ selected: e.target.value });
     };
+
     const handleSubmit = e => {
       e.preventDefault();
       this.setState({error: undefined,});
-      if (this.props.connection) {
-        const session = this.props.connection.session();
-        new Promise((resolve, reject) => {
-          session.run(
-            this.state.selected == 'nascent'
-            ? 'match (theme:Theme), (title:Publication)-[r:THEME_RELATION]-(theme) where r.probability > 0.5 with theme, count(title) as popularity where popularity > 150 return theme.name as name, popularity order by popularity desc'
-            : 'match (theme:Theme), (title:Publication)-[r:THEME_RELATION]-(theme) where r.probability > 0.5 with theme, count(title) as popularity where popularity <= 150 return theme.name as name, popularity order by popularity',
-          )
-            .then(resolve, reject)
-        })
-          .catch(e => {
-            this.setState({ error: e });
-            console.log("ERROR:", e);
-          })
-          .then(parse)
-          .then(result => {
-            this.setState({ result });
-          })
-          .finally(() => {
-            session.close();
-          });
-      } 
+      getDomainsByPopularity(this.state.selected, this.props.connection)
+        .then(
+          resolve => {
+            return resolve.json();
+          },
+          reject => {
+            throw new Error("Error in request");
+          }
+        )
+        .then(response => {
+                console.log('responsed_query:', response);
+                this.setState({ result: response });
+              },
+        )
+        .catch(e => {
+          this.setState({ error: e });
+          console.log("ERROR:", e);
+      });
     };
 
     return (

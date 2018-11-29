@@ -6,6 +6,7 @@ import DomainsQuery from './DomainsQuery';
 import ArticlesQuery from './ArticlesQuery';
 import CustomQuery from './CustomQuery';
 import Status from './Status';
+import Docs from './Docs';
 
 const Main = (is_admin) => (
   <main>
@@ -16,6 +17,7 @@ const Main = (is_admin) => (
       <Route path='/articles-query' component={ArticlesQuery}/>
       <Route path='/custom-query' component={CustomQuery}/>
       <Route path='/status' component={Status} />
+      <Route path='/docs' component={Docs} />
     </Switch>
   </main>
 );

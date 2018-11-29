@@ -7,7 +7,10 @@ const Header = ({ doLogout, authenticated, is_admin }) => (
       <Link to='/' className='navbar-brand'>CAS</Link>
       <div className="d-flex justify-content-end">
       {authenticated && is_admin && (
-        <Link to="/status" className="btn btn-outline-primary">Status</Link>
+        <div>
+        <Link to="/docs" className="btn btn-link">Docs</Link>
+        <Link to="/status" className="btn btn-link">Status</Link>  
+        </div>
         )
       }
       {authenticated && 

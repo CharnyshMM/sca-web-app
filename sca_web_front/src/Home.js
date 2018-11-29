@@ -35,39 +35,40 @@ const Home = (props) => (
           </div>
         </div>
       </div>
-      </div>
+    </div>
 
       <div className="row justify-content-center">
-      <div className="col-6 vertical-margin">
-        <div className="card h-100">
-          <div className="card-body">
-            <div className="media">
-              <span className="oi oi-book primary-icon"></span>
-              <div className="media-body">
-                <h5 className="card-title">Search articles</h5>
-                <p className="card-text">Search for articles on particular parameters.</p>
-                <Link to="/articles-query" className="btn btn-primary">Make query</Link>
+        <div className="col-6 vertical-margin">
+          <div className="card h-100">
+            <div className="card-body">
+              <div className="media">
+                <span className="oi oi-book primary-icon"></span>
+                <div className="media-body">
+                  <h5 className="card-title">Search articles</h5>
+                  <p className="card-text">Search for articles on particular parameters.</p>
+                  <Link to="/articles-query" className="btn btn-primary">Make query</Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      {props.is_admin &&
-      <div className="col-6 vertical-margin ">
-        <div className="card h-100">
-          <div className="card-body">
-            <div className="media">
-              <span className="oi oi-spreadsheet primary-icon"></span>
-              <div className="media-body">
-                <h5 className="card-title">Query builder</h5>
-                <p className="card-text">Compose and execute complex queries to the graph database using the query designer.</p>
-                <Link to="/custom-query" className="btn btn-primary">Make query</Link>
+
+        {props.is_admin &&
+        <div className="col-6 vertical-margin ">
+          <div className="card h-100">
+            <div className="card-body">
+              <div className="media">
+                <span className="oi oi-spreadsheet primary-icon"></span>
+                <div className="media-body">
+                  <h5 className="card-title">Query builder</h5>
+                  <p className="card-text">Compose and execute complex queries to the graph database using the query designer.</p>
+                  <Link to="/custom-query" className="btn btn-primary">Make query</Link>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      }
+        }
       </div>
     </div>
   

@@ -15,6 +15,7 @@ class App extends Component {
     this.state = {
       authenticated: false,
       token: undefined,
+      is_admin: false,
       user: '',
       password: '',
       // connection: undefined,
@@ -39,28 +40,26 @@ class App extends Component {
       this.setState({token: undefined, authenticated: false});
       authorizeOnPythonBackend(this.state.user, this.state.password)
       .then(resolve => {
-        return resolve.json();
+           return resolve.json();
         }
     )
       .then(
         response => {
           console.log("successfully authenticated");
-          this.setState({token: response.token, authenticated: true});
+          this.setState({token: response.token, authenticated: true, is_admin: response.is_admin});
         }
       ) 
       .catch(e => {
         this.setState({ error: e });
         console.log("ERROR:", e);
         alert("Cannot authorize you with these credentials");
-      })    
-      //this.setState({connection: neo_connection});
-       
+      });    
     }
 
 
     return (
-        <NeoContext.Provider value={{ connection: this.state.token }}>
-          <Header doLogout={doLogout} authenticated={this.state.authenticated}/>
+        <NeoContext.Provider value={{ connection: this.state.token, is_admin: this.state.is_admin }}>
+          <Header doLogout={doLogout} authenticated={this.state.authenticated} is_admin={this.state.is_admin}/>
           
           {this.state.authenticated && <Main />}
           { (!this.state.authenticated) && 

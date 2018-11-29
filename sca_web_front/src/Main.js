@@ -7,7 +7,7 @@ import ArticlesQuery from './ArticlesQuery';
 import CustomQuery from './CustomQuery';
 import Status from './Status';
 
-const Main = () => (
+const Main = (is_admin) => (
   <main>
     <Switch>
       <Route exact path='/' component={Home}/>

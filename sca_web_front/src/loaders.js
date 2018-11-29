@@ -21,8 +21,8 @@ const getLoaderPromise = function (path, requestOptions=null) {
         fetch( path , requestOptions).then(
             response => { 
                 console.log("responsed :", response);
-                if (response.status == 200) {
-                    console.log("status=200, resolving promise");
+                if (response.status >= 200 && response.status < 300) {
+                    console.log("status=OK, resolving promise");
                     resolve(response); 
                 } else {
                     console.log(`status=${response.status}, rejecting promise`);

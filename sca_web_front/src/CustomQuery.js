@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import CodeMirror from 'codemirror';
-import { runQueryOnPythonBackend } from './loaders';
+import { runQueryOnPythonBackend } from './verbose_loaders';
 
 import NeoContext from './NeoContext';
 
@@ -82,23 +82,29 @@ class CustomQuery extends Component {
 
     const handleSubmit = e => {
       e.preventDefault();
+      let status = 0;
       this.setState({ error: undefined, result: undefined });
       runQueryOnPythonBackend(this.queryEditor.getValue(), this.props.connection)
-        .then(
-          resolve => {
-            return resolve.json();
-          },
-          reject => {
-            throw new Error("Error. Check your request & Status");
-          }
-        )
-        .then(response => {
-              console.log('responsed_Custom_query:', response);
-              this.setState({ result: response });
-              },
+        .then(result => {
+              status = result.status;
+              return result.response.json();
+            },
+            error => {
+              status = error.status;
+              return error.response.json();
+            })
+        .then(result => {
+              console.log('responsed_Custom_query:', result, status);
+                if (status == 200) {
+                    this.setState({ result: result });
+                } else {
+                    console.log("I throwed an error");
+                    throw Error(result.error);
+                }
+            },
         )
         .catch(e => {
-          this.setState({ error: e });
+          this.setState({ error: e});
           console.log("ERROR:", e);
         })
 
@@ -181,6 +187,6 @@ class CustomQuery extends Component {
 
 export default props => (
   <NeoContext.Consumer>
-    {({ connection }) => <CustomQuery {...props} connection={connection}/>}
+    {({ connection, is_admin }) => <CustomQuery {...props} connection={connection} is_admin={is_admin}/>}
   </NeoContext.Consumer>
 );

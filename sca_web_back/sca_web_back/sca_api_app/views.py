@@ -21,7 +21,7 @@ def getErrorResponce(err):
 
 class CustomQueryView(APIView):
     renderer_classes = (JSONRenderer,)
-    permission_classes = (IsAuthenticated, )
+    permission_classes = (IsAdminUser, )
 
     def get(self, request):
         # there should be request filtering(maybe using decorator)
@@ -122,5 +122,6 @@ def login(request):
         return Response({'error': 'Invalid Credentials'},
                         status=HTTP_404_NOT_FOUND)
     token, _ = Token.objects.get_or_create(user=user)
-    return Response({'token': token.key},
+
+    return Response({'token': token.key, 'is_admin': user.is_superuser},
                     status=HTTP_200_OK)

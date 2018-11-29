@@ -1,8 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import NeoContext from './NeoContext';
 import './Home.css';
 
-const Home = () => (
+const Home = (props) => (
   <div className='container'>
     <h1>Dashboard</h1>
     <div className="row">
@@ -34,6 +35,9 @@ const Home = () => (
           </div>
         </div>
       </div>
+      </div>
+
+      <div className="row justify-content-center">
       <div className="col-6 vertical-margin">
         <div className="card h-100">
           <div className="card-body">
@@ -48,7 +52,8 @@ const Home = () => (
           </div>
         </div>
       </div>
-      <div className="col-6 vertical-margin">
+      {props.is_admin &&
+      <div className="col-6 vertical-margin ">
         <div className="card h-100">
           <div className="card-body">
             <div className="media">
@@ -62,8 +67,14 @@ const Home = () => (
           </div>
         </div>
       </div>
+      }
+      </div>
     </div>
-  </div>
+  
 );
 
-export default Home;
+export default props => (
+  <NeoContext.Consumer>
+    {({ is_admin }) => Home({'is_admin': is_admin})}
+  </NeoContext.Consumer>
+);

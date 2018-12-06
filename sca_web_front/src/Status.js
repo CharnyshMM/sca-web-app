@@ -36,7 +36,9 @@ class Status extends Component {
                     console.log("result OK:", res);
                     this.setState({neoStatus: 
                         {
-                            count: res.count, 
+                            nodesCount: res.nodesCount,
+                            authorsCount: res.authorsCount,
+                            publicationsCount: res.publicationsCount, 
                         }    
                     });
                 },
@@ -110,7 +112,13 @@ class Status extends Component {
                     <td className="col">
                         <ul className="list-group">
                             <li className="list-group-item">
-                                Count: {this.state.neoStatus ? this.state.neoStatus.count : "-"}
+                                Nodes Count: {this.state.neoStatus ? this.state.neoStatus.nodesCount : "-"}
+                            </li>
+                            <li className="list-group-item">
+                                Authors Count: {this.state.neoStatus ? this.state.neoStatus.authorsCount : "-"}
+                            </li>
+                            <li className="list-group-item">
+                                Publications Count: {this.state.neoStatus ? this.state.neoStatus.publicationsCount : "-"}
                             </li>
                         </ul>
                     </td>

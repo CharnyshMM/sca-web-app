@@ -21,7 +21,7 @@ def getErrorResponce(err):
 
 class CustomQueryView(APIView):
     renderer_classes = (JSONRenderer,)
-    permission_classes = (IsAdminUser, )
+    permission_classes = (IsAdminUser,)
 
     def get(self, request):
         # there should be request filtering(maybe using decorator)
@@ -42,12 +42,13 @@ class GetStatusView(APIView):
 
     def get(self, request):
         try:
-            result = NeoQuerier().get_nodes_count()
+            nodes_count = NeoQuerier().get_nodes_count()
+            authors_count = NeoQuerier().get_nodes_count(NeoQuerier.AUTHOR_NODE_LABEL)
+            publications_count = NeoQuerier().get_nodes_count(NeoQuerier.PUBLICATION_NODE_LABEL)
         except Exception:
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
-        print("result:", result)
-        return Response({"count": result})
-
+        print("result:", nodes_count)
+        return Response({"nodesCount": nodes_count, "authorsCount": authors_count, "publicationsCount": publications_count})
 
 class AuthoritiesQueryView(APIView):
     renderer_classes = (JSONRenderer,)
@@ -65,8 +66,8 @@ class AuthoritiesQueryView(APIView):
 
 
 class ArticlesQueryView(APIView):
-    renderer_classes = (JSONRenderer, )
-    permission_classes = (IsAuthenticated, )
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         keys_list = request.query_params.getlist('keyword')
@@ -80,8 +81,8 @@ class ArticlesQueryView(APIView):
 
 
 class PopularDomainsQueryView(APIView):
-    renderer_classes = (JSONRenderer, )
-    permission_classes = (IsAuthenticated, )
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
 
     def get(self, request):
         POPULARITY_INDEX = 200
@@ -98,11 +99,9 @@ class PopularDomainsQueryView(APIView):
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-
-
 class IndexView(APIView):
-    renderer_classes = (JSONRenderer, )
-    permission_classes = (AllowAny, )
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (AllowAny,)
 
     def get(self, request):
         return Response({"hello": "world! API server is alive"})

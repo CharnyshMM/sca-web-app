@@ -15,11 +15,14 @@ class Status extends Component {
 
     componentDidMount() {
         getHBaseStatus()
-            .then(result => result.text()) // getting the response text
+            .then(result => result.json()) // getting the response text
             .then(result => {
-                result = JSON.parse(result);
+                
                 this.setState({hBaseStatus: {
-                    count: result, // getting publications count from recieved text 
+                    hbasePublications: result.hbasePublications, // getting publications count from recieved text 
+                    documents: result.documents,
+                    texts: result.texts,
+                    filteredTexts: result.filteredTexts,
                 }
                 });
             },
@@ -79,7 +82,19 @@ class Status extends Component {
                     <td className="col">
                         <ul className="list-group">
                             <li className="list-group-item">
-                                Publications Count: {this.state.hBaseStatus ? this.state.hBaseStatus.count : "-"}
+                                Publications Count: {this.state.hBaseStatus ? this.state.hBaseStatus.hbasePublications : "-"}
+                            </li>
+                            <li className="list-group-item">
+                                Documents: {this.state.hBaseStatus ? this.state.hBaseStatus.documents : "-"}
+                            </li>
+                            
+                            <li className="list-group-item">
+                                Texts: {this.state.hBaseStatus ? this.state.hBaseStatus.texts : "-"}
+                            </li>
+
+                            
+                            <li className="list-group-item">
+                                Filtered Texts: {this.state.hBaseStatus ? this.state.hBaseStatus.filteredTexts : "-"}
                             </li>
                         </ul>
                     </td>

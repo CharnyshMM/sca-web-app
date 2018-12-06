@@ -7,6 +7,10 @@ from .neo_config import neo_password, neo_user, neo_port, neo_host, neo_scheme
 
 
 class NeoQuerier:
+    AUTHOR_NODE_LABEL = "Author"
+    PUBLICATION_NODE_LABEL = "Publication"
+    THEME_NODE_LABEL = "Theme"
+
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
 
@@ -16,12 +20,14 @@ class NeoQuerier:
         c = self.graph.run(query)
         return c.data()
 
-    def get_nodes_count(self):
-        query = "MATCH(c) RETURN COUNT(c)"
-        #graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
-        #c = graph.evaluate()
+    def get_nodes_count(self, label=None):
+        if not label:
+            query = "MATCH(c) RETURN COUNT(c)"
+        else:
+            query = "MATCH(a:{}) RETURN COUNT(a)".format(label)
         c = self.graph.evaluate(query)
         return c
+	
 
     def get_authorities_in_domains(self, domains_list):
         #graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)

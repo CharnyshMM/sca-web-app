@@ -1,15 +1,26 @@
 
 # ========================================
-#		DJANGO GITIGNORE
+#	SCA_WEB_BACK
 # ========================================
 
 sca_web_back/sca_web_back/__pycache__/
 
 sca_web_back/sca_web_back/sca_api_app/__pycache__/
 
+sca_web_back/sca_web_back/sca_api_app/neo_config.py
+
 sca_web_back/sca_web_back/secret_config.py
 
 sca_web_back/db.sqlite3
 
+# =========================================
+#	SCA_WEB_FRONT
+# =========================================
+
 sca_web_front/node_modules/
+
+
+sca_web_front/src/constant_urls.js
+
+
 

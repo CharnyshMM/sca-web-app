@@ -1,5 +1,4 @@
 import React from 'react';
-import {DOCS_URLS_DICT} from './constant_urls'
 
 const Docs = () => {
 
@@ -19,10 +18,10 @@ const Docs = () => {
         <div className='container'>
             <h1>Documentation pages</h1>
             <table className="table">
-        
+
             <tbody>
-                {rows} 
-            </tbody>   
+                {rows}
+            </tbody>
             </table>
         </div>
     );

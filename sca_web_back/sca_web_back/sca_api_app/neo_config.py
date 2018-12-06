@@ -5,6 +5,6 @@
 neo_host = "localhost"
 neo_port = "7474"
 neo_user = "neo4j"
-neo_password = "1111"
+neo_password = "123456"
 neo_scheme = "http"
 

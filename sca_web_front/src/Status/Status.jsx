@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import NeoContext from './NeoContext';
-import { getNeoStatus, getHBaseStatus } from './loaders';
+import NeoContext from '../NeoContext';
+import { getNeoStatus, getHBaseStatus } from '../loaders';
 
 
 class Status extends Component {

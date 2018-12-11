@@ -13,6 +13,9 @@ sca_web_back/sca_web_back/secret_config.py
 
 sca_web_back/db.sqlite3
 
+sca_web_back/.idea/workspace.xml
+
+
 # =========================================
 #	SCA_WEB_FRONT
 # =========================================

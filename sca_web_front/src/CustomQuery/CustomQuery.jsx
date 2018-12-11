@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import CodeMirror from 'codemirror';
-import { runQueryOnPythonBackend } from './verbose_loaders';
+import { runQueryOnPythonBackend } from '../verbose_loaders';
 
-import NeoContext from './NeoContext';
+import NeoContext from '../NeoContext';
 
 import './CustomQuery.css';
 
@@ -106,7 +106,7 @@ class CustomQuery extends Component {
         .catch(e => {
           this.setState({ error: e});
           console.log("ERROR:", e);
-        })
+        });
 
     }
     

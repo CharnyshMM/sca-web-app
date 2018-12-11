@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import {getAuthoritiesInDomainsList} from './loaders';
 
-import NeoContext from './NeoContext';
+import {getAuthoritiesInDomainsList} from '../loaders';
+
+import NeoContext from '../NeoContext';
 
 class AuthoritiesQuery extends Component {
   constructor(props) {

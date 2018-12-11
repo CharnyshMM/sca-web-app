@@ -10,7 +10,7 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_404_NOT_FOUND, HTTP_200_OK
-from .neo_utilities import NeoQuerier
+from .neo_querier import NeoQuerier
 
 CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 
@@ -24,7 +24,7 @@ class CustomQueryView(APIView):
     permission_classes = (IsAdminUser, )
 
     def get(self, request):
-        # there should be request filtering(maybe using decorator)
+        # there should be request filtering(maybe using decorator) :))
         if not request.query_params.get(CUSTOM_QUERY_REQUEST_PARAMETER):
             return Response(getErrorResponce("No query provided"), status=HTTP_400_BAD_REQUEST)
         try:
@@ -55,8 +55,25 @@ class AuthoritiesQueryView(APIView):
 
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
+
         try:
             result = NeoQuerier().get_authorities_in_domains(domains_list)
+            return Response(result)
+        except GraphError as e:
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class AuthorWithPublicationsInDomainsQuery(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        domains_list = request.query_params.getlist('domain')
+        author_name = request.query_params.getlist('author')
+        try:
+            result = NeoQuerier().get_author_with_publications_in_domais(author_name, domains_list)
             return Response(result)
         except GraphError as e:
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
@@ -84,7 +101,7 @@ class PopularDomainsQueryView(APIView):
     permission_classes = (IsAuthenticated, )
 
     def get(self, request):
-        POPULARITY_INDEX = 200
+        POPULARITY_INDEX = 200 # hardcoded index AAAAAAAAAAAAAAAAAA
         wanted_popularity = request.query_params.get('popularity')
         try:
             if wanted_popularity == 'nascent':
@@ -96,8 +113,6 @@ class PopularDomainsQueryView(APIView):
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 
 
 class IndexView(APIView):

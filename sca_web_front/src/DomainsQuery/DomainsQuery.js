@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
-import { getDomainsByPopularity } from './loaders';
-import NeoContext from './NeoContext';
+import { getDomainsByPopularity } from '../loaders';
+import NeoContext from '../NeoContext';
 
 class DomainsQuery extends Component {
   constructor(props) {

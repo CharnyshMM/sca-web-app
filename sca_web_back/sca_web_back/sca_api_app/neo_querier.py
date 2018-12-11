@@ -31,12 +31,13 @@ class NeoQuerier:
 
     def get_authorities_in_domains(self, domains_list):
         #graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
-        result = self.graph.run('MATCH (a:Author)-[:WROTE]-(p:Publication), '
-                           '(p)-[r:THEME_RELATION]-(d:Theme) '
-                           'WHERE r.probability > 0.5 WITH collect(d.name) as domains, '
-                           'collect(distinct p) as pub, a '
-                           'WHERE ALL(domain_name in {domains_list} '
-                           'WHERE domain_name in domains) RETURN a, length(pub)', domains_list=domains_list)
+        query = 'MATCH (a:Author)-[:WROTE]-(p:Publication), '\
+                           '(p)-[r:THEME_RELATION]-(d:Theme) '\
+                           'WHERE r.probability > 0.5 WITH collect(d.name) as domains, '\
+                           'collect(distinct p) as pub, a '\
+                           'WHERE ALL(domain_name in {domains_list} '\
+                           'WHERE domain_name in domains) RETURN a, length(pub)'
+        result = self.graph.run(query, domains_list=domains_list)
         return result.data()
 
 
@@ -60,3 +61,13 @@ class NeoQuerier:
             query = uninteresting_query
         #graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
         return self.graph.run(query, popularity_index=popularity_index).data()
+
+    def get_author_with_publications_in_domais(self, author_name, domains_list):
+        query = 'MATCH (a:Author)-[:WROTE]-(p:Publication), ' \
+                '(p)-[r:THEME_RELATION]-(d:Theme) ' \
+                'WHERE a.name={author_name} r.probability > 0.5 WITH collect(d.name) as domains, ' \
+                'collect(distinct p) as pub, a ' \
+                'WHERE ALL(domain_name in {domains_list} ' \
+                'WHERE domain_name in domains) RETURN a, pub'
+        result = self.graph.run(query, author_name=author_name, domains_list=domains_list)
+        return result.data()

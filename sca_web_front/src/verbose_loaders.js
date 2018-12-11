@@ -4,7 +4,8 @@ import {
     HBASE_STATUS_PATH,
     PYTHON_BACKEND_API_AUTHORITIES_QUERY,
     PYTHON_BACKEND_API_ARTICLES_QUERY,
-    PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY
+    PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY,
+    PYTHON_BACKEND_API_AUTHOR_PUBLICATIONS_IN_DOMAINS_QUERY,
 } from './constant_urls';
 
 // ========================================================================
@@ -101,6 +102,12 @@ const getDomainsByPopularity = (popularity, token) => {
 }
 
 
+const getAuthorPublicationsInDomains = (author_name, domains_list, token) => {
+    let query = buildQueryParametersList('domain', domains_list);
+    query += `&author=${author_name}`;
+    return getLoaderPromise(`${PYTHON_BACKEND_API_AUTHOR_PUBLICATIONS_IN_DOMAINS_QUERY}?${query}`, authOptions(token))
+}
+
 const getNeoStatus = (token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, authOptions(token));
 }
@@ -118,4 +125,5 @@ export {
     getAuthoritiesInDomainsList,
     getArticlesByKeywords,
     getDomainsByPopularity,
+    getAuthorPublicationsInDomains,
 };

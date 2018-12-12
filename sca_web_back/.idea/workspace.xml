@@ -3,7 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="9c223db1-e8a4-488b-a7e6-37fcc58690c8" name="Default Changelist" comment="django rest api started">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_utilities.py" beforeDir="false" afterPath="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_utilities.py" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_querier.py" beforeDir="false" afterPath="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_querier.py" afterDir="false" />
+>>>>>>> new_front
       <change beforePath="$PROJECT_DIR$/sca_web_back/sca_api_app/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/sca_web_back/sca_api_app/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -25,14 +29,23 @@
     <session id="867459425">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
+<<<<<<< HEAD
           <entry key="project.closed" value="6" />
+=======
+          <entry key="project.closed" value="7" />
+>>>>>>> new_front
           <entry key="project.open.time.0" value="1" />
           <entry key="project.open.time.2" value="1" />
           <entry key="project.open.time.3" value="1" />
           <entry key="project.open.time.4" value="4" />
-          <entry key="project.open.time.7" value="1" />
+          <entry key="project.open.time.5" value="1" />
+          <entry key="project.open.time.7" value="2" />
           <entry key="project.open.time.8" value="1" />
+<<<<<<< HEAD
           <entry key="project.opened" value="9" />
+=======
+          <entry key="project.opened" value="10" />
+>>>>>>> new_front
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
@@ -48,30 +61,45 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="675" />
-          <entry key="dummy" value="48" />
+          <entry key="dummy" value="68" />
           <entry key="neo_data_json_encoder" value="587" />
           <entry key="neo_utilities" value="2" />
+<<<<<<< HEAD
           <entry key="py" value="5140" />
+=======
+          <entry key="py" value="5804" />
+>>>>>>> new_front
           <entry key="txt" value="24" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
+<<<<<<< HEAD
           <entry key="PLAIN_TEXT" value="72" />
           <entry key="Python" value="6404" />
+=======
+          <entry key="PLAIN_TEXT" value="92" />
+          <entry key="Python" value="7068" />
+>>>>>>> new_front
         </counts>
       </usages-collector>
     </session>
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/views.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="211">
               <caret line="50" column="101" selection-start-line="50" selection-start-column="84" selection-end-line="50" selection-end-column="101" />
+=======
+            <state relative-caret-position="1079">
+              <caret line="73" column="46" lean-forward="true" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="46" />
+>>>>>>> new_front
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
+                <marker date="1544628635454" expanded="true" signature="2542:3229" ph="..." />
               </folding>
             </state>
           </provider>
@@ -90,8 +118,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sca_web_back/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="35" selection-start-line="35" selection-end-line="35" />
+            <state relative-caret-position="170">
+              <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
               <folding>
                 <element signature="e#636#668#0" expanded="true" />
               </folding>
@@ -99,11 +127,16 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/neo_utilities.py">
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/neo_querier.py">
           <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
             <state relative-caret-position="136">
               <caret line="9" column="32" selection-start-line="9" selection-start-column="32" selection-end-line="9" selection-end-column="32" />
+=======
+            <state relative-caret-position="249">
+              <caret line="39" column="54" selection-start-line="39" selection-start-column="54" selection-end-line="39" selection-end-column="54" />
+>>>>>>> new_front
             </state>
           </provider>
         </entry>
@@ -161,16 +194,17 @@
         <option value="$PROJECT_DIR$/sca_web_back/sca_api_app/secret_config.py" />
         <option value="$PROJECT_DIR$/sca_web_back/secret_config.py" />
         <option value="$PROJECT_DIR$/sca_web_back/settings.py" />
-        <option value="$PROJECT_DIR$/sca_web_back/urls.py" />
         <option value="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_utilities.py" />
+        <option value="$PROJECT_DIR$/sca_web_back/urls.py" />
         <option value="$PROJECT_DIR$/sca_web_back/sca_api_app/views.py" />
+        <option value="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_querier.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="-12" />
-    <option name="y" value="-12" />
-    <option name="width" value="1944" />
+    <option name="x" value="879" />
+    <option name="y" value="13" />
+    <option name="width" value="1098" />
     <option name="height" value="1044" />
   </component>
   <component name="ProjectLevelVcsManager" settingsEditedManually="true">
@@ -305,7 +339,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sca_web_back/sca_api_app/neo_utilities.py" />
+      <option name="SCRIPT_NAME" value="D:\Documents\Univer\SCA\SCA\sca_web_back\sca_web_back\sca_api_app\neo_querier.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -360,7 +394,7 @@
   <component name="ToolWindowManager">
     <frame x="-7" y="-7" width="1295" height="695" extended-state="6" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" weight="0.12877584" />
+      <window_info content_ui="combo" id="Project" order="0" weight="0.21366164" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -371,7 +405,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32857144" />
       <window_info anchor="bottom" id="Version Control" order="7" show_stripe_button="false" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.3232682" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" visible="true" weight="0.14031972" />
       <window_info anchor="bottom" id="Event Log" order="9" side_tool="true" weight="0.32972974" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.3285968" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -432,6 +466,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/neo_data_json_encoder.py" />
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/apps.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -451,6 +486,15 @@
     <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/tests.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+=======
+    <entry file="file://$PROJECT_DIR$/sca_web_back/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2482">
+          <caret line="146" column="21" selection-start-line="146" selection-start-column="21" selection-end-line="146" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+>>>>>>> new_front
     <entry file="file://$PROJECT_DIR$/sca_web_back/secret_config.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -468,6 +512,7 @@
     <entry file="file://$PROJECT_DIR$/manage.py">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
+<<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/sca_web_back/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="296">
@@ -479,16 +524,47 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="136">
           <caret line="9" column="32" selection-start-line="9" selection-start-column="32" selection-end-line="9" selection-end-column="32" />
+=======
+    <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/tests.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/apps.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/models.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sca_web_back/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="34" column="37" selection-start-line="34" selection-start-column="37" selection-end-line="34" selection-end-column="37" />
+          <folding>
+            <element signature="e#636#668#0" expanded="true" />
+          </folding>
+>>>>>>> new_front
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/views.py">
       <provider selected="true" editor-type-id="text-editor">
+<<<<<<< HEAD
         <state relative-caret-position="211">
           <caret line="50" column="101" selection-start-line="50" selection-start-column="84" selection-end-line="50" selection-end-column="101" />
+=======
+        <state relative-caret-position="1079">
+          <caret line="73" column="46" lean-forward="true" selection-start-line="73" selection-start-column="46" selection-end-line="73" selection-end-column="46" />
+>>>>>>> new_front
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+            <marker date="1544628635454" expanded="true" signature="2542:3229" ph="..." />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sca_web_back/sca_api_app/neo_querier.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="249">
+          <caret line="39" column="54" selection-start-line="39" selection-start-column="54" selection-end-line="39" selection-end-column="54" />
         </state>
       </provider>
     </entry>

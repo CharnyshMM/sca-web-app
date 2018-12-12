@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
-import {getAuthoritiesInDomainsList} from './loaders';
+import queryString from 'query-string';
 
-import NeoContext from './NeoContext';
+import {getAuthoritiesInDomainsList} from '../loaders';
+import {createAuthoritiesInDomainsLink, createAuthorPublicationsInDomainsLink} from '../utilities/links_creators';
+import NeoContext from '../NeoContext';
 
 class AuthoritiesQuery extends Component {
   constructor(props) {
@@ -10,8 +12,47 @@ class AuthoritiesQuery extends Component {
       domains: [],
       domainInputValue: '',
       error: undefined,
-      // result: [],
     };
+  }
+
+  makeQuery(domains) {
+      this.setState({ error: undefined, result: undefined, domains: domains });
+      
+      const token = window.sessionStorage.getItem("token");
+      getAuthoritiesInDomainsList(domains, token)
+        .then(
+          resolve => {
+            return resolve.json();
+          },
+          reject => {
+            throw new Error("Error in request");
+          }
+        )
+        .then(response => {
+              console.log('responsed:', response);
+              this.setState({ result: response });
+              },
+        )
+        .catch(e => {
+          this.setState({ error: e });
+          console.log("ERROR:", e);
+        });
+  }
+
+  componentDidMount() {
+      console.log("comp did mount");
+      
+     
+      const search = queryString.parse(this.props.location.search);
+      let domains = search.domain;
+      if (domains == undefined) {
+        return;
+      }
+      if (!Array.isArray(domains)) {
+        domains = [domains];
+      }
+      console.log("domains", domains);
+      this.makeQuery(domains);      
   }
 
   render() {
@@ -22,41 +63,34 @@ class AuthoritiesQuery extends Component {
         this.setState({ domainInputValue: event.target.value });
       }
     };
+
     const addDomain = domain => {
       if (!domain) {
         domain = this.state.domainInputValue;
       }
       this.setState(prev => ({ domainInputValue: '', domains: [...prev.domains, domain] }));
-    }
+    };
+
     const removeDomain = index => {
       this.setState(prev => ({ domains: [
         ...prev.domains.slice(0, index),
         ...prev.domains.slice(index + 1),
       ] }));
     };
+
     const handleSubmit = e => {
       e.preventDefault();
-      this.setState({ error: undefined, result: undefined });
-      
-      getAuthoritiesInDomainsList(this.state.domains, this.props.connection)
-        .then(
-          resolve => {
-            return resolve.json();
-          },
-          reject => {
-            throw new Error("Error in request");
-          }
-        )
-        .then(response => {
-              console.log('responsed_Custom_query:', response);
-              this.setState({ result: response });
-              },
-        )
-        .catch(e => {
-          this.setState({ error: e });
-          console.log("ERROR:", e);
-        });
+      this.props.history.push(createAuthoritiesInDomainsLink(this.state.domains));
+      this.makeQuery(this.state.domains);
+    };
 
+    const onTableRowClick = (index) => {
+        if (!this.state.result) {
+          return;
+        }
+        let author_name = this.state.result[index]['a']['name'];
+        const link = createAuthorPublicationsInDomainsLink(author_name, this.state.domains);
+        this.props.history.push(link);
     };
 
     return (
@@ -90,7 +124,7 @@ class AuthoritiesQuery extends Component {
           </div>
         )}
         {this.state.result && (
-          <table className="table">
+          <table className="table table-hover">
             <thead>
               <tr>
                 <th scope="col">#</th>
@@ -100,10 +134,16 @@ class AuthoritiesQuery extends Component {
             </thead>
             <tbody>
               {this.state.result.map((row, i) => (
-                <tr key={i}>
-                  <th scope="row">{i}</th>
-                  <td>{row['a']['name']}</td>  {/*hardcoded ['a']!!!!!!! If the backend uses different format, it crashes*/}
-                  <td>{row['length(pub)']}</td>
+                <tr key={i} onClick={()=>onTableRowClick(i)}>
+                  <th scope="row">
+                    {i}
+                  </th>
+                  <td>
+                    {row['a']['name']}
+                  </td>
+                  <td>
+                    {row['length(pub)']}
+                  </td>
                 </tr>
               ))}
             </tbody>

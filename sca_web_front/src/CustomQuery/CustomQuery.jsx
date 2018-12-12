@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import CodeMirror from 'codemirror';
-import { runQueryOnPythonBackend } from './verbose_loaders';
+import { runQueryOnPythonBackend } from '../verbose_loaders';
 
-import NeoContext from './NeoContext';
+import NeoContext from '../NeoContext';
 
 import './CustomQuery.css';
 
@@ -81,38 +81,38 @@ class CustomQuery extends Component {
     };
 
     const handleSubmit = e => {
-      e.preventDefault();
-      let status = 0;
-      this.setState({ error: undefined, result: undefined });
-      runQueryOnPythonBackend(this.queryEditor.getValue(), this.props.connection)
-        .then(result => {
-              status = result.status;
-              return result.response.json();
-            },
-            error => {
-              status = error.status;
-              return error.response.json();
-            })
-        .then(result => {
-              console.log('responsed_Custom_query:', result, status);
-                if (status == 200) {
-                    this.setState({ result: result });
-                } else {
-                    console.log("I throwed an error");
-                    throw Error(result.error);
-                }
-            },
-        )
-        .catch(e => {
-          this.setState({ error: e});
-          console.log("ERROR:", e);
-        })
-
+        e.preventDefault();
+        let status = 0;
+        const token = window.sessionStorage.getItem("token");
+        this.setState({ error: undefined, result: undefined });
+        runQueryOnPythonBackend(this.queryEditor.getValue(), token)
+          .then(result => {
+                status = result.status;
+                return result.response.json();
+              },
+              error => {
+                status = error.status;
+                return error.response.json();
+              }) 
+          .then(result => {
+                console.log('responsed_Custom_query:', result, status);
+                  if (status == 200) {
+                      this.setState({ result: result });
+                  } else {
+                      console.log("I throwed an error");
+                      throw Error(result.error);
+                  }
+              },
+          )
+          .catch(e => {
+            this.setState({ error: e});
+            console.log("ERROR:", e);
+          });
     }
     
     const toggleConstructor = e => {
-      this.setState({ useConstructor: e.target.checked });
-      this.queryEditor.setOption('readOnly', e.target.checked);
+        this.setState({ useConstructor: e.target.checked });
+        this.queryEditor.setOption('readOnly', e.target.checked);
     }
 
     return (

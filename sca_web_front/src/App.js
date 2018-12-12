@@ -32,6 +32,9 @@ class App extends Component {
     };
 
     const doLogout = () => {
+       window.sessionStorage.removeItem('token');
+       window.sessionStorage.removeItem('isAuthorized');
+       window.sessionStorage.removeItem('isAdmin');
        this.setState({ authenticated: false, token: undefined});
     }
 
@@ -46,7 +49,10 @@ class App extends Component {
       .then(
         response => {
           console.log("successfully authenticated");
-          this.setState({token: response.token, authenticated: true, is_admin: response.is_admin});
+          // this.setState({token: response.token, authenticated: true, is_admin: response.is_admin});
+          window.sessionStorage.setItem("token", response.token);
+          window.sessionStorage.setItem("isAuthorized", true);
+          window.sessionStorage.setItem("isAdmin", response.is_admin)
         }
       ) 
       .catch(e => {
@@ -55,29 +61,26 @@ class App extends Component {
         alert("Cannot authorize you with these credentials");
       });    
     }
-
+    var isAuthorized = window.sessionStorage.getItem("isAuthorized");
+    var isAdmin = window.sessionStorage.getItem("isAdmin");
 
     return (
-        <NeoContext.Provider value={{ connection: this.state.token, is_admin: this.state.is_admin }}>
-          <Header doLogout={doLogout} authenticated={this.state.authenticated} is_admin={this.state.is_admin}/>
+        <NeoContext.Provider value={{ connection: this.state.token, is_admin: isAdmin }}>
+          <Header doLogout={doLogout} authenticated={isAuthorized} is_admin={isAdmin}/>
           
-          {this.state.authenticated && <Main />}
-          { (!this.state.authenticated) && 
+          {isAuthorized && <Main />}
+          { (!isAuthorized) && 
             <div className="container">
             <form onSubmit={setupConnection}>
-              <h5>Log in, please</h5>
-                
+                <h5>Log in, please</h5>
                 <div className="form-group row col-md-5">
                   <label htmlFor="user-input">User</label>
-                  
-                    <input id="user-input" type="text" value={this.state.user} onChange={changeUser} className="form-control"/>
-                  
+                  <input id="user-input" type="text" value={this.state.user} onChange={changeUser} className="form-control"/>
                 </div>
+
                 <div className="form-group row col-md-5">
                   <label htmlFor="password-input">Password</label>
-                  
-                    <input id="password-input" type="password" value={this.state.password} onChange={changePassword} className="form-control"/>
-                  
+                  <input id="password-input" type="password" value={this.state.password} onChange={changePassword} className="form-control"/>
                 </div>
 
                 <button type="submit" className="btn btn-primary">Connect</button>

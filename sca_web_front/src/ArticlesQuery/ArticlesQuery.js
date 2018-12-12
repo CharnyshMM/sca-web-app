@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import {getArticlesByKeywords} from './loaders';
+import {getArticlesByKeywords} from '../loaders';
+import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 
-import NeoContext from './NeoContext';
+import NeoContext from '../NeoContext';
 
 
 class ArticlesQuery extends Component {
@@ -48,9 +49,12 @@ class ArticlesQuery extends Component {
         const handleSubmit = e => {
           e.preventDefault();
           console.log("onSubmit: ",this.state.keywords);
+          
           this.setState({ error: undefined, result: undefined });
 
-          getArticlesByKeywords(this.state.keywords, this.props.connection)
+          const token = window.sessionStorage.getItem("token");
+          console.log(token);
+          getArticlesByKeywords(this.state.keywords, token)
             .then(
               resolve => {
                 return resolve.json();
@@ -88,16 +92,9 @@ class ArticlesQuery extends Component {
               <button className="btn btn-primary" type="submit">Submit</button>
             </form>
 
-             <div className="border-bottom">
-                <h3 >keywords:</h3>
-                  <ul className="list-inline">
-                    {this.state.keywords.map((keyword, i) => (
-                      <li className="list-inline-item" key={i}>
-                        <button type="button" className="btn btn-outline-danger btn-sm" title="Click to remove this keyword" onClick={() => removeKeyword(i)}>{keyword}</button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+            <h3>keywords:</h3>
+            <HorizontalKeywordsList keywords={this.state.keywords} onClickHandler={removeKeyword} />
+
             {this.state.error && (
               <div className="alert alert-warning mt-3" role="alert">
                 <h4 className="alert-heading">{this.state.error.name}</h4>

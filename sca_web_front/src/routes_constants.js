@@ -1,0 +1,8 @@
+
+const AUTHORITIES_QUERY = "/authorities-query";
+const AUTHORITIES_QUERY__AUTHORITY = `${AUTHORITIES_QUERY}/authority/`;
+
+export {
+    AUTHORITIES_QUERY,
+    AUTHORITIES_QUERY__AUTHORITY,
+}

@@ -93,7 +93,7 @@ class CustomQuery extends Component {
               error => {
                 status = error.status;
                 return error.response.json();
-              })
+              }) 
           .then(result => {
                 console.log('responsed_Custom_query:', result, status);
                   if (status == 200) {

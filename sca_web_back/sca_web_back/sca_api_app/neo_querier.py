@@ -36,7 +36,8 @@ class NeoQuerier:
                            'WHERE r.probability > 0.5 WITH collect(d.name) as domains, '\
                            'collect(distinct p) as pub, a '\
                            'WHERE ALL(domain_name in {domains_list} '\
-                           'WHERE domain_name in domains) RETURN a, length(pub)'
+                           'WHERE domain_name in domains) RETURN a, length(pub) ' \
+                            'ORDER BY length(pub) DESC'
         result = self.graph.run(query, domains_list=domains_list)
         return result.data()
 
@@ -63,9 +64,10 @@ class NeoQuerier:
         return self.graph.run(query, popularity_index=popularity_index).data()
 
     def get_author_with_publications_in_domais(self, author_name, domains_list):
+
         query = 'MATCH (a:Author)-[:WROTE]-(p:Publication), ' \
                 '(p)-[r:THEME_RELATION]-(d:Theme) ' \
-                'WHERE a.name={author_name} r.probability > 0.5 WITH collect(d.name) as domains, ' \
+                'WHERE a.name={author_name} AND r.probability > 0.5 WITH collect(d.name) as domains, ' \
                 'collect(distinct p) as pub, a ' \
                 'WHERE ALL(domain_name in {domains_list} ' \
                 'WHERE domain_name in domains) RETURN a, pub'

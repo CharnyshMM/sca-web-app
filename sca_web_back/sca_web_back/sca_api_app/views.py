@@ -71,7 +71,9 @@ class AuthorWithPublicationsInDomainsQuery(APIView):
 
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
-        author_name = request.query_params.getlist('author')
+        author_name = request.query_params.get('author')
+        print(domains_list)
+        print(author_name)
         try:
             result = NeoQuerier().get_author_with_publications_in_domais(author_name, domains_list)
             return Response(result)

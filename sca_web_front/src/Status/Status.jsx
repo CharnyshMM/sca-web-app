@@ -30,7 +30,9 @@ class Status extends Component {
                     console.log("fetch error")
                     this.setState({hBaseStatus: undefined});
             });
-        getNeoStatus(this.props.connection)
+
+        const token = window.sessionStorage.getItem("token");
+        getNeoStatus(token)
             .then(result=> result.json())
             .then(res => {
                     console.log("result OK:", res);

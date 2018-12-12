@@ -13,9 +13,9 @@ const Main = (is_admin) => (
   <main>
     <Switch>
       <Route exact path='/' component={Home}/>
+      <Route path="/authorities-query/authority/" component={SingleAuthorityView} /> 
       <Route path='/authorities-query' component={AuthoritiesQuery}/>
-      <Route path="/authorities-query/:authority" component={SingleAuthorityView} />
-
+          
       <Route path='/domains-query' component={DomainsQuery}/>
       <Route path='/articles-query' component={ArticlesQuery}/>
       <Route path='/custom-query' component={CustomQuery}/>

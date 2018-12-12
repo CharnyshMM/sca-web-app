@@ -19,7 +19,8 @@ class DomainsQuery extends Component {
     const handleSubmit = e => {
       e.preventDefault();
       this.setState({error: undefined,});
-      getDomainsByPopularity(this.state.selected, this.props.connection)
+      var token = window.sessionStorage.getItem("token");
+      getDomainsByPopularity(this.state.selected, token)
         .then(
           resolve => {
             return resolve.json();

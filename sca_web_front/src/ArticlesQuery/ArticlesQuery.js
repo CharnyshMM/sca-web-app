@@ -49,9 +49,12 @@ class ArticlesQuery extends Component {
         const handleSubmit = e => {
           e.preventDefault();
           console.log("onSubmit: ",this.state.keywords);
+          
           this.setState({ error: undefined, result: undefined });
 
-          getArticlesByKeywords(this.state.keywords, this.props.connection)
+          const token = window.sessionStorage.getItem("token");
+          console.log(token);
+          getArticlesByKeywords(this.state.keywords, token)
             .then(
               resolve => {
                 return resolve.json();
@@ -72,7 +75,6 @@ class ArticlesQuery extends Component {
         };
     
         let row_iteration_key = 0;
-        let keywordsList = this.state.keywords;
 
         return (
           <div className="container">
@@ -91,7 +93,7 @@ class ArticlesQuery extends Component {
             </form>
 
             <h3>keywords:</h3>
-            <HorizontalKeywordsList keywords={keywordsList} onClickHandler={removeKeyword} />
+            <HorizontalKeywordsList keywords={this.state.keywords} onClickHandler={removeKeyword} />
 
             {this.state.error && (
               <div className="alert alert-warning mt-3" role="alert">

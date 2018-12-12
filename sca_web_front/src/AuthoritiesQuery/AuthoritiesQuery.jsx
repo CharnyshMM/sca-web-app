@@ -39,7 +39,8 @@ class AuthoritiesQuery extends Component {
       e.preventDefault();
       this.setState({ error: undefined, result: undefined });
       
-      getAuthoritiesInDomainsList(this.state.domains, this.props.connection)
+      const token = window.sessionStorage.getItem("token");
+      getAuthoritiesInDomainsList(this.state.domains, token)
         .then(
           resolve => {
             return resolve.json();
@@ -103,7 +104,9 @@ class AuthoritiesQuery extends Component {
               {this.state.result.map((row, i) => (
                 <tr key={i}>
                   <th scope="row">{i}</th>
-                  <td>{row['a']['name']}</td>  {/*hardcoded ['a']!!!!!!! If the backend uses different format, it crashes*/}
+                  <td>
+                    {row['a']['name']}
+                  </td>  {/*hardcoded ['a']!!!!!!! If the backend uses different format, it crashes*/}
                   <td>{row['length(pub)']}</td>
                 </tr>
               ))}

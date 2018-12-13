@@ -6,7 +6,6 @@ class HorizontalKeywordsList extends Component {
         super(props);
 
     }
-
     render() {
 
         const onItemClick = (index) => {

@@ -79,8 +79,12 @@ class SingleAuthorityView extends Component {
             {this.state.result && 
                 <div>
                     <h1>{author.name}'s publications</h1>
-                    <h3>On domains:</h3>
-                    <HorizontalKeywordsList keywords={this.state.domains} />
+                    <div className="card">
+                        <div className="card-body">
+                            <h5 className="card-title">On domains:</h5>
+                            <HorizontalKeywordsList keywords={this.state.domains} />
+                        </div>
+                    </div>
                     
                     {publications && 
                         <table className="table ">

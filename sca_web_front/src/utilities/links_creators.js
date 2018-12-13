@@ -1,4 +1,8 @@
-import {AUTHORITIES_QUERY__AUTHORITY, AUTHORITIES_QUERY} from '../routes_constants';
+import {
+    AUTHORITIES_QUERY__AUTHORITY,
+    AUTHORITIES_QUERY,
+    DOMAINS_POPULARITY_QUERY
+} from '../routes_constants';
 
 function buildQueryParametersList(name, val_list) {
     let query = '';
@@ -20,8 +24,13 @@ function createAuthoritiesInDomainsLink(domains) {
     return `${AUTHORITIES_QUERY}?${buildQueryParametersList("domain", domains)}`;
 }
 
+function createDomainsPopularityLink(popularity_key) {
+    return `${DOMAINS_POPULARITY_QUERY}?popularity=${popularity_key}`;
+}
+
 export {
     buildQueryParametersList,
     createAuthorPublicationsInDomainsLink,
     createAuthoritiesInDomainsLink,
+    createDomainsPopularityLink,
 };

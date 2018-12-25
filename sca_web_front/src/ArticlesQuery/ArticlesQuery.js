@@ -83,7 +83,7 @@ class ArticlesQuery extends Component {
         <h1>Search for articles by keywords</h1>
         <form className="form" onSubmit={handleSubmit}>
           <div className="form-group input-group">
-            <input type="text" className="form-control" placeholder="Domain" value={this.state.keywordInputValue} onChange={changeKeywordInput} aria-describedby="using" />
+            <input type="text" className="form-control" placeholder="Keyword" value={this.state.keywordInputValue} onChange={changeKeywordInput} aria-describedby="using" />
             <div className="input-group-append">
               <button type="button" className="btn btn-outline-primary" onClick={() => addKeyword()}>
                 <span className="oi oi-plus"></span>

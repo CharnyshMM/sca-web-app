@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { getArticlesByKeywords } from '../verbose_loaders';
+import { createKeywordsQueryLink } from '../utilities/links_creators';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
+import queryString from 'query-string';
 
 import NeoContext from '../NeoContext';
 
@@ -13,6 +15,22 @@ class ArticlesQuery extends Component {
       keywordInputValue: '',
       error: undefined,
     };
+  }
+
+  componentDidMount() {
+    console.log("comp did mount");
+    const search = queryString.parse(this.props.location.search);
+    let keywords = search.keyword;
+
+    if (keywords == undefined) {
+      return;
+    }
+    if (!Array.isArray(keywords)) {
+      keywords = [keywords];
+    }
+    this.setState({keywords: keywords})
+    console.log("keywords ", keywords);
+    this.makeQuery(keywords);
   }
 
   makeQuery(keywords) {
@@ -81,6 +99,7 @@ class ArticlesQuery extends Component {
 
     const handleSubmit = e => {
       e.preventDefault();
+      this.props.history.push(createKeywordsQueryLink(this.state.keywords));
       this.makeQuery(this.state.keywords);
     };
 

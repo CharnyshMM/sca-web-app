@@ -1,7 +1,8 @@
 import {
     AUTHORITIES_QUERY__AUTHORITY,
     AUTHORITIES_QUERY,
-    DOMAINS_POPULARITY_QUERY
+    DOMAINS_POPULARITY_QUERY,
+    ARTICLES_QUERY
 } from '../routes_constants';
 
 function buildQueryParametersList(name, val_list) {
@@ -28,9 +29,14 @@ function createDomainsPopularityLink(popularity_key) {
     return `${DOMAINS_POPULARITY_QUERY}?popularity=${popularity_key}`;
 }
 
+function createKeywordsQueryLink(keywords) {
+    return `${ARTICLES_QUERY}?${buildQueryParametersList("keyword", keywords)}`;
+}
+
 export {
     buildQueryParametersList,
     createAuthorPublicationsInDomainsLink,
     createAuthoritiesInDomainsLink,
     createDomainsPopularityLink,
+    createKeywordsQueryLink,
 };

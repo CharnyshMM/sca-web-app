@@ -56,7 +56,9 @@ class AuthoritiesQueryView(APIView):
 
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
-
+        if domains_list is None\
+                or len(domains_list) == 0:
+            return Response(getErrorResponce("empty query"), status=HTTP_400_BAD_REQUEST);
         try:
             result = NeoQuerier().get_authorities_in_domains(domains_list)
             return Response(result)
@@ -73,8 +75,12 @@ class AuthorWithPublicationsInDomainsQuery(APIView):
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
         author_name = request.query_params.get('author')
-        print(domains_list)
-        print(author_name)
+        if domains_list is None\
+                or len(domains_list) == 0 \
+                or author_name is None \
+                or author_name == "":
+            return Response(getErrorResponce("empty query"), status=HTTP_400_BAD_REQUEST)
+
         try:
             result = NeoQuerier().get_author_with_publications_in_domais(author_name, domains_list)
             return Response(result)
@@ -90,6 +96,10 @@ class ArticlesQueryView(APIView):
 
     def get(self, request):
         keys_list = request.query_params.getlist('keyword')
+
+        if keys_list is None or len(keys_list) == 0:
+            return Response(getErrorResponce("empty query"), status=HTTP_400_BAD_REQUEST)
+        
         try:
             result = NeoQuerier().get_articles_by_keywords(keys_list)
             return Response(result)

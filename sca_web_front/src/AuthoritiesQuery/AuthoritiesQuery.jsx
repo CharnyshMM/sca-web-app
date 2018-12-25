@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
 
-import {getAuthoritiesInDomainsList} from '../loaders';
-import {createAuthoritiesInDomainsLink, createAuthorPublicationsInDomainsLink} from '../utilities/links_creators';
+import { getAuthoritiesInDomainsList } from '../verbose_loaders';
+import { createAuthoritiesInDomainsLink, createAuthorPublicationsInDomainsLink } from '../utilities/links_creators';
 import NeoContext from '../NeoContext';
 
 class AuthoritiesQuery extends Component {
@@ -16,43 +16,50 @@ class AuthoritiesQuery extends Component {
   }
 
   makeQuery(domains) {
-      this.setState({ error: undefined, result: undefined, domains: domains });
-      
-      const token = window.sessionStorage.getItem("token");
-      getAuthoritiesInDomainsList(domains, token)
-        .then(
-          resolve => {
-            return resolve.json();
-          },
-          reject => {
-            throw new Error("Error in request");
-          }
-        )
-        .then(response => {
-              console.log('responsed:', response);
-              this.setState({ result: response });
-              },
-        )
-        .catch(e => {
-          this.setState({ error: e });
-          console.log("ERROR:", e);
-        });
+    this.setState({ error: undefined, result: undefined, domains: domains });
+    const token = window.sessionStorage.getItem("token");
+    let status = 0;
+
+    getAuthoritiesInDomainsList(domains, token)
+      .then(result => {
+        status = result.status;
+        return result.response.json();
+      },
+        error => {
+          status = error.status;
+          return error.response.json();
+        })
+      .then(result => {
+        console.log('responsed:', result, status);
+        if (status == 200) {
+          this.setState({ result: result });
+        } else {
+          console.log("I throwed an error");
+          throw Error(result.error);
+        }
+      },
+    )
+      .catch(e => {
+        this.setState({ error: e });
+        console.log("ERROR:", e);
+      });
   }
 
+
   componentDidMount() {
-      console.log("comp did mount");
-      
-     
-      const search = queryString.parse(this.props.location.search);
-      let domains = search.domain;
-      if (domains == undefined) {
-        return;
-      }
-      if (!Array.isArray(domains)) {
-        domains = [domains];
-      }
-      console.log("domains", domains);
-      this.makeQuery(domains);      
+    console.log("comp did mount");
+
+
+    const search = queryString.parse(this.props.location.search);
+    let domains = search.domain;
+    if (domains == undefined) {
+      return;
+    }
+    if (!Array.isArray(domains)) {
+      domains = [domains];
+    }
+    console.log("domains", domains);
+    this.makeQuery(domains);
   }
 
   render() {
@@ -72,10 +79,12 @@ class AuthoritiesQuery extends Component {
     };
 
     const removeDomain = index => {
-      this.setState(prev => ({ domains: [
-        ...prev.domains.slice(0, index),
-        ...prev.domains.slice(index + 1),
-      ] }));
+      this.setState(prev => ({
+        domains: [
+          ...prev.domains.slice(0, index),
+          ...prev.domains.slice(index + 1),
+        ]
+      }));
     };
 
     const handleSubmit = e => {
@@ -85,12 +94,12 @@ class AuthoritiesQuery extends Component {
     };
 
     const onTableRowClick = (index) => {
-        if (!this.state.result) {
-          return;
-        }
-        let author_name = this.state.result[index]['a']['name'];
-        const link = createAuthorPublicationsInDomainsLink(author_name, this.state.domains);
-        this.props.history.push(link);
+      if (!this.state.result) {
+        return;
+      }
+      let author_name = this.state.result[index]['a']['name'];
+      const link = createAuthorPublicationsInDomainsLink(author_name, this.state.domains);
+      this.props.history.push(link);
     };
 
     return (
@@ -107,7 +116,7 @@ class AuthoritiesQuery extends Component {
                 ))}
               </ul>
             </div>
-            <input type="text" className="form-control" placeholder="Domain" value={this.state.domainInputValue} onChange={changeDomainInput} aria-describedby="using"/>
+            <input type="text" className="form-control" placeholder="Domain" value={this.state.domainInputValue} onChange={changeDomainInput} aria-describedby="using" />
             <div className="input-group-append">
               <button type="button" className="btn btn-outline-primary" onClick={() => addDomain()}>
                 <span className="oi oi-plus"></span>
@@ -134,7 +143,7 @@ class AuthoritiesQuery extends Component {
             </thead>
             <tbody>
               {this.state.result.map((row, i) => (
-                <tr key={i} onClick={()=>onTableRowClick(i)}>
+                <tr key={i} onClick={() => onTableRowClick(i)}>
                   <th scope="row">
                     {i}
                   </th>
@@ -156,6 +165,6 @@ class AuthoritiesQuery extends Component {
 
 export default props => (
   <NeoContext.Consumer>
-    {({ connection }) => <AuthoritiesQuery {...props} connection={connection}/>}
+    {({ connection }) => <AuthoritiesQuery {...props} connection={connection} />}
   </NeoContext.Consumer>
 );

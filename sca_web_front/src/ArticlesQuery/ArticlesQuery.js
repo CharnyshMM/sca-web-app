@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getArticlesByKeywords } from '../loaders';
+import { getArticlesByKeywords } from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 
 import NeoContext from '../NeoContext';
@@ -14,6 +14,37 @@ class ArticlesQuery extends Component {
       error: undefined,
     };
   }
+
+  makeQuery(keywords) {
+    this.setState({ error: undefined, result: undefined });
+    const token = window.sessionStorage.getItem("token");
+
+    let status = 0;
+    getArticlesByKeywords(keywords, token)
+      .then(result => {
+        status = result.status;
+        return result.response.json();
+      },
+        error => {
+          status = error.status;
+          return error.response.json();
+        })
+      .then(result => {
+        console.log('responsed:', result, status);
+        if (status == 200) {
+          this.setState({ result: result });
+        } else {
+          console.log("I throwed an error");
+          throw Error(result.error);
+        }
+      },
+    )
+      .catch(e => {
+        this.setState({ error: e });
+        console.log("ERROR:", e);
+      });
+  }
+
   render() {
     const changeKeywordInput = event => {
       if ([';', ',', '.'].includes(event.target.value[event.target.value.length - 1])) {
@@ -50,30 +81,7 @@ class ArticlesQuery extends Component {
 
     const handleSubmit = e => {
       e.preventDefault();
-      console.log("onSubmit: ", this.state.keywords);
-
-      this.setState({ error: undefined, result: undefined });
-
-      const token = window.sessionStorage.getItem("token");
-      console.log(token);
-      getArticlesByKeywords(this.state.keywords, token)
-        .then(
-          resolve => {
-            return resolve.json();
-          },
-          reject => {
-            throw new Error("Error in request");
-          }
-        )
-        .then(response => {
-          console.log('responsed_query:', response);
-          this.setState({ result: response });
-        },
-      )
-        .catch(e => {
-          this.setState({ error: e });
-          console.log("ERROR:", e);
-        });
+      this.makeQuery(this.state.keywords);
     };
 
     let row_iteration_key = 0;

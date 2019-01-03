@@ -13,12 +13,10 @@ class App extends Component {
     super(props);
 
     this.state = {
-      authenticated: false,
-      token: undefined,
+      authorized: false,
       is_admin: false,
       user: '',
       password: '',
-      // connection: undefined,
     }
   }
 
@@ -35,12 +33,12 @@ class App extends Component {
        window.sessionStorage.removeItem('token');
        window.sessionStorage.removeItem('isAuthorized');
        window.sessionStorage.removeItem('isAdmin');
-       this.setState({ authenticated: false, token: undefined});
+       this.setState({ authorized: false, token: undefined});
     }
 
     const setupConnection = (e) => {
       e.preventDefault();
-      this.setState({token: undefined, authenticated: false});
+      this.setState({is_admin: false, authorized: false});
       authorizeOnPythonBackend(this.state.user, this.state.password)
       .then(resolve => {
            return resolve.json();
@@ -48,11 +46,11 @@ class App extends Component {
     )
       .then(
         response => {
-          console.log("successfully authenticated");
-          // this.setState({token: response.token, authenticated: true, is_admin: response.is_admin});
+          console.log("successfully authorized");
           window.sessionStorage.setItem("token", response.token);
           window.sessionStorage.setItem("isAuthorized", true);
-          window.sessionStorage.setItem("isAdmin", response.is_admin)
+          window.sessionStorage.setItem("isAdmin", response.is_admin);
+          this.setState({authorized: true, is_admin: response.is_admin})
         }
       ) 
       .catch(e => {
@@ -68,8 +66,8 @@ class App extends Component {
         <NeoContext.Provider value={{ connection: this.state.token, is_admin: isAdmin }}>
           <Header doLogout={doLogout} authenticated={isAuthorized} is_admin={isAdmin}/>
           
-          {isAuthorized && <Main />}
-          { (!isAuthorized) && 
+          {this.state.authorized && <Main />}
+          {!this.state.authorized && 
             <div className="container">
             <form onSubmit={setupConnection}>
                 <h5>Log in, please</h5>

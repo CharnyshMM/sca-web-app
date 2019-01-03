@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import { getAuthoritiesInDomainsList } from '../verbose_loaders';
 import { createAuthoritiesInDomainsLink, createAuthorPublicationsInDomainsLink } from '../utilities/links_creators';
 import NeoContext from '../NeoContext';
+import Spinner from '../ReusableComponents/Spinner';
 
 class AuthoritiesQuery extends Component {
   constructor(props) {
@@ -12,11 +13,12 @@ class AuthoritiesQuery extends Component {
       domains: [],
       domainInputValue: '',
       error: undefined,
+      loading: false,
     };
   }
 
   makeQuery(domains) {
-    this.setState({ error: undefined, result: undefined, domains: domains });
+    this.setState({ error: undefined, result: undefined, domains: domains, loading: true });
     const token = window.sessionStorage.getItem("token");
     let status = 0;
 
@@ -32,7 +34,7 @@ class AuthoritiesQuery extends Component {
       .then(result => {
         console.log('responsed:', result, status);
         if (status == 200) {
-          this.setState({ result: result });
+          this.setState({ result: result, loading: false });
         } else {
           console.log("I throwed an error");
           throw Error(result.error);
@@ -40,7 +42,7 @@ class AuthoritiesQuery extends Component {
       },
     )
       .catch(e => {
-        this.setState({ error: e });
+        this.setState({ error: e, loading: false });
         console.log("ERROR:", e);
       });
   }
@@ -132,6 +134,11 @@ class AuthoritiesQuery extends Component {
             <pre><code>{this.state.error.message}</code></pre>
           </div>
         )}
+
+        {this.state.loading &&
+          <Spinner />
+        }
+
         {this.state.result && (
           <table className="table table-hover">
             <thead>

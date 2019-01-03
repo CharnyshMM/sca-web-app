@@ -5,6 +5,8 @@ import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList
 import queryString from 'query-string';
 
 import NeoContext from '../NeoContext';
+import { runInThisContext } from 'vm';
+import Spinner from '../ReusableComponents/Spinner';
 
 
 class ArticlesQuery extends Component {
@@ -14,6 +16,7 @@ class ArticlesQuery extends Component {
       keywords: [],
       keywordInputValue: '',
       error: undefined,
+      loading: false,
     };
   }
 
@@ -34,7 +37,7 @@ class ArticlesQuery extends Component {
   }
 
   makeQuery(keywords) {
-    this.setState({ error: undefined, result: undefined });
+    this.setState({ error: undefined, result: undefined, loading: true });
     const token = window.sessionStorage.getItem("token");
 
     let status = 0;
@@ -50,7 +53,7 @@ class ArticlesQuery extends Component {
       .then(result => {
         console.log('responsed:', result, status);
         if (status == 200) {
-          this.setState({ result: result });
+          this.setState({ result: result, loading: false });
         } else {
           console.log("I throwed an error");
           throw Error(result.error);
@@ -58,7 +61,7 @@ class ArticlesQuery extends Component {
       },
     )
       .catch(e => {
-        this.setState({ error: e });
+        this.setState({ error: e, loading: false });
         console.log("ERROR:", e);
       });
   }
@@ -133,6 +136,10 @@ class ArticlesQuery extends Component {
             <pre><code>{this.state.error.message}</code></pre>
           </div>
         )}
+
+        {this.state.loading &&
+          <Spinner />  
+        }
 
         {this.state.result && (
           <table className="table">

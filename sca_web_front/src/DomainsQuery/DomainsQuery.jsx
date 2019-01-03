@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import { createAuthoritiesInDomainsLink, createDomainsPopularityLink } from '../utilities/links_creators';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 import NeoContext from '../NeoContext';
+import Spinner from '../ReusableComponents/Spinner';
 
 class DomainsQuery extends Component {
   constructor(props) {
@@ -12,12 +13,13 @@ class DomainsQuery extends Component {
     this.state = {
       selected: 'nascent',
       domains: [],
+      loading: false,
     };
   }
 
   loadData(popularityKey) {
     const token = window.sessionStorage.getItem("token");
-    this.setState({error: undefined, result: undefined, selected: popularityKey});
+    this.setState({error: undefined, result: undefined, selected: popularityKey, loading: true});
     getDomainsByPopularity(popularityKey, token)
       .then(
         resolve => {
@@ -29,11 +31,11 @@ class DomainsQuery extends Component {
       )
       .then(response => {
               console.log('responsed_query:', response);
-              this.setState({ result: response });
+              this.setState({ result: response, loading: false });
             },
       )
       .catch(e => {
-        this.setState({ error: e });
+        this.setState({ error: e, loading: false });
         console.log("ERROR:", e);
     });
   }
@@ -119,6 +121,9 @@ class DomainsQuery extends Component {
               <button className="btn btn-primary" onClick={onSearchAuthoritiesClick}>Search for authorities</button>
             </div>
           </div>
+        }
+        {this.state.loading &&
+          <Spinner />
         }
         {this.state.result && (
           <table className="table">

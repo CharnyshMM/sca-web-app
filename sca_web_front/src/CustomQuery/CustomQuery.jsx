@@ -3,6 +3,7 @@ import CodeMirror from 'codemirror';
 import { runQueryOnPythonBackend } from '../verbose_loaders';
 
 import NeoContext from '../NeoContext';
+import Spinner from '../ReusableComponents/Spinner';
 
 import './CustomQuery.css';
 
@@ -13,6 +14,7 @@ class CustomQuery extends Component {
       clauses: [],
       queryText: '',
       useConstructor: false,
+      loading: false,
     };
   }
 
@@ -90,7 +92,7 @@ class CustomQuery extends Component {
       e.preventDefault();
       let status = 0;
       const token = window.sessionStorage.getItem("token");
-      this.setState({ error: undefined, result: undefined });
+      this.setState({ error: undefined, result: undefined, loading: true });
       runQueryOnPythonBackend(this.queryEditor.getValue(), token)
         .then(result => {
           status = result.status;
@@ -103,7 +105,7 @@ class CustomQuery extends Component {
         .then(result => {
           console.log('responsed_Custom_query:', result, status);
           if (status == 200) {
-            this.setState({ result: result });
+            this.setState({ result: result, loading: false });
           } else {
             console.log("I throwed an error");
             throw Error(result.error);
@@ -111,7 +113,7 @@ class CustomQuery extends Component {
         },
       )
         .catch(e => {
-          this.setState({ error: e });
+          this.setState({ error: e, loading: false});
           console.log("ERROR:", e);
         });
     }
@@ -184,6 +186,11 @@ class CustomQuery extends Component {
             <pre><code>{this.state.error.message}</code></pre>
           </div>
         )}
+
+        {this.state.loading &&
+          <Spinner />
+        }
+
         {this.state.result && (
           <ul className="list-group mt-3">
             {(this.state.result).map((record, i) => (

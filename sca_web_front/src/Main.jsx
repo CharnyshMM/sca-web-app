@@ -7,12 +7,16 @@ import DomainsQuery from './DomainsQuery/DomainsQuery';
 import ArticlesQuery from './ArticlesQuery/ArticlesQuery';
 import CustomQuery from './CustomQuery/CustomQuery';
 import Status from './Status/Status';
+import SearchStart from './Search/StartSearch';
+import SearchAndResults from './Search/SearchAndResults';
 
 
-const Main = (is_admin) => (
+const Main = () => (
   <main>
     <Switch>
       <Route exact path='/' component={Home}/>
+      <Route path='/search/start/' component={SearchStart} />
+      <Route path='/search/' component={SearchAndResults} />
       <Route path="/authorities-query/authority/" component={SingleAuthorityView} /> 
       <Route path='/authorities-query' component={AuthoritiesQuery}/>
           

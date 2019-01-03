@@ -20,6 +20,13 @@ class App extends Component {
     }
   }
 
+  componentDidMount() {
+    this.setState({
+      authorized: window.sessionStorage.getItem("isAuthorized"),
+      is_admin: window.sessionStorage.getItem("isAdmin")
+    })
+  }
+
   render() {
     const changeUser = (e) => {
       this.setState({ user: e.target.value });

@@ -211,8 +211,10 @@ class CustomQuery extends Component {
   }
 }
 
-export default props => (
-  <NeoContext.Consumer>
-    {({ connection, is_admin }) => <CustomQuery {...props} connection={connection} is_admin={is_admin} />}
-  </NeoContext.Consumer>
-);
+// export default props => (
+//   <NeoContext.Consumer>
+//     {({ connection, is_admin }) => <CustomQuery {...props} connection={connection} is_admin={is_admin} />}
+//   </NeoContext.Consumer>
+// );
+
+export default CustomQuery;

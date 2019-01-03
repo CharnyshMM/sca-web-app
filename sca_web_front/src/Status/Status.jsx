@@ -155,8 +155,11 @@ class Status extends Component {
     }
 }
 
-export default props => (
-    <NeoContext.Consumer>
-      {({ connection }) => <Status {...props} connection={connection}/>}
-    </NeoContext.Consumer>
-  );
+// export default props => (
+//     <NeoContext.Consumer>
+//       {({ connection }) => <Status {...props} connection={connection}/>}
+//     </NeoContext.Consumer>
+//   );
+
+
+export default Status;

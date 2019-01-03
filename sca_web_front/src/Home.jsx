@@ -3,7 +3,10 @@ import { Link } from 'react-router-dom';
 import NeoContext from './NeoContext';
 import './Home.css';
 
-const Home = (props) => (
+const Home = () => {
+  let isMyAdmin = window.sessionStorage.getItem("isAdmin") == "true" ||  window.sessionStorage.getItem("isAdmin") === true;
+  console.log("isA in home", isMyAdmin);
+  return (
   <div className='container'>
     <h1>Dashboard</h1>
     <div className="row">
@@ -53,7 +56,7 @@ const Home = (props) => (
           </div>
         </div>
 
-        {props.is_admin &&
+        {(isMyAdmin) &&
         <div className="col-6 vertical-margin ">
           <div className="card h-100">
             <div className="card-body">
@@ -73,9 +76,13 @@ const Home = (props) => (
     </div>
   
 );
+};
 
-export default props => (
-  <NeoContext.Consumer>
-    {({ is_admin }) => Home({'is_admin': is_admin})}
-  </NeoContext.Consumer>
-);
+// export default props => (
+//   <NeoContext.Consumer>
+//     {({ is_admin }) => Home({'is_admin': is_admin})}
+//   </NeoContext.Consumer>
+// );
+
+
+export default Home;

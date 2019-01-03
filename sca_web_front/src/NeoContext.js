@@ -4,7 +4,6 @@ import React from 'react';
 
 const NeoContext = React.createContext({
   connection: undefined,
-  is_admin: false,
 });
 
 

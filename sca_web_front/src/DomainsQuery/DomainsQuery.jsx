@@ -156,8 +156,11 @@ class DomainsQuery extends Component {
   }
 }
 
-export default props => (
-  <NeoContext.Consumer>
-    {({ connection }) => <DomainsQuery {...props} connection={connection}/>}
-  </NeoContext.Consumer>
-);
+// export default props => (
+//   <NeoContext.Consumer>
+//     {({ connection }) => <DomainsQuery {...props} connection={connection}/>}
+//   </NeoContext.Consumer>
+// );
+
+
+export default DomainsQuery;

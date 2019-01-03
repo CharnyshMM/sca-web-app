@@ -179,8 +179,10 @@ class ArticlesQuery extends Component {
   }
 };
 
-export default props => (
-  <NeoContext.Consumer>
-    {({ connection }) => <ArticlesQuery {...props} connection={connection} />}
-  </NeoContext.Consumer>
-);
+// export default props => (
+//   <NeoContext.Consumer>
+//     {({ connection }) => <ArticlesQuery {...props} connection={connection} />}
+//   </NeoContext.Consumer>
+// );
+
+export default ArticlesQuery;

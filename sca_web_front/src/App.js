@@ -13,8 +13,10 @@ class App extends Component {
     super(props);
 
     this.state = {
-      authorized: false, //!!!!!!!!!!!!
-      is_admin: false,  // !!!!!!!!!!!!!!
+
+      authorized: false,
+      isAdmin: false,
+
       user: '',
       password: '',
     }
@@ -23,8 +25,9 @@ class App extends Component {
   componentDidMount() {
     this.setState({
       authorized: window.sessionStorage.getItem("isAuthorized"),
-      is_admin: window.sessionStorage.getItem("isAdmin")
+      isAdmin: window.sessionStorage.getItem("isAdmin")
     })
+    console.log("isAdmins in SS", window.sessionStorage.getItem("isAdmin"));
   }
 
   render() {
@@ -45,7 +48,7 @@ class App extends Component {
 
     const setupConnection = (e) => {
       e.preventDefault();
-      this.setState({is_admin: false, authorized: false});
+      this.setState({isAdmin: false, authorized: false});
       authorizeOnPythonBackend(this.state.user, this.state.password)
       .then(resolve => {
            return resolve.json();
@@ -53,24 +56,24 @@ class App extends Component {
     )
       .then(
         response => {
-          console.log("successfully authorized");
+          console.log("successfully authorized", response);
           window.sessionStorage.setItem("token", response.token);
           window.sessionStorage.setItem("isAuthorized", true);
           window.sessionStorage.setItem("isAdmin", response.is_admin);
-          this.setState({authorized: true, is_admin: response.is_admin})
+          this.setState({authorized: true, isAdmin: response.is_admin})
         }
       ) 
       .catch(e => {
-        this.setState({ error: e });
+        this.setState({ error: e , authorized: false, isAdmin: false});
         console.log("ERROR:", e);
         alert("Cannot authorize you with these credentials");
       });    
     }
-    var isAuthorized = window.sessionStorage.getItem("isAuthorized");
-    var isAdmin = window.sessionStorage.getItem("isAdmin");
-
+    var isAuthorized = window.sessionStorage.getItem("isAuthorized")== "true" ||  window.sessionStorage.getItem("isAuthorized") === true;
+    var isAdmin = window.sessionStorage.getItem("isAdmin") == "true" ||  window.sessionStorage.getItem("isAdmin") === true;
+    console.log("isAdmin", isAdmin);
     return (
-        <NeoContext.Provider value={{ connection: this.state.token, is_admin: isAdmin }}>
+        <div>
           <Header doLogout={doLogout} authenticated={isAuthorized} is_admin={isAdmin}/>
           
           {this.state.authorized && <Main />}
@@ -93,7 +96,7 @@ class App extends Component {
             </form>
             </div>
             }       
-        </NeoContext.Provider>
+        </div>
     );
   }
 }

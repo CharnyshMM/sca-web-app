@@ -170,8 +170,11 @@ class AuthoritiesQuery extends Component {
   }
 }
 
-export default props => (
-  <NeoContext.Consumer>
-    {({ connection }) => <AuthoritiesQuery {...props} connection={connection} />}
-  </NeoContext.Consumer>
-);
+// export default props => (
+//   <NeoContext.Consumer>
+//     {({ connection }) => <AuthoritiesQuery {...props} connection={connection} />}
+//   </NeoContext.Consumer>
+// );
+
+
+export default AuthoritiesQuery;

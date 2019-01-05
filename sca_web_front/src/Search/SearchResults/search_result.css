@@ -1,0 +1,35 @@
+.search_result {
+    margin: 2% 5%;
+}
+
+.search_result__title {
+    font-family: sans-serif;
+    font-size: 1.5em;
+}
+
+.search_result__domains_list {
+    display: flex;
+    direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    list-style-type: none;
+}
+
+.search_result__domains_list__label {
+    font-style: italic;
+    font-family: sans-serif;
+    padding: 2px 3px;
+}
+
+.search_result__domains_list__item {
+    border: 1px solid #E0E0F0;
+    border-radius: 10px;
+    font-family: sans-serif;
+    margin: 0px 5px;
+    padding: 1px 3px;
+}
+
+.search_result__type {
+    border: 1px solid #E0E0F0;
+    border-bottom: none;
+}

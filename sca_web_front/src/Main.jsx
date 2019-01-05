@@ -7,8 +7,8 @@ import DomainsQuery from './DomainsQuery/DomainsQuery';
 import ArticlesQuery from './ArticlesQuery/ArticlesQuery';
 import CustomQuery from './CustomQuery/CustomQuery';
 import Status from './Status/Status';
-import SearchStart from './Search/StartSearch';
-import SearchAndResults from './Search/SearchAndResults';
+import SearchStart from './Search/StartSearch/StartSearch';
+import SearchAndResults from './Search/SearchWithResults/SearchWithResults';
 
 
 const Main = () => (

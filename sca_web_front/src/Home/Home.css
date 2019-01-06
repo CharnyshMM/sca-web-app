@@ -1,0 +1,37 @@
+.primary-icon {
+  font-size: 80pt;
+  margin-right: 20px;
+}
+
+.vertical-margin {
+  margin-top: 32px;
+}
+
+.search_form {
+  background: whitesmoke;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  -ms-flex-pack: center;
+  justify-content: center;
+  position: relative;
+  margin: 6% 0%;
+  padding: 2% 3%;
+  border-radius: 16px;
+}
+
+.search_form__input {
+  flex-grow: 10;
+  height: 6vh;
+  border: 0px;
+  border-radius: 9px;
+  padding: 2%;
+  font-size: 1.5em;
+}
+
+.search_form__button {
+  margin-left: 2%;
+  -ms-flex-positive: 1;
+  flex-grow: 1;
+}

@@ -2,6 +2,16 @@
     margin: 2% 5%;
 }
 
+.search_result__header {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.search_result__type {
+    padding-top: 0.2em;
+    padding-right: 0.4em; 
+}
+
 .search_result__title {
     font-family: sans-serif;
     font-size: 1.5em;
@@ -13,6 +23,7 @@
     flex-wrap: wrap;
     justify-content: flex-start;
     list-style-type: none;
+    padding: 0px;
 }
 
 .search_result__domains_list__label {
@@ -29,7 +40,3 @@
     padding: 1px 3px;
 }
 
-.search_result__type {
-    border: 1px solid #E0E0F0;
-    border-bottom: none;
-}

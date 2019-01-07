@@ -6,6 +6,7 @@ import {
     PYTHON_BACKEND_API_ARTICLES_QUERY,
     PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY,
     PYTHON_BACKEND_API_AUTHOR_PUBLICATIONS_IN_DOMAINS_QUERY,
+    PYTHON_BACKEND_API_SEARCH,
 } from './constant_urls';
 
 // ========================================================================
@@ -85,6 +86,10 @@ const authorizeOnPythonBackend = function (username, password) {
     return getLoaderPromise(`${PYTHON_BACKEND_API}/login/`, requestOptions);
 }
 
+const doSearchByName = (name, token) => {
+    let query = PYTHON_BACKEND_API_SEARCH + `?search=${name}`;
+    return getLoaderPromise(query, authOptions(token));
+};
 
 const getAuthoritiesInDomainsList = (domains_list, token) => {
     let query = buildQueryParametersList('domain', domains_list);
@@ -126,4 +131,5 @@ export {
     getArticlesByKeywords,
     getDomainsByPopularity,
     getAuthorPublicationsInDomains,
+    doSearchByName,
 };

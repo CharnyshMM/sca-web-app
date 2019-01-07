@@ -82,3 +82,23 @@ class NeoQuerier:
 
         result = self.graph.run(query, author_name=author_name, domains_list=domains_list)
         return result.data()
+
+    def find_nodes_by_name(self, name, skip=0, limit=10):
+        query = """MATCH (n)
+                WHERE (EXISTS(n.name) and toLower(n.name) CONTAINS toLower({name}))
+                OPTIONAL MATCH (n)-[r:THEME_RELATION]->(t:Theme)
+                WHERE r.probability > 0.55
+                OPTIONAL MATCH (a:Author)-[:WROTE]-(n)
+                OPTIONAL MATCH (n)-[:WROTE]->(p)
+                OPTIONAL MATCH (n)-[:THEME_RELATION]-(t_p)
+                RETURN n as node,
+                a as author, 
+                collect(DISTINCT t) as themes,
+                count(t_p) as publications_on_theme, 
+                count(p) as author_pubs, 
+                LABELS(n) as type
+                SKIP {skip_n}
+                LIMIT {limit_n}"""
+        print(limit, skip)
+        result = self.graph.run(query, name=name, skip_n=skip, limit_n=limit)
+        return result.data()

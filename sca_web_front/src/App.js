@@ -22,8 +22,8 @@ class App extends Component {
 
   componentDidMount() {
     this.setState({
-      authorized: true, // window.sessionStorage.getItem("isAuthorized"),
-      is_admin: true, //window.sessionStorage.getItem("isAdmin")
+      authorized: window.sessionStorage.getItem("isAuthorized"),
+      is_admin: window.sessionStorage.getItem("isAdmin")
     })
   }
 
@@ -66,8 +66,8 @@ class App extends Component {
         alert("Cannot authorize you with these credentials");
       });    
     }
-    var isAuthorized = true ;//window.sessionStorage.getItem("isAuthorized");
-    var isAdmin = true; // window.sessionStorage.getItem("isAdmin");
+    var isAuthorized = window.sessionStorage.getItem("isAuthorized");
+    var isAdmin = window.sessionStorage.getItem("isAdmin");
 
     return (
         <NeoContext.Provider value={{ connection: this.state.token, is_admin: isAdmin }}>

@@ -1,7 +1,11 @@
 import React, {Component} from 'react';
 import queryString from 'query-string';
 
-import {createAuthorLink, createPublicationLink} from '../utilities/links_creators';
+import {
+    createAuthorLink, 
+    createPublicationLink,
+    createAuthoritiesInDomainsLink,
+} from '../utilities/links_creators';
 
 import {getPublication} from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
@@ -66,23 +70,26 @@ class Publication extends Component {
                 <section className="container">
                     <h1>{this.state.result["publication"]["name"]}</h1>
                     <h3>by <a href={createAuthorLink(this.state.result["authors_ids"][0])}>{this.state.result["authors"][0]["name"]}</a></h3>
-                    <div className="card">
-                        <div className="card-body">
-                            <h5 className="card-title">On Domains:</h5>
-                            <HorizontalKeywordsList keywords={domains} />
-                        </div>
-                    </div>
                     
+                    <hr/>
+                    <h5 className="card-title">On Domains:</h5> 
+                    <HorizontalKeywordsList keywords={domains} />
+                    {domains && domains.length > 0 &&
+                        <span><a href={createAuthoritiesInDomainsLink(domains)}>Find experts in those domains</a></span>
+                    }
+                    <hr/>
                     <p>year <b>{this.state.result["publication"]["year"]}</b></p>
                     <p>ISBN: <b>{this.state.result["publication"]["ISBN"]}</b></p>
                     <p>in <b>{this.state.result["publication"]["language"]}</b> language</p>
                     <p>{this.state.result["publication"]["pages"]} pages</p>
+                    {linked_pubs && linked_pubs.length > 0 && 
                     <section>
                         <h3>LINKED PUBLICATIONS</h3>
                         <ul>
                             {linked_pubs}
                         </ul>
                     </section>
+                    }
                 </section>
             )
         } else if (this.state.error) {

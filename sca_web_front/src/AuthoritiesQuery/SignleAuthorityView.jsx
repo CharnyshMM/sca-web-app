@@ -4,7 +4,7 @@ import queryString from 'query-string';
 
 import { getAuthorPublicationsInDomains } from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
-
+import {createPublicationLink} from '../utilities/links_creators';
 
 class SingleAuthorityView extends Component {
     constructor(props) {
@@ -66,16 +66,19 @@ class SingleAuthorityView extends Component {
     render() {
         let author = null;
         let publications = null;
-
+        let publications_ids = null;
 
         if (this.state.result) {
             author = this.state.result[0]["a"]; //a is the key to author value in response json
             publications = this.state.result[0]["pub"];// pub for publications list
-
+            publications_ids = this.state.result[0]["pub_ids"];
             console.log(author);
             console.log("publs:", publications);
         }
 
+        const onPublicationClick = id => {
+            this.props.history.push(createPublicationLink(id));
+        }
 
         return (
             <section className="container">
@@ -107,7 +110,7 @@ class SingleAuthorityView extends Component {
                                 <tbody>
                                     {publications.map((p, i) => (
                                         <tr key={i}>
-                                            <td>{p["name"]}</td>
+                                            <td><a href={createPublicationLink(publications_ids[i])}>{p["name"]}</a></td>
                                             <td>{p["year"]}</td>
                                             <td>{p["ISBN"]}</td>
                                         </tr>

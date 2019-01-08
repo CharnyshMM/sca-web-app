@@ -75,9 +75,9 @@ class NeoQuerier:
         query = 'MATCH (a:Author)-[:WROTE]-(p:Publication), ' \
                 '(p)-[r:THEME_RELATION]-(d:Theme) ' \
                 'WHERE a.name={author_name} AND r.probability > 0.7 WITH collect(d.name) as domains, ' \
-                'collect(distinct p) as pub, a ' \
+                'collect(distinct p) as pub, a,collect(distinct ID(p)) as pub_ids ' \
                 'WHERE ALL(domain_name in {domains_list} ' \
-                'WHERE domain_name in domains) RETURN a, pub'
+                'WHERE domain_name in domains) RETURN a, pub, pub_ids'
 
 
         result = self.graph.run(query, author_name=author_name, domains_list=domains_list)

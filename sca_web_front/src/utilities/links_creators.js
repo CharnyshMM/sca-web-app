@@ -4,6 +4,9 @@ import {
     DOMAINS_POPULARITY_QUERY,
     ARTICLES_QUERY,
     SEARCH,
+    AUTHOR,
+    DOMAIN,
+    PUBLICATION
 } from '../routes_constants';
 
 function buildQueryParametersList(name, val_list) {
@@ -38,6 +41,16 @@ function createSearchLink(name) {
     return `${SEARCH}?search=${name.toLowerCase()}`;
 }
 
+function createAuthorLink(id) {
+    return `${AUTHOR}?author=${id}`;
+}
+function createDomainLink(id) {
+    return `${DOMAIN}?domain=${id}`;
+}
+function createPublicationLink(id) {
+    return `${PUBLICATION}?publication=${id}`;
+}
+
 export {
     buildQueryParametersList,
     createAuthorPublicationsInDomainsLink,
@@ -45,4 +58,7 @@ export {
     createDomainsPopularityLink,
     createKeywordsQueryLink,
     createSearchLink,
+    createAuthorLink,
+    createDomainLink,
+    createPublicationLink,
 };

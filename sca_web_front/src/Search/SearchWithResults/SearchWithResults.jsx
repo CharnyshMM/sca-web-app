@@ -38,7 +38,7 @@ class SearchWithResults extends Component {
             )
             .then(
                 result => {
-                    console.log('responsed_Search:', result, status);
+                   // console.log('responsed_Search:', result, status);
                     if (status == 200) {
                         this.setState({ result: result });
                     } else {
@@ -80,7 +80,8 @@ class SearchWithResults extends Component {
                 count(p) as author_pubs, 
                 LABELS(n) as type
                 SKIP {skip}
-                LIMIT {limit}
+                LIMIT {limit},
+                ID(n) as id
         */
         let searchResults = [];
         if (this.state.result) {
@@ -88,13 +89,13 @@ class SearchWithResults extends Component {
                 console.log(r);
                 switch(r["type"][0]) {
                     case "Theme":
-                        searchResults.push(<DomainResult key={i} domain={r["node"]} publications_count={r["publications_on_theme"]}/>);
+                        searchResults.push(<DomainResult key={i} id={r["id"]} domain={r["node"]} publications_count={r["publications_on_theme"]}/>);
                         break;
                     case "Author":
-                        searchResults.push(<AuthorResult key={i} author={r["node"]} publications_count={r["author_pubs"]}/>);
+                        searchResults.push(<AuthorResult key={i} id={r["id"]} author={r["node"]} publications_count={r["author_pubs"]}/>);
                         break;
                     case "Publication":
-                        searchResults.push(<PublicationResult key={i} publication={r["node"]} author={r["author"]} domains={r["themes"]}/>);
+                        searchResults.push(<PublicationResult key={i} id={r["id"]} publication={r["node"]} author={r["author"]} domains={r["themes"]}/>);
                         break;
                }
             });
@@ -104,8 +105,10 @@ class SearchWithResults extends Component {
             <div>
                 <form method="GET" onSubmit={onSearchClick}>
                     <div className="top_search_form">
+                        
                         <input className="top_search_form__input" value={this.state.search_input} onChange={onSearchInputChange} type="text" placeholder="Search for knowledge..." />
                         <button className="top_search_form__button" type="submit">Go!</button>
+                        
                     </div>
                 </form>
 

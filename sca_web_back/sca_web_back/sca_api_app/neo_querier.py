@@ -96,9 +96,30 @@ class NeoQuerier:
                 collect(DISTINCT t) as themes,
                 count(t_p) as publications_on_theme, 
                 count(p) as author_pubs, 
-                LABELS(n) as type
+                LABELS(n) as type,
+				ID(n) as id
                 SKIP {skip_n}
                 LIMIT {limit_n}"""
         print(limit, skip)
         result = self.graph.run(query, name=name, skip_n=skip, limit_n=limit)
         return result.data()
+
+    def get_publication_with_details(self, pid):
+        query = """
+            MATCH (p:Publication)
+                where ID(p) = {pid}
+                OPTIONAL MATCH (p) -[:LINKS_TO]->(l_p)
+                OPTIONAL MATCH (p)-[:WROTE]-(a)
+                OPTIONAL MATCH (p)-[tr:THEME_RELATION]-(t:Theme)
+                WHERE tr.probability > 0.55
+                RETURN p as publication, 
+                collect(DISTINCT a) as authors,
+                collect(distinct ID(a)) as authors_ids,
+                collect(DISTINCT l_p) as linked_publications,
+                collect(DISTINCT ID(l_p)) as linked_publications_ids,
+                collect(DISTINCT t) as themes,
+                collect(DISTINCT ID(t)) as themes_ids
+        """
+
+        result = self.graph.run(query, pid=pid)
+        return result.data();

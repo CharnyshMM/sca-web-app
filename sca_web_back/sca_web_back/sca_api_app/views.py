@@ -163,6 +163,26 @@ class SearchView(APIView):
         except Exception as e:
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+class GetPublication(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            print(request.query_params.get("id"))
+            pid = int(request.query_params.get("id"))
+
+            nq = NeoQuerier()
+            return Response(nq.get_publication_with_details(pid)[0])
+        except ValueError as e:
+            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes((AllowAny,))

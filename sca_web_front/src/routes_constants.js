@@ -4,6 +4,9 @@ const AUTHORITIES_QUERY__AUTHORITY = `${AUTHORITIES_QUERY}/authority/`;
 const DOMAINS_POPULARITY_QUERY = "/domains-query";
 const ARTICLES_QUERY = "/articles-query"
 const SEARCH = "/search";
+const AUTHOR = "/author";
+const DOMAIN = "/domain";
+const PUBLICATION = "/publication";
 
 export {
     AUTHORITIES_QUERY,
@@ -11,4 +14,7 @@ export {
     DOMAINS_POPULARITY_QUERY,
     ARTICLES_QUERY,
     SEARCH,
+    AUTHOR, 
+    PUBLICATION, 
+    DOMAIN,
 }

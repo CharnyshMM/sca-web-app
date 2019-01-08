@@ -129,6 +129,11 @@ const getPublication = (id, token) => {
     return getLoaderPromise(query, authOptions(token));
 };
 
+const getAuthor = (id, token) => {
+    const query = `${PYTHON_BACKEND_API_AUTHOR}?id=${id}`;
+    return getLoaderPromise(query, authOptions(token));
+}
+
 export {
     getLoaderPromise,
     runQueryOnPythonBackend,
@@ -141,4 +146,5 @@ export {
     getAuthorPublicationsInDomains,
     doSearchByName,
     getPublication,
+    getAuthor,
 };

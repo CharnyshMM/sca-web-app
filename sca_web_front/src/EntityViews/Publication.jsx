@@ -10,8 +10,6 @@ import {
 import {getPublication} from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 
-import './publication.css';
-
 class Publication extends Component {
     constructor(props) {
         super(props);
@@ -84,7 +82,7 @@ class Publication extends Component {
                     <p>{this.state.result["publication"]["pages"]} pages</p>
                     {linked_pubs && linked_pubs.length > 0 && 
                     <section>
-                        <h3>LINKED PUBLICATIONS</h3>
+                        <h3>REFERS PUBLICATIONS</h3>
                         <ul>
                             {linked_pubs}
                         </ul>

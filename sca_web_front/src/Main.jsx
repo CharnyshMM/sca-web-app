@@ -9,6 +9,7 @@ import CustomQuery from './CustomQuery/CustomQuery';
 import Status from './Status/Status';
 import SearchWithResults from './Search/SearchWithResults/SearchWithResults';
 import Publication from './EntityViews/Publication';
+import Author from './EntityViews/Author';
 
 
 const Main = () => (
@@ -16,7 +17,7 @@ const Main = () => (
     <Switch>
       <Route exact path='/' component={Home}/>
       <Route path='/search/' component={SearchWithResults} />
-      <Route path="/author/" />
+      <Route path="/author/" component={Author}/>
       <Route path="/domain/" />
       <Route path="/publication" component={Publication}/>
       <Route path="/authorities-query/authority/" component={SingleAuthorityView} /> 

@@ -23,7 +23,7 @@ from .sca_api_app.views import CustomQueryView, \
     AuthoritiesQueryView, \
     AuthorWithPublicationsInDomainsQuery, \
     ArticlesQueryView, \
-    PopularDomainsQueryView, SearchView, GetPublication
+    PopularDomainsQueryView, SearchView, GetPublication, GetAuthor
 
 urlpatterns = [
     path('', view=IndexView.as_view(), name="index"),
@@ -37,6 +37,7 @@ urlpatterns = [
     path('query/domains_popularity/', view=PopularDomainsQueryView.as_view(), name='domains_popularity_query'),
     path('search/', view=SearchView.as_view(), name="search"),
     path('publication/', view=GetPublication.as_view(), name="publication"),
+    path('author/', view=GetAuthor.as_view(), name="author"),
 
     path('status/', view=GetStatusView.as_view(), name="status"),
 ]

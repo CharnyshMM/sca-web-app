@@ -119,8 +119,8 @@ const getHBaseStatus = () => {
     return getLoaderPromise(HBASE_STATUS_PATH);
 }
 
-const doSearchByName = (name, token) => {
-    const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}`;
+const doSearchByName = (name,limit, offset, token) => {
+    const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}&limit=${limit}&offset=${offset}`;
     return getLoaderPromise(query, authOptions(token));
 };
 

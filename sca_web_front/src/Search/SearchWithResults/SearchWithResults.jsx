@@ -9,13 +9,16 @@ import PublicationResult from '../SearchResults/PublicationResult';
 import AuthorResult from '../SearchResults/AuthorResult';
 import DomainResult from '../SearchResults/DomainResult';
 
+
+const RESULTS_ON_PAGE_LIMIT = 10;
+
 class SearchWithResults extends Component {
     constructor(props) {
         super(props);
         this.state = {
-          result: undefined,
+          result: [],
           offset: 0,
-          page: 0,
+          last_update_length: 0,
           search_input: "",
         };
       }
@@ -24,8 +27,11 @@ class SearchWithResults extends Component {
         const token = window.sessionStorage.getItem("token");
         let status = 0;
 
-        this.setState({error: undefined, result: undefined, page: 0});
-        doSearchByName(name, token)
+        this.setState({error: undefined});
+        console.log("before - offset", this.state.offset);
+        console.log("before - last_update_length", this.state.last_update_length);
+        
+        doSearchByName(name, RESULTS_ON_PAGE_LIMIT, this.state.offset, token)
             .then(
                 result => {
                     status = result.status;
@@ -40,7 +46,12 @@ class SearchWithResults extends Component {
                 result => {
                    // console.log('responsed_Search:', result, status);
                     if (status == 200) {
-                        this.setState({ result: result });
+                        this.setState({
+                            offset: this.state.offset + result.length,
+                            last_update_length: result.length,
+                            result: this.state.result.concat(result)
+                          });
+                        
                     } else {
                         console.log("I throwed an error");
                         throw Error(result.error);
@@ -62,9 +73,16 @@ class SearchWithResults extends Component {
     }
 
     render() {
+        console.log("render - offset", this.state.offset);
+        console.log("render - last_update_length", this.state.last_update_length);
 
         const onSearchClick = e => {
             e.preventDefault();
+            this.setState({
+                offset: 0,
+                last_update_length: 0,
+                result: []
+            });
             this.props.history.push(createSearchLink(this.state.search_input));
             this.doSearch(this.state.search_input);
           };
@@ -72,6 +90,14 @@ class SearchWithResults extends Component {
           const onSearchInputChange = (e) => {
             this.setState({search_input: e.target.value});
           }
+
+        const onUpdateClick = e => {
+            const queryParams = queryString.parse(this.props.location.search);
+            if (queryParams.search != undefined && queryParams.search != "") {
+                this.doSearch(queryParams.search);
+                this.setState({search_input: queryParams.search});
+            }
+        }
         /*
         RETURN n as node,
                 a as author, 
@@ -123,6 +149,26 @@ class SearchWithResults extends Component {
                 <div className="container">
                     {searchResults}
                 </div>
+
+                <footer className="pagination_footer">
+                    {this.state.last_update_length != 0 && this.state.result.length > 0 &&
+                        <button className="more_button" onClick={onUpdateClick}>More!</button>
+                    }
+                    {this.state.last_update_length == 0 && this.state.result.length > 0 &&
+                        <div className="alert">
+                            You reached the bottom! (Hoping you have found the truth too:))
+                        </div>
+                    }
+                    {this.state.last_update_length == 0 && this.state.result.length == 0 && this.state.search_input.length > 0 &&
+                        <div className="alert">
+                            Nothing was found on "<i>{this.state.search_input.length}</i>" so far
+                            <ul>
+                                <li>Maybe you didn't push Go! button?</li>
+                                <li>Or, unfortunatelly, we have nothing to show you</li>
+                            </ul>
+                        </div>
+                    }
+                </footer>
             </div>
         );
     }

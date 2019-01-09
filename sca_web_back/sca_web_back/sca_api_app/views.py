@@ -146,21 +146,25 @@ class SearchView(APIView):
 
     def get(self, request, **kwargs):
         name = request.query_params.get("search")
-        limit = request.query_params.get("limit")
-        offset = request.query_params.get("offset")
-        print(kwargs)
-        print("search", name)
-        print("of:", offset)
-        print("lim", limit)
+
         if name is None or name == "":
             return Response(getErrorResponce("empty query"), status=HTTP_400_BAD_REQUEST)
         neo = NeoQuerier()
         try:
-            result = neo.find_nodes_by_name(name)
+            limit = int(request.query_params.get("limit"))
+            offset = int(request.query_params.get("offset"))
+            print("limit", limit)
+            print("offset", offset)
+            result = neo.find_nodes_by_name(name, skip=offset, limit=limit)
             return Response(result)
+        except ValueError as e:
+            print(e)
+            return Response(getErrorResponce("value and limit must be numeric"), status=HTTP_400_BAD_REQUEST)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 

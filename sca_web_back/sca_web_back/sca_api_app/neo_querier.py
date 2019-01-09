@@ -74,7 +74,7 @@ class NeoQuerier:
             WHERE a.name={author_name} AND r.probability > 0.7 WITH collect(d.name) as domains, 
             collect(distinct p) as pub, a,collect(distinct ID(p)) as pub_ids 
             WHERE ALL(domain_name in {domains_list} 
-            WHERE domain_name in domains) RETURN a, pub, pub_ids
+            WHERE domain_name in domains) RETURN a, ID(a) as author_id, pub, pub_ids
         """
 
 

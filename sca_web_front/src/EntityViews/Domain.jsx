@@ -3,16 +3,15 @@ import queryString from 'query-string';
 
 import {
     createPublicationLink,
-    createAuthoritiesInDomainsLink,
-    createAuthorPublicationsInDomainsLink
+    createAuthorLink,
 } from '../utilities/links_creators';
 
-import { getAuthor } from '../verbose_loaders';
+import { getDomain } from '../verbose_loaders';
 
 import './author.css';
 
 
-class Author extends Component {
+class Domain extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -26,7 +25,7 @@ class Author extends Component {
         const token = window.sessionStorage.getItem("token")
         const queryStr = queryString.parse(this.props.location.search);
         let status = 0;
-        getAuthor(queryStr.author, token)
+        getDomain(queryStr.domain, token)
             .then(
                 result => {
                     status = result.status;
@@ -59,41 +58,42 @@ class Author extends Component {
         /*
             result structure:
              {
-                 author: {neo_author},
-                 major_domains: {[{domains:[], publications_in_domains}]}
-                 top_cited_publications: [{publication, publication_id, links_count}]
-             }
+                domain: {name: "13133",...}
+                publications_count: 12312,
+                "top_10_authors_in_domain": top_10_authors_in_domain_by_publications_count,
+                "top_10_cited_publications": top_10_cited_publications
+            }
         */
 
         let content = null;
         if (this.state.result) {
 
-            let domains_listItems = this.state.result["major_domains"].map((p,i) => (
+            let topCitedPublications_listItems = this.state.result["top_10_cited_publications"].map((p,i) => (
                 <li key={i}>
-                    <a href={createAuthorPublicationsInDomainsLink(this.state.result["author"]["name"], p["domains"].map(v=>v["name"]))}>{p["publications_in_domains"].length} publication(s)</a> on {p["domains"].map(v =><span className="author__domain_item">{v["name"]}</span>)}
-                     
-                    <a href={createAuthoritiesInDomainsLink(p["domains"].map(v=>v["name"]))}>Find experts</a>
+                    <a href={createPublicationLink(p["publication_id"])}> {p["publication"]["name"]} ({p["publication"]["year"]})</a>
                 </li>
             ));
 
-            let top_cited_publications_listItems = this.state.result["top_cited_publications"].map((v,i)=>(
-                <li><a href={createPublicationLink(v["publication_id"])}>{v["publication"]["name"]}</a></li>
+            let topAuthorsByPublicationsCount = this.state.result["top_10_authors_in_domain"].map((v,i)=>(
+                <li key={i}><a href={createAuthorLink(v["author_id"])}>{v["author"]["name"]}</a> has <b>{v["publications_count"]} publications</b></li>
             ));
             content = (
                 <section className="container">
-                    <h1>{this.state.result["author"]["name"]}</h1>
+                    <h1>{this.state.result["domain"]["name"]}</h1>
                    
-                    <h5 className="card-title">Majors in domains:</h5>
-                    {domains_listItems && domains_listItems.length > 0 &&
+                    <p>{this.state.result["publications_count"]} publications</p>
+
+                    <h5 className="card-title">Most cited publications on <i>{this.state.result["domain"]["name"]}</i></h5>
+                    {topCitedPublications_listItems && topCitedPublications_listItems.length > 0 &&
                         <ul>
-                            {domains_listItems}
+                            {topCitedPublications_listItems}
                         </ul>
                     }
-                    {top_cited_publications_listItems && top_cited_publications_listItems.length > 0 && 
+                    {topAuthorsByPublicationsCount && topAuthorsByPublicationsCount.length > 0 && 
                     (<section>
-                        <h3>TOP CITED PUBLICATIONS:</h3>
+                        <h5>Authors who majors in {this.state.result["domain"]["name"]}:</h5>
                         <ul>
-                            {top_cited_publications_listItems}
+                            {topAuthorsByPublicationsCount}
                         </ul>
                     </section>
                     )
@@ -117,4 +117,4 @@ class Author extends Component {
     }
 }
 
-export default Author;
+export default Domain;

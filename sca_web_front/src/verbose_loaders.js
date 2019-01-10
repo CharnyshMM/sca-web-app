@@ -119,8 +119,12 @@ const getHBaseStatus = () => {
     return getLoaderPromise(HBASE_STATUS_PATH);
 }
 
-const doSearchByName = (name,limit, offset, token) => {
-    const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}&limit=${limit}&offset=${offset}`;
+const doSearchByName = (name, limit, offset, token) => {
+    let type = "all"; // is not needed now, will be later added to func params to specify a type of results wanted
+    if (type != "all" || type != "author" || type != "publication" || type != "domain") {
+        type = "all"
+    }
+    const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
     return getLoaderPromise(query, authOptions(token));
 };
 
@@ -131,6 +135,11 @@ const getPublication = (id, token) => {
 
 const getAuthor = (id, token) => {
     const query = `${PYTHON_BACKEND_API_AUTHOR}?id=${id}`;
+    return getLoaderPromise(query, authOptions(token));
+}
+
+const getDomain = (id, token) => {
+    const query = `${PYTHON_BACKEND_API_DOMAIN}?id=${id}`;
     return getLoaderPromise(query, authOptions(token));
 }
 
@@ -147,4 +156,5 @@ export {
     doSearchByName,
     getPublication,
     getAuthor,
+    getDomain,
 };

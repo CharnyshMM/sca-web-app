@@ -73,9 +73,6 @@ class SearchWithResults extends Component {
     }
 
     render() {
-        console.log("render - offset", this.state.offset);
-        console.log("render - last_update_length", this.state.last_update_length);
-
         const onSearchClick = e => {
             e.preventDefault();
             this.setState({
@@ -112,7 +109,6 @@ class SearchWithResults extends Component {
         let searchResults = [];
         if (this.state.result) {
             this.state.result.map((r,i) => {
-                console.log(r);
                 switch(r["type"][0]) {
                     case "Theme":
                         searchResults.push(<DomainResult key={i} id={r["id"]} domain={r["node"]} publications_count={r["publications_on_theme"]}/>);
@@ -140,7 +136,6 @@ class SearchWithResults extends Component {
 
                 <div className="top_results_filter">
                     <button className="top_results_filter__button-active">All results</button>
-                    <button className="top_results_filter__button">Statistics</button>
                     <button className="top_results_filter__button">Publications</button>
                     <button className="top_results_filter__button">Authors</button>
                     <button className="top_results_filter__button">Domains</button>

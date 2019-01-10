@@ -37,8 +37,8 @@ function createKeywordsQueryLink(keywords) {
     return `${ARTICLES_QUERY}?${buildQueryParametersList("keyword", keywords)}`;
 }
 
-function createSearchLink(name) {
-    return `${SEARCH}?search=${name.toLowerCase()}`;
+function createSearchLink(name, type) {
+    return `${SEARCH}?search=${name.toLowerCase()}&type=${type}`;
 }
 
 function createAuthorLink(id) {

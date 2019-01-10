@@ -153,9 +153,10 @@ class SearchView(APIView):
         try:
             limit = int(request.query_params.get("limit"))
             offset = int(request.query_params.get("offset"))
+            node_type = request.query_params.get("type")
             print("limit", limit)
             print("offset", offset)
-            result = neo.find_nodes_by_name(name, skip=offset, limit=limit)
+            result = neo.find_nodes_by_name(name, skip=offset, limit=limit, node_type=node_type)
             return Response(result)
         except ValueError as e:
             print(e)

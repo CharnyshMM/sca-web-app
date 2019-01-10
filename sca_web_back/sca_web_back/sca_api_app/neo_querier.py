@@ -91,9 +91,11 @@ class NeoQuerier:
         )
         return result.data()
 
-    def find_nodes_by_name(self, name, skip=0, limit=10):
-        query = """MATCH (n)
-                WHERE (EXISTS(n.name) and toLower(n.name) CONTAINS toLower({name}))
+    def find_nodes_by_name(self, name, node_type=None, skip=0, limit=10):
+        match_type = "MATCH (n:{}) "
+        match = "MATCH (n) "
+        query = """
+                WHERE (EXISTS(n.name) and toLower(n.name) STARTS WITH toLower({name}))
                 OPTIONAL MATCH (n)-[r:THEME_RELATION]->(t:Theme)
                 WHERE r.probability > {theme_relation_probability}
                 OPTIONAL MATCH (a:Author)-[:WROTE]-(n)
@@ -105,9 +107,14 @@ class NeoQuerier:
                 count(t_p) as publications_on_theme, 
                 count(p) as author_pubs, 
                 LABELS(n) as type,
-				ID(n) as id
+                ID(n) as id
                 SKIP {skip_n}
-                LIMIT {limit_n}"""
+                LIMIT {limit_n}
+        """
+        if node_type is not None and node_type.lower() != "all":
+            query = match_type.format(node_type.capitalize()) + query
+        else:
+            query = match + query
         print(limit, skip)
         result = self.graph.run(
             query,

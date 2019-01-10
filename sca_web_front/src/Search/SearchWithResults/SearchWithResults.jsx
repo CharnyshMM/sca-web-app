@@ -8,6 +8,7 @@ import './search_and_results.css';
 import PublicationResult from '../SearchResults/PublicationResult';
 import AuthorResult from '../SearchResults/AuthorResult';
 import DomainResult from '../SearchResults/DomainResult';
+import SearchResultsFilter from './SearchResultsFilter';
 
 
 const RESULTS_ON_PAGE_LIMIT = 10;
@@ -20,18 +21,17 @@ class SearchWithResults extends Component {
           offset: 0,
           last_update_length: 0,
           search_input: "",
+          type: "all",
         };
       }
 
-    doSearch(name) {
+    doSearch(name, offset, type) {
         const token = window.sessionStorage.getItem("token");
         let status = 0;
 
         this.setState({error: undefined});
-        console.log("before - offset", this.state.offset);
-        console.log("before - last_update_length", this.state.last_update_length);
         
-        doSearchByName(name, RESULTS_ON_PAGE_LIMIT, this.state.offset, token)
+        doSearchByName(name, RESULTS_ON_PAGE_LIMIT, offset, token, type=type)
             .then(
                 result => {
                     status = result.status;
@@ -47,11 +47,14 @@ class SearchWithResults extends Component {
                    // console.log('responsed_Search:', result, status);
                     if (status == 200) {
                         this.setState({
-                            offset: this.state.offset + result.length,
+                            offset: offset + result.length,
                             last_update_length: result.length,
-                            result: this.state.result.concat(result)
                           });
-                        
+                        if (offset != 0) {
+                            this.setState({result: this.state.result.concat(result)});
+                        } else {
+                            this.setState({result: result});
+                        }
                     } else {
                         console.log("I throwed an error");
                         throw Error(result.error);
@@ -67,31 +70,43 @@ class SearchWithResults extends Component {
     componentDidMount() {
         const queryParams = queryString.parse(this.props.location.search);
         if (queryParams.search != undefined && queryParams.search != "") {
-            this.doSearch(queryParams.search);
-            this.setState({search_input: queryParams.search});
+            this.doSearch(queryParams.search, 0, queryParams.type);
+            this.setState({search_input: queryParams.search, type: queryParams.type});
         }
     }
 
     render() {
         const onSearchClick = e => {
             e.preventDefault();
-            this.setState({
-                offset: 0,
-                last_update_length: 0,
-                result: []
-            });
-            this.props.history.push(createSearchLink(this.state.search_input));
-            this.doSearch(this.state.search_input);
+            this.props.history.push(createSearchLink(this.state.search_input, this.state.type));
+            this.doSearch(this.state.search_input, 0, this.state.type);
           };
       
-          const onSearchInputChange = (e) => {
+        const onSearchInputChange = (e) => {
             this.setState({search_input: e.target.value});
-          }
+        }
+
+        const onResultTypeClick = (e) => {
+            e.preventDefault();
+            console.log(e.target.value, "clicked");
+            if(e.target.value) {
+                    this.props.history.push(createSearchLink(this.state.search_input, e.target.value));
+                    this.setState({type: e.target.value});
+                    this.doSearch(this.state.search_input, 0, e.target.value);
+            }
+            
+            for(let i = 0; i < e.currentTarget.children.length; i++) {
+                
+                e.currentTarget.children[i].className="top_results_filter__button";
+            }
+            e.target.className="top_results_filter__button-active";
+        }
 
         const onUpdateClick = e => {
             const queryParams = queryString.parse(this.props.location.search);
             if (queryParams.search != undefined && queryParams.search != "") {
-                this.doSearch(queryParams.search);
+                this.doSearch(queryParams.search, this.state.offset, this.state.type);
+                
                 this.setState({search_input: queryParams.search});
             }
         }
@@ -134,19 +149,14 @@ class SearchWithResults extends Component {
                     </div>
                 </form>
 
-                <div className="top_results_filter">
-                    <button className="top_results_filter__button-active">All results</button>
-                    <button className="top_results_filter__button">Publications</button>
-                    <button className="top_results_filter__button">Authors</button>
-                    <button className="top_results_filter__button">Domains</button>
-                </div>
+                <SearchResultsFilter selected_value={this.state.type} onResultTypeClick={onResultTypeClick} />
 
                 <div className="container">
                     {searchResults}
                 </div>
 
                 <footer className="pagination_footer">
-                    {this.state.last_update_length != 0 && this.state.result.length > 0 &&
+                    {this.state.last_update_length != 0 && this.state.result.length > 0 && this.state.last_update_length == RESULTS_ON_PAGE_LIMIT  &&
                         <button className="more_button" onClick={onUpdateClick}>More!</button>
                     }
                     {this.state.last_update_length == 0 && this.state.result.length > 0 &&
@@ -156,7 +166,7 @@ class SearchWithResults extends Component {
                     }
                     {this.state.last_update_length == 0 && this.state.result.length == 0 && this.state.search_input.length > 0 &&
                         <div className="alert">
-                            Nothing was found on "<i>{this.state.search_input.length}</i>" so far
+                            Nothing was found on "<i>{this.state.search_input}</i>" so far
                             <ul>
                                 <li>Maybe you didn't push Go! button?</li>
                                 <li>Or, unfortunatelly, we have nothing to show you</li>

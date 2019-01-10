@@ -119,11 +119,12 @@ const getHBaseStatus = () => {
     return getLoaderPromise(HBASE_STATUS_PATH);
 }
 
-const doSearchByName = (name, limit, offset, token) => {
-    let type = "all"; // is not needed now, will be later added to func params to specify a type of results wanted
-    if (type != "all" || type != "author" || type != "publication" || type != "domain") {
+const doSearchByName = (name, limit, offset, token, type=undefined) => {
+    
+    if (type !== "all" && type !== "author" && type !== "publication" && type !== "theme") {
         type = "all"
     }
+    console.log("type in lodader", type);
     const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
     return getLoaderPromise(query, authOptions(token));
 };

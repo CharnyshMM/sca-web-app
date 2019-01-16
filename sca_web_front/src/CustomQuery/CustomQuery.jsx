@@ -123,16 +123,20 @@ class CustomQuery extends Component {
       this.queryEditor.setOption('readOnly', e.target.checked);
     }
 
-    const parseResultItem = (item) => {
+    function parseResultItem (item) {
       let viewContent = "";
-
-      viewContent = (<ul style={{ maxWidth: '70%' }}>
-        {Object.keys(item).map((key, i) =>
-          <li>
-            <b>{key}:</b> {item[key]}
-          </li>
-        )}
-      </ul>);
+      console.log(item);
+      if (item instanceof(Object)) {
+        viewContent = (<ul style={{ maxWidth: '70%' }}>
+          {Object.keys(item).map((key, i) =>
+            <li>
+              <b>{key}:</b> {parseResultItem(item[key])}
+            </li>
+          )}
+        </ul>);
+      } else {
+        return item.toString()
+      }
       return viewContent;
     }
 

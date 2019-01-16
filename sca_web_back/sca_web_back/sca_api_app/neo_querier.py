@@ -198,7 +198,7 @@ class NeoQuerier:
             MATCH (t:Theme)-[tr:THEME_RELATION]-(p:Publication)
             WHERE ID(t)={theme_id} AND tr.probability>{theme_relation_probability}
             MATCH (p)<-[:LINKS_TO]-(another_p:Publication)
-            RETURN p as publication, ID(p) publication_id, count(DISTINCT another_p) as links_count
+            RETURN p as publication, ID(p) as publication_id, count(DISTINCT another_p) as links_count
             ORDER BY links_count
             DESC
             LIMIT 10

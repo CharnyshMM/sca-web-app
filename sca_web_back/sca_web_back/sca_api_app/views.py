@@ -12,6 +12,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_404_NOT_FOUND, HTTP_200_OK
 from .neo_querier import NeoQuerier
+from .my_json_encoder import MyJSONEncoder
 
 CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 
@@ -19,9 +20,12 @@ CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 def getErrorResponce(err):
     return {"error": err}
 
+class MyJSONRenderer(JSONRenderer):
+    encoder_class = MyJSONEncoder
+
 
 class CustomQueryView(APIView):
-    renderer_classes = (JSONRenderer,)
+    renderer_classes = (MyJSONRenderer,)
     permission_classes = (IsAdminUser,)
 
     def get(self, request):

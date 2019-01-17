@@ -5,6 +5,8 @@ import { runQueryOnPythonBackend } from '../verbose_loaders';
 import Spinner from '../ReusableComponents/Spinner';
 
 import './CustomQuery.css';
+import CustomQueryTextResponse from './CustomQueryTextResponse';
+import CustomQueryGraphResponse from './CustomQueryGraphResponse';
 
 class CustomQuery extends Component {
   constructor(props) {
@@ -13,6 +15,7 @@ class CustomQuery extends Component {
       clauses: [],
       queryText: '',
       useConstructor: false,
+      resultViewType: "text",
       loading: false,
     };
   }
@@ -92,7 +95,11 @@ class CustomQuery extends Component {
       let status = 0;
       const token = window.sessionStorage.getItem("token");
       this.setState({ error: undefined, result: undefined, loading: true });
-      runQueryOnPythonBackend(this.queryEditor.getValue(), token)
+
+      let query = this.queryEditor.getValue().split("\n").join(" ");
+
+      console.log("the query", query);
+      runQueryOnPythonBackend(query, token)
         .then(
           result => {
             status = result.status;
@@ -111,9 +118,9 @@ class CustomQuery extends Component {
             throw Error(result.error);
           }
         },
-      )
+        )
         .catch(e => {
-          this.setState({ error: e, loading: false});
+          this.setState({ error: e, loading: false });
           console.log("ERROR:", e);
         });
     }
@@ -123,21 +130,10 @@ class CustomQuery extends Component {
       this.queryEditor.setOption('readOnly', e.target.checked);
     }
 
-    function parseResultItem (item) {
-      let viewContent = "";
-      console.log(item);
-      if (item instanceof(Object)) {
-        viewContent = (<ul style={{ maxWidth: '70%' }}>
-          {Object.keys(item).map((key, i) =>
-            <li>
-              <b>{key}:</b> {parseResultItem(item[key])}
-            </li>
-          )}
-        </ul>);
-      } else {
-        return item.toString()
-      }
-      return viewContent;
+    const onTextGraphSelectorClick = value => {
+
+      console.log("type:", value);
+      this.setState({ resultViewType: value });
     }
 
     return (
@@ -145,12 +141,13 @@ class CustomQuery extends Component {
         <h1>Query builder</h1>
         <form className="form" onSubmit={handleSubmit}>
           <div className={this.state.useConstructor ? 'form-group disabled' : 'form-group'}>
-            <textarea className="form-control" value={this.state.queryText} onChange={changeQueryText} />
+            <textarea className="form-control" style={{ "height": "200px" }} value={this.state.queryText} onChange={changeQueryText} />
           </div>
           <div className="form-check">
             <input type="checkbox" checked={this.state.useConstructor} onChange={toggleConstructor} className="form-check-input" id="use-constructor" />
             <label htmlFor="use-constructor" className="form-check-label">Use Constructor</label>
           </div>
+
           {this.state.useConstructor && (
             <div className="form-group">
               <ul className="list-group">
@@ -195,30 +192,31 @@ class CustomQuery extends Component {
           <Spinner />
         }
 
+        
+
+        <section style={{"margin": "10px 0px"}}>
         {this.state.result && (
-          <ul className="list-group mt-3">
-            {(this.state.result).map((record, i) => (
-              <li className="list-group-item" key={i}>
-                <table className="table table-sm">
-                  <tbody>
-                    {Object.keys(record).map((key, j) => (
-                      <tr key={j}><th scope="row">{key}</th><td style={{ maxWidth: '70%' }}>{parseResultItem(record[key])}</td></tr>
-                    ))}
-                  </tbody>
-                </table>
-              </li>
-            ))}
-          </ul>
-        )}
+          <div className="btn-group btn-group-toggle" data-toggle="buttons">
+            <label className="btn btn-secondary active" onClick={() => onTextGraphSelectorClick("text")} value="text">
+              <input type="radio" name="options" value="text" autocomplete="off" checked /> Text
+            </label>
+            <label className="btn btn-secondary" value="graph" onClick={() => onTextGraphSelectorClick("graph")}>
+              <input type="radio" name="options" value="graph" autocomplete="off" /> Graph
+            </label>
+          </div>
+        )
+        }
+          {this.state.result && this.state.resultViewType == "graph" && (
+            <CustomQueryGraphResponse result={this.state.result} queryText={this.queryEditor.getValue()} />
+          )}
+
+          {this.state.result && this.state.resultViewType == "text" && (
+            <CustomQueryTextResponse result={this.state.result} />
+          )}
+        </section>
       </div>
     );
   }
 }
-
-// export default props => (
-//   <NeoContext.Consumer>
-//     {({ connection, is_admin }) => <CustomQuery {...props} connection={connection} is_admin={is_admin} />}
-//   </NeoContext.Consumer>
-// );
 
 export default CustomQuery;

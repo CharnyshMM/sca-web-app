@@ -32,3 +32,4 @@ sca_web_front/src/constant_urls.js
 ../sca_web_back/sca_web_back/__pycache__/settings.cpython-37.pyc
 sca_web_back/sca_web_back/sca_api_app/__pycache__/views.cpython-37.pyc
 
+sca_web_back/js.py

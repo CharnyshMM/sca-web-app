@@ -9,6 +9,7 @@ import PublicationResult from '../SearchResults/PublicationResult';
 import AuthorResult from '../SearchResults/AuthorResult';
 import DomainResult from '../SearchResults/DomainResult';
 import SearchResultsFilter from './SearchResultsFilter';
+import Spinner from '../../ReusableComponents/Spinner';
 
 
 const RESULTS_ON_PAGE_LIMIT = 10;
@@ -22,6 +23,7 @@ class SearchWithResults extends Component {
           last_update_length: 0,
           search_input: "",
           type: "all",
+          loading: false,
         };
       }
 
@@ -29,7 +31,7 @@ class SearchWithResults extends Component {
         const token = window.sessionStorage.getItem("token");
         let status = 0;
 
-        this.setState({error: undefined});
+        this.setState({error: undefined, loading: true});
         
         doSearchByName(name, RESULTS_ON_PAGE_LIMIT, offset, token, type=type)
             .then(
@@ -49,6 +51,7 @@ class SearchWithResults extends Component {
                         this.setState({
                             offset: offset + result.length,
                             last_update_length: result.length,
+                            loading: false,
                           });
                         if (offset != 0) {
                             this.setState({result: this.state.result.concat(result)});
@@ -62,9 +65,10 @@ class SearchWithResults extends Component {
                 },
         )
             .catch(e => {
-                this.setState({ error: e });
+                this.setState({ error: e, loading: false });
                 console.log("ERROR:", e);
             });
+            
     }
 
     componentDidMount() {
@@ -152,7 +156,12 @@ class SearchWithResults extends Component {
                 <SearchResultsFilter selected_value={this.state.type} onResultTypeClick={onResultTypeClick} />
 
                 <div className="container">
-                    {searchResults}
+                   
+                    <Spinner />
+                   
+                    
+                        {searchResults}
+                    }
                 </div>
 
                 <footer className="pagination_footer">

@@ -86,8 +86,8 @@ def relationship_to_dict(rel):
         "type": type(rel).__name__,
         "identity": rel.identity,
         "labels": list(rel.labels),
-        "start_node": node_to_dict(rel.start_node),
-        "end_node": node_to_dict(rel.end_node),
+        "source": rel.start_node.identity,
+        "target": rel.end_node.identity,
         **dict(rel)
     }
 

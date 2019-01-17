@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import CodeMirror from 'codemirror';
 import { runQueryOnPythonBackend } from '../verbose_loaders';
 
-import NeoContext from '../NeoContext';
 import Spinner from '../ReusableComponents/Spinner';
 
 import './CustomQuery.css';
@@ -94,10 +93,11 @@ class CustomQuery extends Component {
       const token = window.sessionStorage.getItem("token");
       this.setState({ error: undefined, result: undefined, loading: true });
       runQueryOnPythonBackend(this.queryEditor.getValue(), token)
-        .then(result => {
-          status = result.status;
-          return result.response.json();
-        },
+        .then(
+          result => {
+            status = result.status;
+            return result.response.json();
+          },
           error => {
             status = error.status;
             return error.response.json();

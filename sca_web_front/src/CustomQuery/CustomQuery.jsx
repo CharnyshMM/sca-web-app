@@ -94,7 +94,7 @@ class CustomQuery extends Component {
       e.preventDefault();
       let status = 0;
       const token = window.sessionStorage.getItem("token");
-      this.setState({ error: undefined, result: undefined, loading: true });
+      this.setState({ error: undefined, result: undefined, loading: true, resultViewType: "text" });
 
       let query = this.queryEditor.getValue().split("\n").join(" ");
 

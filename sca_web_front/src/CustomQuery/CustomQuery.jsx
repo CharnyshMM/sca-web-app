@@ -8,6 +8,7 @@ import Spinner from '../ReusableComponents/Spinner';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import CustomQueryConstructorClause from './CustomQueryConstructorClause';
 import CustomQueryResult from './CustomQueryResult';
+import BeautifulSwitch from '../ReusableComponents/BeautifulSwitch/BeautifulSwitch';
 
 class CustomQuery extends Component {
   constructor(props) {
@@ -159,8 +160,7 @@ class CustomQuery extends Component {
             <textarea className="form-control" style={{ "height": "200px" }} value={this.state.queryText} onChange={this.changeQueryText} />
           </div>
           <div className="form-check">
-            <input type="checkbox" checked={this.state.useConstructor} onChange={this.toggleConstructor} className="form-check-input" id="use-constructor" />
-            <label htmlFor="use-constructor" className="form-check-label">Use Constructor</label>
+            <BeautifulSwitch label="Use constructor" onSwitchChange={this.toggleConstructor} />
           </div>
 
           {this.state.useConstructor && (

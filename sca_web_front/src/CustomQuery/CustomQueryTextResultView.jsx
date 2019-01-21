@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class CustomQueryTextResponse extends Component {
+class CustomQueryTextResultView extends Component {
     constructor(props) {
         super(props);
         this.state = {}
@@ -47,4 +47,4 @@ class CustomQueryTextResponse extends Component {
     }
 }
 
-export default CustomQueryTextResponse;
+export default CustomQueryTextResultView;

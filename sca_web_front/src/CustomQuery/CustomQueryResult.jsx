@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 
-import CustomQueryGraphResponse from './CustomQueryGraphResponse';
-import CustomQueryTextResponse from './CustomQueryTextResponse';
+import CustomQueryGraphResponse from './CustomQueryGraphResultView';
+import CustomQueryTextResultView from './CustomQueryTextResultView';
 import { getUniqueNodesAndLinks, checkIfLinksAreValid } from './graph_unilities'
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
+import BeautifulSwitch from '../ReusableComponents/BeautifulSwitch/BeautifulSwitch';
 
 import './custom_query_result.css';
 
@@ -18,14 +19,14 @@ class CustomQueryResult extends Component {
 
     onViewToggleChange(event) {
         if (event.target.checked) {
-            this.setState({resultViewMode: "graph"});
+            this.setState({ resultViewMode: "graph" });
         } else {
-            this.setState({resultViewMode: "text"});
+            this.setState({ resultViewMode: "text" });
         }
     }
 
     render() {
-        
+
         const [uniqueNodes, uniqueLinks, others] = getUniqueNodesAndLinks(this.props.result);
         const graphViewModeAllowed = checkIfLinksAreValid(uniqueLinks, uniqueNodes);
         console.log("allow grapht", graphViewModeAllowed);
@@ -36,24 +37,15 @@ class CustomQueryResult extends Component {
         if (this.state.resultViewMode === "graph") {
             resultView = <CustomQueryGraphResponse unique_nodes={uniqueNodes} unique_links={uniqueLinks} />;
         } else {
-            resultView = <CustomQueryTextResponse result={this.props.result} />
+            resultView = <CustomQueryTextResultView result={this.props.result} />
         }
 
         return (
             <section className="custom_query__result">
-            {graphViewModeAllowed &&
-                <div className="graph_visualisations_switch">
-                    <span className="graph_visualisations_switch__label">
-                        Graph visualisations 
-                    </span>
-
-                    <label className="switch">
-                        <input onChange={this.onViewToggleChange} type="checkbox" />
-                        <span className="slider round"></span>
-                    </label>
-                </div>
-            }
-            {resultView}
+                {graphViewModeAllowed &&
+                    <BeautifulSwitch label="Graph visualizations " onSwitchChange={this.onViewToggleChange} />
+                }
+                {resultView}
             </section>
         )
     }

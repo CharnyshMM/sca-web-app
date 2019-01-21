@@ -6,7 +6,7 @@ import { buildSimpleGraph } from './graph_unilities';
 
 
 
-class CustomQueryGraphResoponse extends Component {
+class CustomQueryGraphResultView extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -86,4 +86,4 @@ class CustomQueryGraphResoponse extends Component {
 }
 
 
-export default CustomQueryGraphResoponse;
+export default CustomQueryGraphResultView;

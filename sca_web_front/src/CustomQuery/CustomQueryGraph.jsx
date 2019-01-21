@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import { Graph } from 'react-d3-graph';
 
 import { buildSimpleGraph, getUniqueNodesAndLinks } from './graph_unilities';
+import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 
 
@@ -19,6 +20,19 @@ class CustomQueryGraph extends Component {
         };
     }
 
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        console.log("derived state from error",error);
+        let errorMessage = error.message;
+        if (error.message.includes("react-d3-graph")) {
+            errorMessage = "Can't draw a beautiful graph for these results :'("
+        }
+        return {hasError: true, errorMessage};
+    }
+
+    componentDidCatch(e){
+        console.log(e);
+    }
 
     componentDidMount() {
         const queryStr = queryString.parse(this.props.location.search);
@@ -26,7 +40,7 @@ class CustomQueryGraph extends Component {
         let status = 0;
         const token = window.sessionStorage.getItem("token");
         this.setState({ error: undefined, result: undefined, queryText: queryStr.query });
-        runQueryOnPythonBackend(queryStr.query, token)
+        runQueryOnPythonBackend("match (c)-[r]-() return c,r limit 10", token)
             .then(result => {
                 status = result.status;
                 return result.response.json();
@@ -80,13 +94,19 @@ class CustomQueryGraph extends Component {
             linkHighlightBehavior:true,
         };
 
+       
+
         let graph = "";
         
         const onNodeClick = nodeId => {
             this.setState({node_info: this.state.unique_nodes[nodeId]});
         }
         
-        if (this.state.result) {
+        if (this.state.hasError) {
+            console.log("no errors so far");
+        }
+
+        if (this.state.result && !this.state.hasError) {
             let data = buildSimpleGraph(this.state.unique_nodes, this.state.unique_links);
             graph = (<Graph
                 id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
@@ -100,12 +120,16 @@ class CustomQueryGraph extends Component {
 
         return (
             <section className="container">
-                <h3>query {this.state.queryText}</h3>
-               
-                {graph}
-                <div className="node_info" style={{"width": "800px", wordBreak: "break-word"}}>
-                    {JSON.stringify(this.state.node_info)}
-                </div>
+                {!this.state.hasError && <div>
+                   
+                
+                    {graph}
+                    <div className="node_info" style={{"width": "800px", wordBreak: "break-word"}}>
+                        {JSON.stringify(this.state.node_info)}
+                    </div>
+                    </div>
+                }
+                {this.state.hasError && <h1>Erroor</h1>}
             </section>
         );
     }

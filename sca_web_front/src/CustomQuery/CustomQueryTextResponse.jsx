@@ -9,7 +9,6 @@ class CustomQueryTextResponse extends Component {
     render() {
         function parseResultItem(item) {
             let viewContent = "";
-            console.log(item);
             if (item instanceof (Object)) {
                 viewContent = (<ul style={{ maxWidth: '70%' }}>
                     {Object.keys(item).map((key, i) =>

@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { runQueryOnPythonBackend } from '../verbose_loaders';
-import queryString from 'query-string';
 import { Graph } from 'react-d3-graph';
+import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
-import { buildSimpleGraph, getUniqueNodesAndLinks } from './graph_unilities';
+import { buildSimpleGraph } from './graph_unilities';
 
 
 
@@ -11,16 +10,28 @@ class CustomQueryGraphResoponse extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            queryText: '',
             node_info: [],
-            unique_nodes: {},
-            unique_links: {},
-            result: undefined,
+            hasError: false,
+            errorMessage: "",
         };
-        [this.unique_nodes, this.unique_links, this.others] = getUniqueNodesAndLinks(this.props.result);
-        console.log(this.unique_nodes, this.unique_nodes);
+        
     }
 
+    componentDidCatch(error, errorInfo) {
+        console.log("componentDidCatchv");
+        console.log("EEERORR", error.message);
+        console.log("descr", errorInfo);
+    }
+
+    static getDerivedStateFromError(error) {
+        // Update state so the next render will show the fallback UI.
+        console.log("derived state from error",error);
+        let errorMessage = error.message;
+        if (error.message.includes("react-d3-graph")) {
+            errorMessage = "Can't draw a beautiful graph for these results :'("
+        }
+        return {hasError: true, errorMessage};
+    }
 
     render() {
         const myConfig = {
@@ -43,33 +54,26 @@ class CustomQueryGraphResoponse extends Component {
             linkHighlightBehavior:true,
         };
 
-        let graph = "";
+        if (this.state.hasError) {
+            return (<ErrorAlert errorName="Error" errorMessage={this.state.errorMessage} />);
+        }
         
         const onNodeClick = nodeId => {
-            this.setState({node_info: this.unique_nodes[nodeId]});
-        }
-        
-        if (this.props.result) {
-            let data = buildSimpleGraph(this.unique_nodes, this.unique_links);
-            try {
-                graph = (<Graph
-                    id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-                    data={data}
-                    config={myConfig}
-                    onClickNode={onNodeClick}
-                    style="width: 400px, height: 400px"
-                />);
-            } catch (error) {
-                console.log(error);
-            }
-           
+            this.setState({node_info: this.props.unique_nodes[nodeId]});
         }
 
+        let graph = "";
+        const data = buildSimpleGraph(this.props.unique_nodes, this.props.unique_links);
+        graph = (<Graph
+            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+            data={data}
+            config={myConfig}
+            onClickNode={onNodeClick}
+            style="width: 400px, height: 400px"
+        />);
         
-
         return (
             <section className="container">
-                <h3>query {this.props.queryText}</h3>
                 <div style={{"border": "1px solid black", "overflow": "scroll"}}>
                 {graph}
                 </div>

@@ -6,10 +6,7 @@ import './CustomQuery.css';
 
 import Spinner from '../ReusableComponents/Spinner';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
-import CustomQueryTextResponse from './CustomQueryTextResponse';
-import CustomQueryGraphResponse from './CustomQueryGraphResponse';
 import CustomQueryConstructorClause from './CustomQueryConstructorClause';
-import {checkIfLinksAreValid} from './graph_unilities';
 import CustomQueryResult from './CustomQueryResult';
 
 class CustomQuery extends Component {
@@ -68,7 +65,7 @@ class CustomQuery extends Component {
         })
       .then(result => {
         console.log('responsed_Custom_query:', result, status);
-        if (status == 200) {
+        if (status === 200) {
           this.setState({ result: result, loading: false });
         } else {
           console.log("I throwed an error");
@@ -190,6 +187,7 @@ class CustomQuery extends Component {
           )}
           <button className="btn btn-primary" type="submit">Submit</button>
         </form>
+        
         {this.state.error && (
           <ErrorAlert errorName={this.state.error.name} errorMessage={this.state.error.message} />
         )}
@@ -199,17 +197,6 @@ class CustomQuery extends Component {
         }
 
         <section style={{ "margin": "10px 0px" }}>
-          {this.state.result && (
-            <div className="btn-group btn-group-toggle" data-toggle="buttons">
-              <label className="btn btn-secondary active" onClick={() => this.onTextGraphSelectorClick("text")} value="text">
-                <input type="radio" name="options" value="text" autoComplete="off" defaultChecked /> Text
-            </label>
-              <label className="btn btn-secondary" value="graph" onClick={() => this.onTextGraphSelectorClick("graph")}>
-                <input type="radio" name="options" value="graph" autoComplete="off" /> Graph
-            </label>
-            </div>
-          )
-          }
           {this.state.result && (
             <CustomQueryResult result={this.state.result} />
           )}

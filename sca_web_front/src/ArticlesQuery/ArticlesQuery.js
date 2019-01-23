@@ -4,8 +4,6 @@ import { createKeywordsQueryLink } from '../utilities/links_creators';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 import queryString from 'query-string';
 
-import NeoContext from '../NeoContext';
-import { runInThisContext } from 'vm';
 import Spinner from '../ReusableComponents/Spinner';
 
 

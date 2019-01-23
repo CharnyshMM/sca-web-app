@@ -13,10 +13,8 @@ class App extends Component {
     super(props);
 
     this.state = {
-
       authorized: false,
       isAdmin: false,
-
       user: '',
       password: '',
     }

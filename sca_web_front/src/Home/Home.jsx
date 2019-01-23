@@ -16,7 +16,7 @@ class Home extends Component {
 
     const onSearchClick = e => {
       e.preventDefault();
-      this.props.history.push(createSearchLink(this.state.search_input));
+      this.props.history.push(createSearchLink(this.state.search_input, "all"));
     };
 
     const onSearchInputChange = (e) => {
@@ -65,7 +65,7 @@ class Home extends Component {
           </div>
         </div>
 
-        <div className="row justify-content-center">
+        <div className="row justify-content-center mb-5">
           <div className="col-6 vertical-margin">
             <div className="card h-100">
               <div className="card-body">

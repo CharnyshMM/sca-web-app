@@ -154,13 +154,12 @@ class SearchWithResults extends Component {
                 <SearchResultsFilter selected_value={type} onResultTypeClick={onResultTypeClick} />
 
                 <div className="container">
-                    
+                    {!loading && hasError && JSON.stringify(error)}
+                    {!hasError &&
+                        <div>{searchResults}</div>
+                    }
                     {loading && 
                         <Spinner />
-                    }
-                    {!loading && hasError && JSON.stringify(error)}
-                    {!loading && !hasError &&
-                        <div>{searchResults}</div>
                     }
                 </div>
 
@@ -173,7 +172,7 @@ class SearchWithResults extends Component {
                             You reached the bottom! (Hoping you have found the truth too:))
                         </div>
                     }
-                    {last_update_length == 0 && result.length == 0 && this.state.search_input.length > 0 &&
+                    {!loading && last_update_length == 0 && result.length == 0 && this.state.search_input.length > 0 &&
                         <div className="alert">
                             Nothing was found on "<i>{this.state.search_input}</i>" so far
                             <br />

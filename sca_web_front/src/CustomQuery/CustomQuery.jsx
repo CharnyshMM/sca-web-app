@@ -17,7 +17,6 @@ class CustomQuery extends Component {
       clauses: [],
       queryText: '',
       useConstructor: false,
-      resultViewType: "text",
       loading: false,
     };
 
@@ -28,7 +27,6 @@ class CustomQuery extends Component {
     this.changeClauseType = this.changeClauseType.bind(this);
     this.changeQueryText = this.changeQueryText.bind(this);
     this.toggleConstructor = this.toggleConstructor.bind(this);
-    this.onTextGraphSelectorClick = this.onTextGraphSelectorClick.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
   }
 
@@ -36,6 +34,7 @@ class CustomQuery extends Component {
     this.queryEditor = CodeMirror.fromTextArea(document.querySelector('textarea'), {
       mode: 'cypher',
       lineNumbers: true,
+      
     });
   }
 
@@ -49,7 +48,7 @@ class CustomQuery extends Component {
     event.preventDefault();
     let status = 0;
     const token = window.sessionStorage.getItem("token");
-    this.setState({ error: undefined, result: undefined, loading: true, resultViewType: "text" });
+    this.setState({ error: undefined, result: undefined, loading: true});
 
     let query = this.queryEditor.getValue().split("\n").join(" ");
 
@@ -83,10 +82,6 @@ class CustomQuery extends Component {
   toggleConstructor(event) {
     this.setState({ useConstructor: event.target.checked });
     this.queryEditor.setOption('readOnly', event.target.checked);
-  }
-
-  onTextGraphSelectorClick(value) {
-    this.setState({ resultViewType: value });
   }
 
   addClause() {

@@ -5,12 +5,14 @@ from django.contrib.auth import authenticate
 from py2neo import GraphError
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAdminUser, IsAuthenticated
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_404_NOT_FOUND, HTTP_200_OK
 from .neo_querier import NeoQuerier
+from .my_json_encoder import MyJSONEncoder
 
 CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 
@@ -18,14 +20,17 @@ CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 def getErrorResponce(err):
     return {"error": err}
 
+class MyJSONRenderer(JSONRenderer):
+    encoder_class = MyJSONEncoder
+
 
 class CustomQueryView(APIView):
-    renderer_classes = (JSONRenderer,)
+    renderer_classes = (MyJSONRenderer,)
     permission_classes = (IsAdminUser,)
 
     def get(self, request):
         # there should be request filtering(maybe using decorator) :))
-        if not request.query_params.get(CUSTOM_QUERY_REQUEST_PARAMETER):
+        if not request.query_params.get(CUSTOM_QUERY_REQUEST_PARAMETER, ):
             return Response(getErrorResponce("No query provided"), status=HTTP_400_BAD_REQUEST)
         try:
             result = NeoQuerier().run_cypher_query(request.query_params[CUSTOM_QUERY_REQUEST_PARAMETER])
@@ -49,6 +54,7 @@ class GetStatusView(APIView):
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
         print("result:", nodes_count)
         return Response({"nodesCount": nodes_count, "authorsCount": authors_count, "publicationsCount": publications_count})
+
 
 class AuthoritiesQueryView(APIView):
     renderer_classes = (JSONRenderer,)
@@ -74,7 +80,7 @@ class AuthorWithPublicationsInDomainsQuery(APIView):
 
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
-        author_name = request.query_params.get('author')
+        author_name = request.query_params.get('author', )
         print(domains_list)
         print(author_name)
         if domains_list is None\
@@ -117,7 +123,7 @@ class PopularDomainsQueryView(APIView):
 
     def get(self, request):
         POPULARITY_INDEX = 200 # hardcoded index AAAAAAAAAAAAAAAAAA
-        wanted_popularity = request.query_params.get('popularity')
+        wanted_popularity = request.query_params.get('popularity', )
         try:
             if wanted_popularity == 'nascent':
                 result = NeoQuerier().get_domains_by_popularity_index(POPULARITY_INDEX, higher=True)
@@ -138,12 +144,97 @@ class IndexView(APIView):
         return Response({"hello": "world! API server is alive"})
 
 
+class SearchView(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, **kwargs):
+        name = request.query_params.get("search")
+
+        if name is None or name == "":
+            return Response(getErrorResponce("empty query"), status=HTTP_400_BAD_REQUEST)
+        neo = NeoQuerier()
+        try:
+            limit = int(request.query_params.get("limit"))
+            offset = int(request.query_params.get("offset"))
+            node_type = request.query_params.get("type")
+            print("limit", limit)
+            print("offset", offset)
+            result = neo.find_nodes_by_name(name, skip=offset, limit=limit, node_type=node_type)
+            return Response(result)
+        except ValueError as e:
+            print(e)
+            return Response(getErrorResponce("value and limit must be numeric"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            print(e)
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GetPublication(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            print(request.query_params.get("id"))
+            pid = int(request.query_params.get("id"))
+
+            nq = NeoQuerier()
+            return Response(nq.get_publication_with_details(pid)[0])
+        except ValueError as e:
+            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GetAuthor(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            print(request.query_params.get("id"))
+            pid = int(request.query_params.get("id"))
+            nq = NeoQuerier()
+            return Response(nq.get_author_with_details(pid))
+        except ValueError as e:
+            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+class GetDomain(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        try:
+            print(request.query_params.get("id"))
+            domain_id = int(request.query_params.get("id"))
+            nq = NeoQuerier()
+            return Response(nq.get_domain_with_details(domain_id))
+        except ValueError as e:
+            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 @csrf_exempt
 @api_view(['POST'])
 @permission_classes((AllowAny,))
 def login(request):
-    username = request.data.get("username")
-    password = request.data.get("password")
+    username = request.data.get("username", )
+    password = request.data.get("password", )
     if username is None or password is None:
         return Response({'error': 'Please provide both username and password'},
                         status=HTTP_400_BAD_REQUEST)

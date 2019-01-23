@@ -4,7 +4,7 @@ import queryString from 'query-string';
 
 import { getAuthorPublicationsInDomains } from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
-
+import {createPublicationLink, createAuthorLink} from '../utilities/links_creators';
 
 class SingleAuthorityView extends Component {
     constructor(props) {
@@ -66,16 +66,17 @@ class SingleAuthorityView extends Component {
     render() {
         let author = null;
         let publications = null;
-
+        let publications_ids = null;
+        let author_id = 0;
 
         if (this.state.result) {
             author = this.state.result[0]["a"]; //a is the key to author value in response json
+            author_id = this.state.result[0]["author_id"];
             publications = this.state.result[0]["pub"];// pub for publications list
-
+            publications_ids = this.state.result[0]["pub_ids"];
             console.log(author);
             console.log("publs:", publications);
         }
-
 
         return (
             <section className="container">
@@ -87,7 +88,7 @@ class SingleAuthorityView extends Component {
                 }
                 {this.state.result &&
                     <div>
-                        <h1>{author.name}'s publications</h1>
+                        <h1><a href={createAuthorLink(author_id)}>{author.name}</a>'s publications</h1>
                         <div className="card">
                             <div className="card-body">
                                 <h5 className="card-title">On domains:</h5>
@@ -107,7 +108,7 @@ class SingleAuthorityView extends Component {
                                 <tbody>
                                     {publications.map((p, i) => (
                                         <tr key={i}>
-                                            <td>{p["name"]}</td>
+                                            <td><a href={createPublicationLink(publications_ids[i])}>{p["name"]}</a></td>
                                             <td>{p["year"]}</td>
                                             <td>{p["ISBN"]}</td>
                                         </tr>

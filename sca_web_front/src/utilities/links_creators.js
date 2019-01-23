@@ -2,7 +2,11 @@ import {
     AUTHORITIES_QUERY__AUTHORITY,
     AUTHORITIES_QUERY,
     DOMAINS_POPULARITY_QUERY,
-    ARTICLES_QUERY
+    ARTICLES_QUERY,
+    SEARCH,
+    AUTHOR,
+    DOMAIN,
+    PUBLICATION
 } from '../routes_constants';
 
 function buildQueryParametersList(name, val_list) {
@@ -33,10 +37,28 @@ function createKeywordsQueryLink(keywords) {
     return `${ARTICLES_QUERY}?${buildQueryParametersList("keyword", keywords)}`;
 }
 
+function createSearchLink(name, type) {
+    return `${SEARCH}?search=${name.toLowerCase()}&type=${type}`;
+}
+
+function createAuthorLink(id) {
+    return `${AUTHOR}?author=${id}`;
+}
+function createDomainLink(id) {
+    return `${DOMAIN}?domain=${id}`;
+}
+function createPublicationLink(id) {
+    return `${PUBLICATION}?publication=${id}`;
+}
+
 export {
     buildQueryParametersList,
     createAuthorPublicationsInDomainsLink,
     createAuthoritiesInDomainsLink,
     createDomainsPopularityLink,
     createKeywordsQueryLink,
+    createSearchLink,
+    createAuthorLink,
+    createDomainLink,
+    createPublicationLink,
 };

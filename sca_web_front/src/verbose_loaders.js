@@ -6,6 +6,10 @@ import {
     PYTHON_BACKEND_API_ARTICLES_QUERY,
     PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY,
     PYTHON_BACKEND_API_AUTHOR_PUBLICATIONS_IN_DOMAINS_QUERY,
+    PYTHON_BACKEND_API_SEARCH,
+    PYTHON_BACKEND_API_PUBLICATION,
+    PYTHON_BACKEND_API_AUTHOR,
+    PYTHON_BACKEND_API_DOMAIN,
 } from './constant_urls';
 
 // ========================================================================
@@ -65,7 +69,7 @@ const buildQueryParametersList = (name, val_list) => {
         }
     }
     return query;
-}
+};
 
 // =========================================================================================
 //     REAL REQUESTS METHODS
@@ -73,7 +77,7 @@ const buildQueryParametersList = (name, val_list) => {
 
 const runQueryOnPythonBackend = function (query, token) {
     return getLoaderPromise(`${PYTHON_BACKEND_API}/query?query=${query}`, authOptions(token));
-}
+};
 
 
 const authorizeOnPythonBackend = function (username, password) {
@@ -83,37 +87,61 @@ const authorizeOnPythonBackend = function (username, password) {
         body: JSON.stringify({ username, password }),
     };
     return getLoaderPromise(`${PYTHON_BACKEND_API}/login/`, requestOptions);
-}
-
+};
 
 const getAuthoritiesInDomainsList = (domains_list, token) => {
     let query = buildQueryParametersList('domain', domains_list);
     return getLoaderPromise(PYTHON_BACKEND_API_AUTHORITIES_QUERY + `?${query}`, authOptions(token));
-}
+};
 
 const getArticlesByKeywords = (keywords_list, token) => {
     let query = buildQueryParametersList('keyword', keywords_list);
     return getLoaderPromise(PYTHON_BACKEND_API_ARTICLES_QUERY + `?${query}`, authOptions(token));
-}
+};
 
 
 const getDomainsByPopularity = (popularity, token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY + `?popularity=${popularity}`, authOptions(token))
-}
+};
 
 
 const getAuthorPublicationsInDomains = (author_name, domains_list, token) => {
     let query = buildQueryParametersList('domain', domains_list);
     query += `&author=${author_name}`;
     return getLoaderPromise(`${PYTHON_BACKEND_API_AUTHOR_PUBLICATIONS_IN_DOMAINS_QUERY}?${query}`, authOptions(token))
-}
+};
 
 const getNeoStatus = (token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, authOptions(token));
-}
+};
 
 const getHBaseStatus = () => {
     return getLoaderPromise(HBASE_STATUS_PATH);
+}
+
+const doSearchByName = (name, limit, offset, token, type=undefined) => {
+    
+    if (type !== "all" && type !== "author" && type !== "publication" && type !== "theme") {
+        type = "all"
+    }
+    console.log("type in lodader", type);
+    const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
+    return getLoaderPromise(query, authOptions(token));
+};
+
+const getPublication = (id, token) => {
+    const query = `${PYTHON_BACKEND_API_PUBLICATION}?id=${id}`;
+    return getLoaderPromise(query, authOptions(token));
+};
+
+const getAuthor = (id, token) => {
+    const query = `${PYTHON_BACKEND_API_AUTHOR}?id=${id}`;
+    return getLoaderPromise(query, authOptions(token));
+}
+
+const getDomain = (id, token) => {
+    const query = `${PYTHON_BACKEND_API_DOMAIN}?id=${id}`;
+    return getLoaderPromise(query, authOptions(token));
 }
 
 export {
@@ -126,4 +154,8 @@ export {
     getArticlesByKeywords,
     getDomainsByPopularity,
     getAuthorPublicationsInDomains,
+    doSearchByName,
+    getPublication,
+    getAuthor,
+    getDomain,
 };

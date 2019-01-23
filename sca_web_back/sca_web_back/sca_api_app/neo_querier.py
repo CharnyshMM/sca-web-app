@@ -10,6 +10,9 @@ class NeoQuerier:
     AUTHOR_NODE_LABEL = "Author"
     PUBLICATION_NODE_LABEL = "Publication"
     THEME_NODE_LABEL = "Theme"
+
+    WROTE_RELATION_LABEL = "WROTE"
+    THEME_RELATION_LABEL = "THEME_RELATION"
     THEME_RELATION_PROBABILITY = 0.6
 
     def __init__(self):
@@ -30,9 +33,10 @@ class NeoQuerier:
         return c
 
     def get_authorities_in_domains(self, domains_list):
-        query = """
-                MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:THEME_RELATION]-(d:Theme)
-                WHERE r.probability > {theme_relation_probability} AND EXISTS(a.name) 
+        query = f"""
+                MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
+                 (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL})
+                WHERE r.probability > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name) 
                 WITH collect(DISTINCT d.name) as domains, collect(distinct p) as pub, a 
                 WHERE ALL(domain_name in {domains_list} WHERE domain_name in domains)
                 RETURN a, length(pub) ORDER BY 
@@ -42,15 +46,15 @@ class NeoQuerier:
         #using deprecated length(pub) in front_EndQ!!!!!!!
         result = self.graph.run(
             query,
-            theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY,
-            domains_list=domains_list
+            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY,
+            # domains_list=domains_list
         )
         return result.data()
 
     def get_articles_by_keywords(self, keywords_list):
         query = """
             MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:KEYWORDS]-(d:KeywordPhrase) 
-            WHERE EXISTS(a.name) 
+            WHERE EXISTS(a.name)
             WITH collect(d.phrase) as publ_keyphrases, collect(distinct p) as pub, a 
             WHERE ALL(key in {keywords_list} WHERE key in publ_keyphrases) 
             RETURN a, pub
@@ -95,7 +99,8 @@ class NeoQuerier:
         match_type = "MATCH (n:{}) "
         match = "MATCH (n) "
         query = """
-                WHERE (EXISTS(n.name) and toLower(n.name) STARTS WITH toLower({name}))
+                WHERE (EXISTS(n.name) and toLower(n.name) STARTS WITH toLower({name})) 
+                    and ("Author" in LABELS(n) or "Publication" in LABELS(n) or "Theme" in LABELS(n))
                 OPTIONAL MATCH (n)-[r:THEME_RELATION]->(t:Theme)
                 WHERE r.probability > {theme_relation_probability}
                 OPTIONAL MATCH (a:Author)-[:WROTE]-(n)

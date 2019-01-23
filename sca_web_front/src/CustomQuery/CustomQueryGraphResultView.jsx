@@ -3,6 +3,7 @@ import { Graph } from 'react-d3-graph';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 import { buildSimpleGraph } from './graph_unilities';
+import CustomQueryObjectTextView from './CustomQueryObjectTextView';
 
 
 
@@ -10,7 +11,7 @@ class CustomQueryGraphResultView extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            node_info: [],
+            node_info: undefined,
             hasError: false,
             errorMessage: "",
         };
@@ -78,7 +79,12 @@ class CustomQueryGraphResultView extends Component {
                 {graph}
                 </div>
                 <div className="node_info" style={{"width": "800px", wordBreak: "break-word"}}>
-                    {JSON.stringify(this.state.node_info)}
+                    {this.state.node_info && 
+                        <div>
+                            <h3>Node info:</h3>
+                            <CustomQueryObjectTextView object={this.state.node_info} />
+                        </div>
+                    }
                 </div>
             </section>
         );

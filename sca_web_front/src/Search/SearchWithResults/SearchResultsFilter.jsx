@@ -1,23 +1,28 @@
 import React from 'react'
 
 const SearchResultsFilter = ({selected_value, onResultTypeClick}) => {
-    const buttons = [
-        <button className="top_results_filter__button" value="all">All results</button>,
-        <button className="top_results_filter__button" value="publication">Publications</button>,
-        <button className="top_results_filter__button" value="author">Authors</button>,
-        <button className="top_results_filter__button" value="theme">Domains</button>
-    ];
+    const valuesAndLabels = {
+        all: "All results",
+        publication: "Publications",
+        author: "Authors",
+        theme: "Themes",
+    };
+    const generalClassName = "top_results_filter__button";
+    const activeClassName = `${generalClassName}-active`;
+
+    const buttons = [];
+
+    for(const key in valuesAndLabels) {
+        if (key === selected_value) {
+            buttons.push(<button className={activeClassName} value={key}>{valuesAndLabels[key]}</button>);
+        } else {
+            buttons.push(<button className={generalClassName} value={key}>{valuesAndLabels[key]}</button>);
+        }
+    }
 
     return(
-        <div id="top_results_filter" className="top_results_filter" onClick={onResultTypeClick}>
-            {buttons.map((v, i)=> {
-                if (v.value == selected_value) {
-                    v.className = "top_results_filter__button-active";
-                    return v;
-                }
-                return v;
-            })
-            }
+        <div className="top_results_filter" onClick={onResultTypeClick}>
+            {buttons}
         </div>
     );
 }

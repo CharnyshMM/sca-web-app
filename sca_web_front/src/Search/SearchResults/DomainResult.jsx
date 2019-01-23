@@ -4,10 +4,10 @@ import {createDomainLink} from '../../utilities/links_creators';
 
 import './search_result.css';
 
-const DomainResult = ({id, key, domain, publications_count}) => {
+const DomainResult = ({id, domain, publications_count}) => {
     
     return (
-        <section eky={key} className="search_result">
+        <section key={id} className="search_result">
             <div className="search_result__header" title="Domain">
                 <span className="oi oi-puzzle-piece search_result__type"> </span>
                 <h3 className="search_result__title"><a href={createDomainLink(id)}>{domain.name}</a></h3>   

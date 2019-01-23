@@ -36,8 +36,10 @@ class CustomQueryView(APIView):
             result = NeoQuerier().run_cypher_query(request.query_params[CUSTOM_QUERY_REQUEST_PARAMETER])
             return Response(result)
         except SyntaxError as e:
+            print(e)
             return Response(getErrorResponce(e.msg), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
 
 
@@ -50,7 +52,8 @@ class GetStatusView(APIView):
             nodes_count = NeoQuerier().get_nodes_count()
             authors_count = NeoQuerier().get_nodes_count(NeoQuerier.AUTHOR_NODE_LABEL)
             publications_count = NeoQuerier().get_nodes_count(NeoQuerier.PUBLICATION_NODE_LABEL)
-        except Exception:
+        except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
         print("result:", nodes_count)
         return Response({"nodesCount": nodes_count, "authorsCount": authors_count, "publicationsCount": publications_count})
@@ -69,8 +72,10 @@ class AuthoritiesQueryView(APIView):
             result = NeoQuerier().get_authorities_in_domains(domains_list)
             return Response(result)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -93,8 +98,10 @@ class AuthorWithPublicationsInDomainsQuery(APIView):
             result = NeoQuerier().get_author_with_publications_in_domais(author_name, domains_list)
             return Response(result)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -112,8 +119,10 @@ class ArticlesQueryView(APIView):
             result = NeoQuerier().get_articles_by_keywords(keys_list)
             return Response(result)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -131,8 +140,10 @@ class PopularDomainsQueryView(APIView):
                 result = NeoQuerier().get_domains_by_popularity_index(POPULARITY_INDEX, higher=False)
             return Response(result)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -160,7 +171,7 @@ class SearchView(APIView):
             node_type = request.query_params.get("type")
             print("limit", limit)
             print("offset", offset)
-            result = neo.find_nodes_by_name(name, skip=offset, limit=limit, node_type=node_type)
+            result = neo.find_nodes_by_name(name, skip_n=offset, limit_n=limit, node_type=node_type)
             return Response(result)
         except ValueError as e:
             print(e)
@@ -185,10 +196,13 @@ class GetPublication(APIView):
             nq = NeoQuerier()
             return Response(nq.get_publication_with_details(pid)[0])
         except ValueError as e:
+            print(e)
             return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
+            print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
@@ -203,8 +217,10 @@ class GetAuthor(APIView):
             nq = NeoQuerier()
             return Response(nq.get_author_with_details(pid))
         except ValueError as e:
+            print(e)
             return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)
@@ -221,8 +237,10 @@ class GetDomain(APIView):
             nq = NeoQuerier()
             return Response(nq.get_domain_with_details(domain_id))
         except ValueError as e:
+            print(e)
             return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
         except GraphError as e:
+            print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
         except Exception as e:
             print(e)

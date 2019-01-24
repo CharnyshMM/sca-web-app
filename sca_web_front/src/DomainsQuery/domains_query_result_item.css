@@ -1,0 +1,12 @@
+.domains_query_result_item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px gray solid;
+    margin: 10px 0px;
+    border-radius: 7px;
+}
+
+.domains_query_result_item__chart {
+    text-align: center;
+}

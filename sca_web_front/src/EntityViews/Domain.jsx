@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
+import {
+    XYPlot,
+    XAxis,
+    YAxis,
+    VerticalGridLines,
+    HorizontalGridLines,
+    VerticalBarSeries
+  } from 'react-vis';
+
 
 import {
     createPublicationLink,
@@ -68,15 +77,22 @@ class Domain extends Component {
         let content = null;
         if (this.state.result) {
 
-            let topCitedPublications_listItems = this.state.result["top_10_cited_publications"].map((p,i) => (
+            const topCitedPublications_listItems = this.state.result["top_10_cited_publications"].map((p,i) => (
                 <li key={i}>
                     <a href={createPublicationLink(p["publication_id"])}> {p["publication"]["name"]} ({p["publication"]["year"]})</a>
                 </li>
             ));
 
-            let topAuthorsByPublicationsCount = this.state.result["top_10_authors_in_domain"].map((v,i)=>(
+            const topAuthorsByPublicationsCount = this.state.result["top_10_authors_in_domain"].map((v,i)=>(
                 <li key={i}><a href={createAuthorLink(v["author_id"])}>{v["author"]["name"]}</a> has <b>{v["publications_count"]} publications</b></li>
             ));
+
+            const yearlyDynamicsChart = Object.keys(this.state.result["yearly_dynamics"])
+                .map(year => ({
+                    x:year,
+                    y:this.state.result["yearly_dynamics"][year]
+                }));
+            
             content = (
                 <section className="container">
                     <h1>{this.state.result["domain"]["name"]}</h1>
@@ -98,6 +114,18 @@ class Domain extends Component {
                     </section>
                     )
                     }
+                    <div>
+                        <h5>Publications dynamics</h5>
+                    <XYPlot margin={{bottom: 70}} xType="ordinal" width={900} height={300}>
+                        <VerticalGridLines />
+                        <HorizontalGridLines />
+                        <XAxis tickLabelAngle={-45} />
+                        <YAxis />
+                        <VerticalBarSeries
+                            data={yearlyDynamicsChart}
+                        />      
+                        </XYPlot>  
+                    </div>
                     
                 </section>
             );

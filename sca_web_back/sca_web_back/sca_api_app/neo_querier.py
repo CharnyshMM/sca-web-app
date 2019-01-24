@@ -85,12 +85,33 @@ class NeoQuerier:
             where popularity < {popularity_index} 
             return theme.name as name, popularity order by popularity
         """
-        query = ''
+
+        yearly_dynamics_query = f"""
+            MATCH (t:{self.THEME_NODE_LABEL})<-[t_r:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
+                WHERE t_r.probability > {self.THEME_RELATION_PROBABILITY}
+                WITH COLLECT(DISTINCT p) as pubs, t
+                UNWIND pubs as distinct_pubs
+                WITH collect(distinct_pubs.year) as publications_years, t, pubs
+                RETURN t, ID(t) as t_id, publications_years, size(pubs) as publications_count
+        """
+
         if higher:
             query = nascent_query
         else:
             query = uninteresting_query
-        return self.graph.run(query).data()
+
+        yearly_dynamics = self.graph.run(yearly_dynamics_query)
+        domains_yearly_dynamics_response = []
+        for entry in yearly_dynamics:
+            domains_yearly_dynamics_response.append({
+                "theme": entry["t"],
+                "theme_id": entry["t_id"],
+                "dynamics": NeoQuerier.split_domain_dynamics(entry["publications_years"]),
+                "publications_count": entry["publications_count"]
+            })
+
+        print(domains_yearly_dynamics_response)
+        return domains_yearly_dynamics_response
 
     def get_author_with_publications_in_domains(self, author_name, domains_list):
 
@@ -240,6 +261,15 @@ class NeoQuerier:
             LIMIT 10
         """
 
+        publications_yearly_dynamics_query = f"""
+            MATCH (t:{self.THEME_NODE_LABEL})<-[t_r:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
+                WHERE ID(t) = {domain_id} and t_r.probability > {self.THEME_RELATION_PROBABILITY}
+                WITH COLLECT(DISTINCT p) as pubs, t
+                UNWIND pubs as distinct_pubs
+                WITH collect(distinct_pubs.year) as publications_years
+                RETURN publications_years
+        """
+
         domain_and_publications_count = self.graph.run(domain_and_publications_count_query).data()[0]  # because I match theme by ID
 
         top_10_authors_in_domain_by_publications_count = self.graph.run(
@@ -250,8 +280,37 @@ class NeoQuerier:
             top_10_cited_publications_query,
         ).data()
 
+        publications_yearly_dynamics = self.graph.run(publications_yearly_dynamics_query).data()[0]["publications_years"]
+
+        domain_dynamics = {}
+        for year in publications_yearly_dynamics:
+            if year == 0 or year <0:
+                continue
+            if year in domain_dynamics:
+                domain_dynamics[year] += 1
+            else:
+                domain_dynamics[year] = 1
+
         return {
             **domain_and_publications_count,
             "top_10_authors_in_domain": top_10_authors_in_domain_by_publications_count,
-            "top_10_cited_publications": top_10_cited_publications
+            "top_10_cited_publications": top_10_cited_publications,
+            "yearly_dynamics": domain_dynamics
         }
+
+    @staticmethod
+    def split_domain_dynamics(years):
+        before_1950 = 0
+        between_1950_and_2000 = 0
+        after_2000 = 0
+        for y in years:
+            if y <= 1950:
+                before_1950 += 1
+            elif 1950 < y <= 2000:
+                between_1950_and_2000 += 1
+            elif y > 2000:
+                after_2000 += 1
+        return {"before_1950": before_1950,
+                "between_1950_and_2000": between_1950_and_2000,
+                "after_2000": after_2000
+                }

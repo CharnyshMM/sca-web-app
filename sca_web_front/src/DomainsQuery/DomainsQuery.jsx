@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 
 import { getDomainsByPopularity } from '../loaders';
 import queryString from 'query-string';
-import { createAuthoritiesInDomainsLink, createDomainsPopularityLink } from '../utilities/links_creators';
+import { createAuthoritiesInDomainsLink, createDomainsPopularityLink, createDomainLink } from '../utilities/links_creators';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 import NeoContext from '../NeoContext';
 import Spinner from '../ReusableComponents/Spinner';
+import DomainsQueryResultItem from './DomainsQueryResultItem';
 
 class DomainsQuery extends Component {
   constructor(props) {
@@ -60,7 +61,7 @@ class DomainsQuery extends Component {
     };
 
     const onAddDomainToListClick = (index) => {
-        let domain = this.state.result[index]["name"];
+        let domain = this.state.result[index]["theme"]["name"];
         if (this.state.domains && this.state.domains.includes(domain)) {
             return;
         }
@@ -79,7 +80,12 @@ class DomainsQuery extends Component {
         return;
       }
 
-      const link = createAuthoritiesInDomainsLink(this.state.domains);
+    const link = createAuthoritiesInDomainsLink(this.state.domains);
+      this.props.history.push(link);
+    }
+
+    const onNameClick = (i) => {
+      const link = createDomainLink(this.state.result[i]["theme_id"]);
       this.props.history.push(link);
     }
 
@@ -90,19 +96,41 @@ class DomainsQuery extends Component {
       this.loadData(this.state.selected);
     };
 
+    const result = [];
+    if (this.state.result) {
+      const sortedResult = this.state.result.sort((a, b)=>{
+        if (this.state.selected == "publications") {
+          return b["publications_count"] - a["publications_count"];
+        } else if (this.state.selected == "after_2000") {
+          return b["dynamics"]["after_2000"] - a["dynamics"]["after_2000"];
+        } else if (this.state.selected == "between_1950_and_2000") {
+          return b["dynamics"]["between_1950_and_2000"] - a["dynamics"]["between_1950_and_2000"];
+        } else if (this.state.selected == "before_1950") {
+          return b["dynamics"]["before_1950"] - a["dynamics"]["before_1950"];
+        }
+      })
+      for (let i=0; i < this.state.result.length; i++) {
+        result.push(<DomainsQueryResultItem 
+            key={i}
+            domainInfo={this.state.result[i]}
+            onAddClick={()=>onAddDomainToListClick(i)} 
+            onNameClick={()=>onNameClick(i)}
+            />);
+      }
+    }
+
     return (
       <div className="container">
         <h1>Search for domains by dynamics</h1>
         <form className="form" onSubmit={handleSubmit}>
           <div className="form-group row align-items-center">
-            <div className="form-group col-md-10">
+            <div className="form-group col-md-12">
               <select className="form-control" onChange={changeSelected} value={this.state.selected}>
-                  <option value="nascent">Nascent Domains</option>
-                  <option value="uninteresting" >Uninteresting Domains</option>
+                  <option value="publications">Most publications first</option>
+                  <option value="after_2000" >Most publications after 2000 year</option>
+                  <option value="between_1950_and_2000">Most publications between 1950 and 2000</option>
+                  <option value="before_1950" >Most publications before 1950 year</option>
               </select>
-            </div>
-            <div className="form-group col-md-2">
-            <button className="btn btn-primary" type="submit">Search</button>
             </div>
           </div>
         </form>
@@ -125,32 +153,7 @@ class DomainsQuery extends Component {
         {this.state.loading &&
           <Spinner />
         }
-        {this.state.result && (
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Domain</th>
-                <th scope="col">Popularity Index</th>
-                <th> </th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.result.map((row, i) => (
-                <tr key={i}>
-                  <td scope="row">{i}</td>
-                  <th>{row['name']}</th>
-                  <td>{row['popularity']}</td>
-                  <td>
-                    <button className="btn btn-outline" onClick={()=>onAddDomainToListClick(i)}>
-                      <span className="oi oi-plus"> </span>
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        {result}
       </div>
     );
   }

@@ -83,7 +83,7 @@ class SearchWithResults extends Component {
 
     render() {
         const {result, loading, error, hasError, last_update_length, offset, type} = this.state;
-
+        console.log(result);
         const onSearchClick = e => {
             e.preventDefault();
             this.props.history.push(createSearchLink(this.state.search_input, this.state.type));

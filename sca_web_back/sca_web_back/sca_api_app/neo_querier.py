@@ -65,7 +65,6 @@ class NeoQuerier:
             RETURN a, pub
         """
 
-        print(keywords_list)
         result = self.graph.run(query, keywords_list=keywords_list)
         return result.data()
 
@@ -110,7 +109,6 @@ class NeoQuerier:
                 "publications_count": entry["publications_count"]
             })
 
-        print(domains_yearly_dynamics_response)
         return domains_yearly_dynamics_response
 
     def get_author_with_publications_in_domains(self, author_name, domains_list):
@@ -155,18 +153,21 @@ class NeoQuerier:
                         count(l_p) as links_to_pub
                     UNWIND [author_pubs,publications_on_theme, links_to_pub] as coeff
                 RETURN 
-                    n as node,
+                    DISTINCT n as node,
                     LABELS(n) as type,
                     ID(n) as id,
                     a as author, 
                     author_pubs, 
                     publications_on_theme,
                     links_to_pub,
-                    themes
-                ORDER BY coeff DESC
+                    themes,
+                    MAX(coeff) as sorter
+                ORDER BY sorter DESC
                 SKIP {skip_n}
                 LIMIT {limit_n}
         """
+
+
 
         if node_type is not None and node_type.lower() != "all":
             query = match_type.format(node_type.capitalize()) + query

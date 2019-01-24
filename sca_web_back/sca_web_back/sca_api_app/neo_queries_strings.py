@@ -10,6 +10,19 @@ GET_AUTHORITIES_IN_DOMAINS = """
                 size(pub) DESC 
             """
 
+GET_AUTHORITIES_IN_DOMAINS_WITH_LINKS_COUNT = """
+        MATCH (a:Author)-[:WROTE]-(p:Publication), (p)-[r:THEME_RELATION]-(d:Theme)
+        WHERE r.probability>0.01 and EXISTS(a.name) 
+        OPTIONAL MATCH (p)<-[:LINKS_TO]-(other_p)
+        WITH collect(DISTINCT d.name) as domains,
+            count(distinct p) as publications_count, 
+            count(distinct other_p) as links_count, 
+            a 
+        WHERE ALL(domain_name in {domains_list}  WHERE domain_name in domains)
+        RETURN a, publications_count, links_count 
+        ORDER BY links_count DESC
+"""
+
 # GET_ARTICLES_BY_KEYWORDS returns author and publication pairs where publication node has relations with
 # all keywords specified in {keywords_list}
 

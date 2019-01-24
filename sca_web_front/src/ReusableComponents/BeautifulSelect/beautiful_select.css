@@ -1,0 +1,10 @@
+.beautiful_select {
+    display: flex;
+    -ms-flex-pack: end;
+    justify-content: flex-end;
+    padding: 9px;
+}
+
+.beautiful_select__select {
+    margin-left: 1%;
+}

@@ -16,14 +16,12 @@ class NeoQuerier:
     THEME_RELATION_LABEL = "THEME_RELATION"
     KEYWORDS_RELATION_LABEL = "KEYWORDS"
     LINKS_TO_RELATION_LABEL = "LINKS_TO"
-    THEME_RELATION_PROBABILITY = 0.4
+    THEME_RELATION_PROBABILITY = 0.1
 
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
 
     def run_cypher_query(self, query):
-        # graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
-        # c = graph.run(query)
         c = self.graph.run(query)
         return c.data()
 
@@ -40,13 +38,18 @@ class NeoQuerier:
                 MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
                  (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL})
                 WHERE r.probability > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name) 
-                WITH collect(DISTINCT d.name) as domains, collect(distinct p) as pub, a 
+                OPTIONAL MATCH (p)<-[l:{self.LINKS_TO_RELATION_LABEL}]-()
+                WITH collect(DISTINCT d.name) as domains, 
+                    count(distinct p) as publications_count, 
+                    count(distinct l) as links_count,
+                    a 
                 WHERE ALL(domain_name in {domains_list} WHERE domain_name in domains)
-                RETURN a, length(pub) ORDER BY 
-                size(pub) DESC 
+                RETURN a as author,
+                    publications_count,
+                    links_count 
+                ORDER BY publications_count DESC 
             """
 
-        #using deprecated length(pub) in front_EndQ!!!!!!!
         result = self.graph.run(
             query,
         )
@@ -87,12 +90,9 @@ class NeoQuerier:
             query = nascent_query
         else:
             query = uninteresting_query
-        # graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
-        return self.graph.run(query
-                              #popularity_index=popularity_index
-        ).data()
+        return self.graph.run(query).data()
 
-    def get_author_with_publications_in_domais(self, author_name, domains_list):
+    def get_author_with_publications_in_domains(self, author_name, domains_list):
 
         query = f"""
             MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
@@ -104,12 +104,7 @@ class NeoQuerier:
             RETURN a, ID(a) as author_id, pub, pub_ids
         """
 
-        result = self.graph.run(
-            query
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY,
-            # author_name=author_name,
-            # domains_list=domains_list
-        )
+        result = self.graph.run(query)
         return result.data()
 
     def find_nodes_by_name(self, name, node_type=None, skip_n=0, limit_n=10):
@@ -152,19 +147,12 @@ class NeoQuerier:
                 LIMIT {limit_n}
         """
 
-        print(query)
         if node_type is not None and node_type.lower() != "all":
             query = match_type.format(node_type.capitalize()) + query
         else:
             query = match + query
         print(limit_n, skip_n)
-        result = self.graph.run(
-            query,
-            # name=name,
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY,
-            # skip_n=skip_n,
-            # limit_n=limit_n
-        )
+        result = self.graph.run(query)
         return result.data()
 
     def get_publication_with_details(self, publication_id):
@@ -184,11 +172,7 @@ class NeoQuerier:
                 collect(DISTINCT ID(t)) as themes_ids
         """
 
-        result = self.graph.run(
-            query,
-            # pid=publication_id,
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY
-        )
+        result = self.graph.run(query)
         return result.data()
 
     def get_author_with_details(self, author_id):
@@ -218,18 +202,14 @@ class NeoQuerier:
             LIMIT 5
         """
 
-        author = self.graph.run(author_info_query,
-                                # author_id=author_id
-                                ).data()[0]["author"] # [0] because matching by ID still returns list
-        major_domains = self.graph.run(
-            major_domains_for_author_query,
-            # author_id=author_id,
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY
-        ).data()
-        top_cited_publications = self.graph.run(top_5_cited_publications_query,
-                                                # author_id=author_id
-                                                ).data()
-        return {"author": author, "major_domains": major_domains, "top_cited_publications": top_cited_publications}
+        author = self.graph.run(author_info_query).data()[0]["author"] # [0] because matching by ID still returns list
+        major_domains = self.graph.run(major_domains_for_author_query).data()
+        top_cited_publications = self.graph.run(top_5_cited_publications_query).data()
+        return {
+            "author": author,
+            "major_domains": major_domains,
+            "top_cited_publications": top_cited_publications
+        }
 
     def get_domain_with_details(self, domain_id):
         domain_and_publications_count_query = f"""
@@ -260,22 +240,14 @@ class NeoQuerier:
             LIMIT 10
         """
 
-        domain_and_publications_count = self.graph.run(
-            domain_and_publications_count_query,
-            # theme_id=domain_id,
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY
-            ).data()[0]  # because I match theme by ID
+        domain_and_publications_count = self.graph.run(domain_and_publications_count_query).data()[0]  # because I match theme by ID
 
         top_10_authors_in_domain_by_publications_count = self.graph.run(
-            top_10_authors_in_domain_by_publications_count_query,
-            # theme_id=domain_id,
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY
+            top_10_authors_in_domain_by_publications_count_query
         ).data()
 
         top_10_cited_publications = self.graph.run(
             top_10_cited_publications_query,
-            # theme_id=domain_id,
-            # theme_relation_probability=NeoQuerier.THEME_RELATION_PROBABILITY
         ).data()
 
         return {

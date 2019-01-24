@@ -95,7 +95,7 @@ class AuthorWithPublicationsInDomainsQuery(APIView):
             return Response(getErrorResponce("empty query - no domains specified"), status=HTTP_400_BAD_REQUEST)
 
         try:
-            result = NeoQuerier().get_author_with_publications_in_domais(author_name, domains_list)
+            result = NeoQuerier().get_author_with_publications_in_domains(author_name, domains_list)
             return Response(result)
         except GraphError as e:
             print(e)

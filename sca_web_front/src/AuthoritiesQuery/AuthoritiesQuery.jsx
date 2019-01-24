@@ -3,8 +3,9 @@ import queryString from 'query-string';
 
 import { getAuthoritiesInDomainsList } from '../verbose_loaders';
 import { createAuthoritiesInDomainsLink, createAuthorPublicationsInDomainsLink } from '../utilities/links_creators';
-import NeoContext from '../NeoContext';
 import Spinner from '../ReusableComponents/Spinner';
+import AuthoritiesQueryResult from './AuthoritiesQueryResult';
+import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 class AuthoritiesQuery extends Component {
   constructor(props) {
@@ -95,14 +96,11 @@ class AuthoritiesQuery extends Component {
       this.makeQuery(this.state.domains);
     };
 
-    const onTableRowClick = (index) => {
-      if (!this.state.result) {
-        return;
-      }
-      let author_name = this.state.result[index]['a']['name'];
-      const link = createAuthorPublicationsInDomainsLink(author_name, this.state.domains);
-      this.props.history.push(link);
-    };
+    const onAuthorityClick = (resultItem) => {
+      this.props.history.push(
+        createAuthorPublicationsInDomainsLink(resultItem["author"]["name"], this.state.domains)
+        );
+    }
 
     return (
       <div className="container">
@@ -129,52 +127,20 @@ class AuthoritiesQuery extends Component {
           <button className="btn btn-primary" type="submit">Submit</button>
         </form>
         {this.state.error && (
-          <div className="alert alert-warning mt-3" role="alert">
-            <h4 className="alert-heading">{this.state.error.name}</h4>
-            <pre><code>{this.state.error.message}</code></pre>
-          </div>
+          <ErrorAlert errorName={this.state.error.name} errorMessage={this.state.error.message} />
         )}
 
         {this.state.loading &&
           <Spinner />
         }
 
-        {this.state.result && (
-          <table className="table table-hover">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">Author</th>
-                <th scope="col">Publications count</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.result.map((row, i) => (
-                <tr key={i} onClick={() => onTableRowClick(i)}>
-                  <th scope="row">
-                    {i}
-                  </th>
-                  <td>
-                    {row['a']['name']}
-                  </td>
-                  <td>
-                    {row['length(pub)']}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        {this.state.result && 
+          <AuthoritiesQueryResult result={this.state.result} onItemClick={onAuthorityClick} />
+        }
       </div>
     );
   }
 }
-
-// export default props => (
-//   <NeoContext.Consumer>
-//     {({ connection }) => <AuthoritiesQuery {...props} connection={connection} />}
-//   </NeoContext.Consumer>
-// );
 
 
 export default AuthoritiesQuery;

@@ -16,7 +16,7 @@ class NeoQuerier:
     THEME_RELATION_LABEL = "THEME_RELATION"
     KEYWORDS_RELATION_LABEL = "KEYWORDS"
     LINKS_TO_RELATION_LABEL = "LINKS_TO"
-    THEME_RELATION_PROBABILITY = 0.1
+    THEME_RELATION_PROBABILITY = 0.01
 
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)

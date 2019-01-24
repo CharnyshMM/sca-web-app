@@ -8,7 +8,12 @@ import './search_result.css';
 const PublicationResult = ({id, publication, author, domains}) => {
     
     const domains_list_view = domains.map((d,i)=><li key={i} className="search_result__domains_list__item">{d["name"]}</li>);
-
+    // bugfix when DB returns author = null
+    if (author == null) {
+        author = {
+            name: "Unknown",
+        }
+    }
     return (
         <section key={id} className="search_result">
             <div className="search_result__header" title="Publication">

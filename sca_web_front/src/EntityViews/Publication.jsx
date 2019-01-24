@@ -9,6 +9,7 @@ import {
 
 import {getPublication} from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
+import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 class Publication extends Component {
     constructor(props) {
@@ -17,11 +18,12 @@ class Publication extends Component {
             loading: false,
             result: undefined,
             error: undefined,
+            hasError: false,
         };
     }
     
     componentDidMount() {
-        this.setState({loading: true, result: undefined, error: undefined});
+        this.setState({loading: true, result: undefined, error: undefined, hasError: false});
         const token = window.sessionStorage.getItem("token");
         const queryParams = queryString.parse(this.props.location.search);
         let status = 0;
@@ -42,44 +44,58 @@ class Publication extends Component {
                         throw new Error(response.error);
                     }
                     console.log('responsed:', response);
-                    this.setState({ result: response });
+                    this.setState({ result: response, loading: false });
                   },
             )
             .catch(
                 e => {
-                    this.setState({ error: e });
+                    this.setState({ error: e, hasError: true, loading: false });
                     console.log("ERROR:", e);
                 }
             );
     }
 
     render() {
+        const {result, error, hasError} = this.state; 
+
         let content = null;
-        if (this.state.result) {
-            
-            let linked_pubs = this.state.result["linked_publications"].map((v, i)=> 
-                    <li key={i}><a href={createPublicationLink(this.state.result["linked_publications_ids"][i])}>{v["name"]}</a></li>
+        if (result) {
+            const linked_pubs = result["linked_publications"].map((v, i)=> 
+                    <li key={i}><a href={createPublicationLink(result["linked_publications_ids"][i])}>{v["name"]}</a></li>
                 );
 
-            let domains = this.state.result["themes"].map(v => v["name"]);
+            const domains = result["themes"].map(v => v["name"]);
+
+            const authors = [];
+            for(let i = 0; i < result["authors"].length; i++) {
+                const author = result["authors"][i];
+                if (author != null) {
+                    authors.push( <a href={createAuthorLink(result["authors_ids"][i])}>{result["authors"][i]["name"]}</a>);
+                    authors.push(<br />);
+                }
+            }
 
             console.log(linked_pubs);
             content = (
                 <section className="container">
-                    <h1>{this.state.result["publication"]["name"]}</h1>
-                    <h3>by <a href={createAuthorLink(this.state.result["authors_ids"][0])}>{this.state.result["authors"][0]["name"]}</a></h3>
-                    
-                    <hr/>
-                    <h5 className="card-title">On Domains:</h5> 
-                    <HorizontalKeywordsList keywords={domains} />
-                    {domains && domains.length > 0 &&
-                        <span><a href={createAuthoritiesInDomainsLink(domains)}>Find experts in those domains</a></span>
+                    <h1>{result["publication"]["name"]}</h1>
+                    {authors.length > 0 &&
+                        <h3>by {authors}</h3>
                     }
                     <hr/>
-                    <p>year <b>{this.state.result["publication"]["year"]}</b></p>
-                    <p>ISBN: <b>{this.state.result["publication"]["ISBN"]}</b></p>
-                    <p>in <b>{this.state.result["publication"]["language"]}</b> language</p>
-                    <p>{this.state.result["publication"]["pages"]} pages</p>
+                    {domains.length > 0 &&
+                        <div>
+                            <h5 className="card-title">On Domains:</h5> 
+                            <HorizontalKeywordsList keywords={domains} />                          
+                            <span><a href={createAuthoritiesInDomainsLink(domains)}>Find experts in those domains</a></span>
+                            <hr/>
+                        </div>
+                    }
+                    
+                    <p>year <b>{result["publication"]["year"]}</b></p>
+                    <p>ISBN: <b>{result["publication"]["ISBN"]}</b></p>
+                    <p>in <b>{result["publication"]["language"]}</b> language</p>
+                    <p>{result["publication"]["pages"]} pages</p>
                     {linked_pubs && linked_pubs.length > 0 && 
                     <section>
                         <h3>REFERS PUBLICATIONS</h3>
@@ -90,12 +106,9 @@ class Publication extends Component {
                     }
                 </section>
             )
-        } else if (this.state.error) {
+        } else if (hasError) {
             content = (
-                <div className="alert alert-warning mt-3" role="alert">
-                    <h4 className="alert-heading">{this.state.error.name}</h4>
-                    <pre><code>{this.state.error.message}</code></pre>
-                </div>
+                <ErrorAlert errorName={error.name} errorMessage={error.message} />
                 );
         }
         return (

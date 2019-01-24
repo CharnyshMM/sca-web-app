@@ -34,16 +34,17 @@ class NeoQuerier:
         return c
 
     def get_authorities_in_domains(self, domains_list):
+        lower_domains = [d.lower() for d in domains_list]   # that's important to send low_case domains name!
         query = f"""
                 MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
                  (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL})
                 WHERE r.probability > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name) 
                 OPTIONAL MATCH (p)<-[l:{self.LINKS_TO_RELATION_LABEL}]-()
-                WITH collect(DISTINCT d.name) as domains, 
+                WITH collect(DISTINCT toLower(d.name)) as domains, 
                     count(distinct p) as publications_count, 
                     count(distinct l) as links_count,
                     a 
-                WHERE ALL(domain_name in {domains_list} WHERE domain_name in domains)
+                WHERE ALL(domain_name in {lower_domains} WHERE domain_name in domains)
                 RETURN a as author,
                     publications_count,
                     links_count 

@@ -12,7 +12,7 @@ import {
 
 import './domains_query_result_item.css';
 
-const DomainsQueryResultItem = ({domainInfo, onAddClick, onNameClick}) => {
+const DomainsQueryResultItem = ({domainInfo, onAddClick, domainLink}) => {
 
     const dynamics = [
         {
@@ -31,7 +31,7 @@ const DomainsQueryResultItem = ({domainInfo, onAddClick, onNameClick}) => {
     return (
         <div className="domains_query_result_item">
             <div className="domains_query_result_item__description">
-                <h2><a href="#" onClick={onNameClick}>{domainInfo["theme"]["name"]}</a></h2>
+                <h2><a href={domainLink}>{domainInfo["theme"]["name"]}</a></h2>
                 <p><b>{domainInfo["publications_count"]}</b> publications</p>
                 <button className="domains_query_result_item__add_button" onClick={onAddClick}>
                     <span className="oi oi-plus"> </span> Add to query

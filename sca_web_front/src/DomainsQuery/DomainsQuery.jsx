@@ -114,7 +114,7 @@ class DomainsQuery extends Component {
             key={i}
             domainInfo={this.state.result[i]}
             onAddClick={()=>onAddDomainToListClick(i)} 
-            onNameClick={()=>onNameClick(i)}
+            domainLink={createDomainLink(this.state.result[i]["theme_id"])}
             />);
       }
     }

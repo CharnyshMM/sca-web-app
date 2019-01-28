@@ -56,12 +56,30 @@ class NeoQuerier:
         )
         return result.data()
 
+    def get_author_with_publications_in_domains(self, author_name, domains_list):
+        domains_list = [d.lower() for d in domains_list]
+        query = f"""
+            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
+            (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL}) 
+            WHERE a.name="{author_name}" AND r.probability > {self.THEME_RELATION_PROBABILITY}
+             WITH collect( toLower(d.name)) as domains, 
+            collect(distinct p) as pub, a,collect(distinct ID(p)) as pub_ids 
+            WHERE ALL(domain_name in {domains_list} WHERE domain_name in domains)
+            RETURN a, ID(a) as author_id, pub, pub_ids
+        """
+        print(query)
+        result = self.graph.run(query)
+        rd = result.data()
+        print(rd)
+        return rd
+
     def get_articles_by_keywords(self, keywords_list):
+        keywords_list = [k.toLower for k in keywords_list]
         query = f"""
             MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
              (p)-[r:{self.KEYWORDS_RELATION_LABEL}]-(d:{self.KEYWORD_PHRASE_NODE_LABEL}) 
             WHERE EXISTS(a.name)
-            WITH collect(d.phrase) as publ_keyphrases, collect(distinct p) as pub, a 
+            WITH collect(toLower(d.phrase)) as publ_keyphrases, collect(distinct p) as pub, a 
             WHERE ALL(key in {keywords_list} WHERE key in publ_keyphrases) 
             RETURN a, pub
         """
@@ -69,11 +87,12 @@ class NeoQuerier:
         result = self.graph.run(query, keywords_list=keywords_list)
         return result.data()
 
+
     def get_domains_by_popularity_index(self, popularity_index, higher=True):
         nascent_query = f"""
             match (theme:{self.THEME_NODE_LABEL}),
             (title:{self.PUBLICATION_NODE_LABEL})-[r:{self.THEME_RELATION_LABEL}]-(theme) 
-            where r.probability > 0.5 
+            where r.probability > {self.THEME_RELATION_PROBABILITY} 
             with theme, count(title) as popularity 
                 where popularity > {popularity_index} 
             return theme.name as name, popularity order by popularity desc
@@ -81,7 +100,7 @@ class NeoQuerier:
         uninteresting_query = f"""
             match (theme:{self.THEME_NODE_LABEL}), 
             (title:{self.PUBLICATION_NODE_LABEL})-[r:{self.THEME_RELATION_LABEL}]-(theme) 
-            where r.probability > 0.5 with theme, count(title) as popularity 
+            where r.probability > {self.THEME_RELATION_PROBABILITY} with theme, count(title) as popularity 
             where popularity < {popularity_index} 
             return theme.name as name, popularity order by popularity
         """
@@ -112,20 +131,7 @@ class NeoQuerier:
 
         return domains_yearly_dynamics_response
 
-    def get_author_with_publications_in_domains(self, author_name, domains_list):
 
-        query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
-            (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL}) 
-            WHERE a.name="{author_name}" AND r.probability > {self.THEME_RELATION_PROBABILITY}
-             WITH collect(d.name) as domains, 
-            collect(distinct p) as pub, a,collect(distinct ID(p)) as pub_ids 
-            WHERE ALL(domain_name in {domains_list} WHERE domain_name in domains)
-            RETURN a, ID(a) as author_id, pub, pub_ids
-        """
-
-        result = self.graph.run(query)
-        return result.data()
 
     def find_nodes_by_name(self, name, node_type=None, skip_n=0, limit_n=10):
         match_type = "MATCH (n:{}) "

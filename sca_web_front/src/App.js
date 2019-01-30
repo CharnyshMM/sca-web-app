@@ -6,6 +6,7 @@ import NeoContext from './NeoContext';
 import { authorizeOnPythonBackend } from './loaders';
 
 import './App.css';
+import ErrorBoundary from './ReusableComponents/ErrorBoundary';
 
 
 class App extends Component {
@@ -74,7 +75,11 @@ class App extends Component {
         <div>
           <Header doLogout={doLogout} authenticated={isAuthorized} is_admin={isAdmin}/>
           
-          {this.state.authorized && <Main />}
+          {this.state.authorized && 
+            <ErrorBoundary>
+              <Main />
+            </ErrorBoundary>
+          }
           {!this.state.authorized && 
             <div className="container">
             <form onSubmit={setupConnection}>

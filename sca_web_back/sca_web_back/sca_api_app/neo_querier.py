@@ -87,8 +87,7 @@ class NeoQuerier:
         result = self.graph.run(query, keywords_list=keywords_list)
         return result.data()
 
-
-    def get_domains_by_popularity_index(self, popularity_index, higher=True):
+    def get_domains_by_popularity_index(self, popularity_index=0, higher=True):
         nascent_query = f"""
             match (theme:{self.THEME_NODE_LABEL}),
             (title:{self.PUBLICATION_NODE_LABEL})-[r:{self.THEME_RELATION_LABEL}]-(theme) 
@@ -114,22 +113,25 @@ class NeoQuerier:
                 RETURN t, ID(t) as t_id, publications_years, size(pubs) as publications_count
         """
 
-        if higher:
-            query = nascent_query
-        else:
-            query = uninteresting_query
-
         yearly_dynamics = self.graph.run(yearly_dynamics_query)
         domains_yearly_dynamics_response = []
+        maximum_publications_in_period_count = 0
         for entry in yearly_dynamics:
+
+            dynamics = NeoQuerier.split_domain_dynamics(entry["publications_years"]);
+            maximum_publications_in_period_count = max(maximum_publications_in_period_count, dynamics["maximum_count"])
+
             domains_yearly_dynamics_response.append({
                 "theme": entry["t"],
                 "theme_id": entry["t_id"],
-                "dynamics": NeoQuerier.split_domain_dynamics(entry["publications_years"]),
+                "dynamics": dynamics,
                 "publications_count": entry["publications_count"]
             })
 
-        return domains_yearly_dynamics_response
+        return {
+            "themes": domains_yearly_dynamics_response,
+            "maximum_publications_in_period_count": maximum_publications_in_period_count
+        }
 
 
 
@@ -231,13 +233,24 @@ class NeoQuerier:
             LIMIT 5
         """
 
+        yearly_publishing_statistics_query = f"""
+            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
+            where ID(a)={author_id}
+            WITH collect(DISTINCT p) as publications
+            UNWIND publications as distinct_pub
+            RETURN collect(distinct_pub.year) as publication_years
+        """
+
         author = self.graph.run(author_info_query).data()[0]["author"] # [0] because matching by ID still returns list
         major_domains = self.graph.run(major_domains_for_author_query).data()
         top_cited_publications = self.graph.run(top_5_cited_publications_query).data()
+        yearly_publishing_statistics = self.graph.run(yearly_publishing_statistics_query).data()
+
         return {
             "author": author,
             "major_domains": major_domains,
-            "top_cited_publications": top_cited_publications
+            "top_cited_publications": top_cited_publications,
+            "yearly_publishing_statistics": yearly_publishing_statistics
         }
 
     def get_domain_with_details(self, domain_id):
@@ -291,6 +304,7 @@ class NeoQuerier:
         publications_yearly_dynamics = self.graph.run(publications_yearly_dynamics_query).data()[0]["publications_years"]
 
         domain_dynamics = {}
+
         for year in publications_yearly_dynamics:
             if year == 0 or year <0:
                 continue
@@ -309,16 +323,32 @@ class NeoQuerier:
     @staticmethod
     def split_domain_dynamics(years):
         before_1950 = 0
-        between_1950_and_2000 = 0
-        after_2000 = 0
+        between_1950_and_1970 = 0
+        between_1970_and_1990 = 0
+        between_1990_and_2010 = 0
+        after_2010 = 0
         for y in years:
             if y <= 1950:
                 before_1950 += 1
-            elif 1950 < y <= 2000:
-                between_1950_and_2000 += 1
-            elif y > 2000:
-                after_2000 += 1
-        return {"before_1950": before_1950,
-                "between_1950_and_2000": between_1950_and_2000,
-                "after_2000": after_2000
-                }
+            elif 1950 < y <= 1970:
+                between_1950_and_1970 += 1
+            elif 1970 < y <= 1990:
+                between_1970_and_1990 += 1
+            elif 1990 < y <= 2010:
+                between_1990_and_2010 += 1
+            elif y > 2010:
+                after_2010 += 1
+        return {
+            "before_1950": before_1950,
+            "between_1950_and_1970": between_1950_and_1970,
+            "between_1970_and_1990": between_1970_and_1990,
+            "between_1990_and_2010": between_1990_and_2010,
+            "after_2010": after_2010,
+            "maximum_count": max(
+                before_1950,
+                between_1950_and_1970,
+                between_1970_and_1990,
+                between_1990_and_2010,
+                after_2010
+            )
+        }

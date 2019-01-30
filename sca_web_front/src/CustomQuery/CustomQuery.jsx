@@ -11,44 +11,33 @@ import CustomQueryResult from './CustomQueryResult';
 import BeautifulSwitch from '../ReusableComponents/BeautifulSwitch/BeautifulSwitch';
 
 class CustomQuery extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      clauses: [],
-      queryText: '',
-      useConstructor: false,
-      loading: false,
-    };
+  state = {
+    clauses: [],
+    queryText: '',
+    useConstructor: false,
+    loading: false,
+  };
 
-    this.setStatePromise = this.setStatePromise.bind(this);
-    this.addClause = this.addClause.bind(this);
-    this.parseClauses = this.parseClauses.bind(this);
-    this.removeClause = this.removeClause.bind(this);
-    this.changeClauseType = this.changeClauseType.bind(this);
-    this.changeQueryText = this.changeQueryText.bind(this);
-    this.toggleConstructor = this.toggleConstructor.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
-  }
 
   componentDidMount() {
     this.queryEditor = CodeMirror.fromTextArea(document.querySelector('textarea'), {
       mode: 'cypher',
       lineNumbers: true,
-      
+
     });
   }
 
-  setStatePromise(mutator) {
+  setStatePromise = (mutator) => {
     return new Promise(resolve => {
       this.setState(mutator, resolve);
     });
   }
 
-  handleSubmit(event) {
+  handleSubmit =(event) => {
     event.preventDefault();
     let status = 0;
     const token = window.sessionStorage.getItem("token");
-    this.setState({ error: undefined, result: undefined, loading: true});
+    this.setState({ error: undefined, result: undefined, loading: true });
 
     let query = this.queryEditor.getValue().split("\n").join(" ");
 
@@ -79,17 +68,17 @@ class CustomQuery extends Component {
       });
   }
 
-  toggleConstructor(event) {
+  toggleConstructor = (event) => {
     this.setState({ useConstructor: event.target.checked });
     this.queryEditor.setOption('readOnly', event.target.checked);
   }
 
-  addClause() {
+  addClause = () => {
     this.setStatePromise(prev => ({ clauses: [...prev.clauses, { type: 'match', value: '' }] }))
       .then(this.parseClauses);
   }
 
-  removeClause(index) {
+  removeClause = (index) => {
     return () => {
       this.setStatePromise(prev => ({
         clauses: [
@@ -101,7 +90,7 @@ class CustomQuery extends Component {
     }
   }
 
-  parseClauses() {
+  parseClauses = () => {
     const queryText = this.state.clauses.map(clause => ` ${{
       match: ' MATCH ',
       return: ' RETURN ',
@@ -113,11 +102,11 @@ class CustomQuery extends Component {
     this.queryEditor.setValue(queryText);
   };
 
-  changeQueryText(event) {
+  changeQueryText = (event) => {
     this.setState({ queryText: event.target.value });
   };
 
-  changeClauseType(index) {
+  changeClauseType = (index) => {
     return e => {
       const type = e.target.value;
       this.setStatePromise(prev => ({
@@ -131,7 +120,7 @@ class CustomQuery extends Component {
     };
   }
 
-  changeClauseValue(index) {
+  changeClauseValue = (index) =>  {
     return e => {
       const value = e.target.value;
       this.setStatePromise(prev => ({
@@ -167,9 +156,9 @@ class CustomQuery extends Component {
                       index={i}
                       clauseType={clause.type}
                       clauseValue={clause.value}
-                      onChangeClauseType={() => this.changeClauseType(i)}
-                      onChangeClauseValue={() => this.changeClauseValue(i)}
-                      onRemoveClause={() => this.removeClause(i)}
+                      onChangeClauseType={this.changeClauseType(i)}
+                      onChangeClauseValue={this.changeClauseValue(i)}
+                      onRemoveClause={this.removeClause(i)}
                     />
                   </li>
                 ))}
@@ -182,7 +171,7 @@ class CustomQuery extends Component {
           )}
           <button className="btn btn-primary" type="submit">Submit</button>
         </form>
-        
+
         {this.state.error && (
           <ErrorAlert errorName={this.state.error.name} errorMessage={this.state.error.message} />
         )}

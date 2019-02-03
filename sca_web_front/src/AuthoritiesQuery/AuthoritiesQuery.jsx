@@ -78,6 +78,9 @@ class AuthoritiesQuery extends Component {
       if (!domain) {
         domain = this.state.domainInputValue;
       }
+      if (domain.length === 0) {
+        return;
+      }
       this.setState(prev => ({ domainInputValue: '', domains: [...prev.domains, domain] }));
     };
 

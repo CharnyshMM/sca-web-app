@@ -5,6 +5,8 @@ import queryString from 'query-string';
 import { getAuthorPublicationsInDomains } from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 import {createPublicationLink, createAuthorLink} from '../utilities/links_creators';
+import ErrorAlert from '../ReusableComponents/ErrorAlert';
+import Spinner from '../ReusableComponents/Spinner';
 
 class SingleAuthorityView extends Component {
     constructor(props) {
@@ -13,12 +15,14 @@ class SingleAuthorityView extends Component {
             result: undefined,
             domains: [],
             error: undefined,
+            hasError: false,
+            loading: false,
         }
     }
 
     componentDidMount() {
-        //const authority_name = this.props.params.authority; // getting author name from route parameter authority
-        console.log("comp did mo");
+        //const authority_name = this.props.params.authority; 
+        // getting author name from route parameter authority
         const queryParams = queryString.parse(this.props.location.search);
 
         let domains = queryParams.domain; //domain!!!!!!!!!!!
@@ -28,11 +32,8 @@ class SingleAuthorityView extends Component {
         if (!Array.isArray(domains)) {
             domains = [domains];
         }
-        this.setState({ domains: domains });
-        console.log(domains);
+        this.setState({ domains: domains, loading: true });
         const author_name = queryParams.author;
-
-        console.log(author_name);
 
         let status = null;
         const token = window.sessionStorage.getItem("token");
@@ -50,15 +51,13 @@ class SingleAuthorityView extends Component {
             .then(result => {
                 console.log("responsed singleAuthority:", result, status);
                 if (status == 200) {
-                    console.log("result", result);
-                    this.setState({ result: result });
+                    this.setState({ result: result , loading: false});
                 } else {
-                    console.log("singleAuthority throwing error", status);
                     throw Error(result.error);
                 }
             })
             .catch(e => {
-                this.setState({ error: e });
+                this.setState({ hasError: true, error: e , loading: false});
                 console.log("ERROR", e);
             });
     }
@@ -68,6 +67,10 @@ class SingleAuthorityView extends Component {
         let publications = null;
         let publications_ids = null;
         let author_id = 0;
+
+        if (this.state.loading) {
+            return <Spinner />
+        }
 
         if (this.state.result) {
             author = this.state.result[0]["a"]; //a is the key to author value in response json
@@ -81,10 +84,7 @@ class SingleAuthorityView extends Component {
         return (
             <section className="container">
                 {this.state.error &&
-                    <div className="alert alert-warning mt-3" role="alert">
-                        <h4 className="alert-heading">{this.state.error.name}</h4>
-                        <pre><code>{this.state.error.message}</code></pre>
-                    </div>
+                   <ErrorAlert errorName={this.state.error.name} errorMessage={this.state.error.message} />
                 }
                 {this.state.result &&
                     <div>

@@ -9,6 +9,7 @@ import Spinner from '../ReusableComponents/Spinner';
 import DomainsQueryResultItem from './DomainsQueryResultItem';
 import DomainsQueryResultSortingSelector from './DomainsQueryResultSortingSelector';
 
+
 class DomainsQuery extends Component {
     constructor(props) {
         super(props);
@@ -149,9 +150,9 @@ class DomainsQuery extends Component {
             <div className="container">
                 <h1>Search for domains by dynamics</h1>
 
-                <div className="form-group row align-items-center">
+                
                     <DomainsQueryResultSortingSelector onSortingModeChanged={this.onSortingModeChanged} />
-                </div>
+               
 
                 {selectedDomains && selectedDomains.length > 0 &&
                     <div className="card">

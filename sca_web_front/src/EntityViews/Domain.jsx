@@ -99,18 +99,23 @@ class Domain extends Component {
                    
                     <p>{this.state.result["publications_count"]} publications</p>
 
-                    <h5 className="card-title">Most cited publications on <i>{this.state.result["domain"]["name"]}</i></h5>
+                    
                     {topCitedPublications_listItems && topCitedPublications_listItems.length > 0 &&
-                        <ul>
-                            {topCitedPublications_listItems}
-                        </ul>
+                        <React.Fragment>
+                            <h5 className="card-title">Most cited publications on <i>{this.state.result["domain"]["name"]}</i></h5>
+                            <ul>
+                                {topCitedPublications_listItems}
+                            </ul>
+                        </React.Fragment>
                     }
                     {topAuthorsByPublicationsCount && topAuthorsByPublicationsCount.length > 0 && 
                     (<section>
-                        <h5>Authors who majors in {this.state.result["domain"]["name"]}:</h5>
-                        <ul>
-                            {topAuthorsByPublicationsCount}
-                        </ul>
+                        <React.Fragment>
+                            <h5>Authors who majors in {this.state.result["domain"]["name"]}:</h5>
+                            <ul>
+                                {topAuthorsByPublicationsCount}
+                            </ul>
+                        </React.Fragment>
                     </section>
                     )
                     }

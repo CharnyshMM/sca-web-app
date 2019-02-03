@@ -82,20 +82,22 @@ class Author extends Component {
             content = (
                 <section className="container">
                     <h1>{this.state.result["author"]["name"]}</h1>
-                   
-                    <h5 className="card-title">Majors in domains:</h5>
+                                      
                     {domains_listItems && domains_listItems.length > 0 &&
-                        <ul>
-                            {domains_listItems}
-                        </ul>
+                        <React.Fragment>
+                            <h5 className="card-title">Majors in domains:</h5>
+                            <ul>
+                                {domains_listItems}
+                            </ul>
+                        </React.Fragment>
                     }
                     {top_cited_publications_listItems && top_cited_publications_listItems.length > 0 && 
-                    (<section>
+                    (<React.Fragment>
                         <h3>TOP CITED PUBLICATIONS:</h3>
                         <ul>
                             {top_cited_publications_listItems}
                         </ul>
-                    </section>
+                    </React.Fragment>
                     )
                     }
                     

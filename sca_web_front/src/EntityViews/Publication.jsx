@@ -84,12 +84,12 @@ class Publication extends Component {
                     }
                     <hr/>
                     {domains.length > 0 &&
-                        <div>
+                        <React.Fragment>
                             <h5 className="card-title">On Domains:</h5> 
                             <HorizontalKeywordsList keywords={domains} />                          
                             <span><a href={createAuthoritiesInDomainsLink(domains)}>Find experts in those domains</a></span>
                             <hr/>
-                        </div>
+                        </React.Fragment>
                     }
                     
                     <p>year <b>{result["publication"]["year"]}</b></p>
@@ -97,12 +97,12 @@ class Publication extends Component {
                     <p>in <b>{result["publication"]["language"]}</b> language</p>
                     <p>{result["publication"]["pages"]} pages</p>
                     {linked_pubs && linked_pubs.length > 0 && 
-                    <section>
-                        <h3>REFERS PUBLICATIONS</h3>
-                        <ul>
-                            {linked_pubs}
-                        </ul>
-                    </section>
+                        <React.Fragment>
+                            <h3>REFERS PUBLICATIONS</h3>
+                            <ul>
+                                {linked_pubs}
+                            </ul>
+                        </React.Fragment>
                     }
                 </section>
             )

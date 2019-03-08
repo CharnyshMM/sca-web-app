@@ -22,10 +22,8 @@ class Status extends Component {
             .then(result => {
                 
                 this.setState({hBaseStatus: {
-                    hbasePublications: result.hbasePublications, // getting publications count from recieved text 
-                    documents: result.documents,
-                    texts: result.texts,
-                    filteredTexts: result.filteredTexts,
+                    responsesCount: result.responsesCount, // getting publications count from recieved text 
+                    responsesCount: result.responsesCount,
                 },
                 hbaseStatusLoading: false,
                 });
@@ -108,20 +106,12 @@ class Status extends Component {
                     <td className="col">
                         <ul className="list-group">
                             <li className="list-group-item">
-                                Publications Count: {this.state.hBaseStatus ? this.state.hBaseStatus.hbasePublications : "-"}
+                                Publications Count: {this.state.hBaseStatus ? this.state.hBaseStatus.publicationsCount : "-"}
                             </li>
                             <li className="list-group-item">
-                                Documents: {this.state.hBaseStatus ? this.state.hBaseStatus.documents : "-"}
+                                Responses Count: {this.state.hBaseStatus ? this.state.hBaseStatus.responsesCount : "-"}
                             </li>
                             
-                            <li className="list-group-item">
-                                Texts: {this.state.hBaseStatus ? this.state.hBaseStatus.texts : "-"}
-                            </li>
-
-                            
-                            <li className="list-group-item">
-                                Filtered Texts: {this.state.hBaseStatus ? this.state.hBaseStatus.filteredTexts : "-"}
-                            </li>
                         </ul>
                     </td>
                 </tr>

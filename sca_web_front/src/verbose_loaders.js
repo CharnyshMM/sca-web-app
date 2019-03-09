@@ -10,6 +10,7 @@ import {
     PYTHON_BACKEND_API_PUBLICATION,
     PYTHON_BACKEND_API_AUTHOR,
     PYTHON_BACKEND_API_DOMAIN,
+    PYTHON_BACKEND_API_THEMES_LIST
 } from './constant_urls';
 
 // ========================================================================
@@ -144,6 +145,10 @@ const getDomain = (id, token) => {
     return getLoaderPromise(query, authOptions(token));
 }
 
+const getDomainsList = (token) => {
+    return getLoaderPromise(PYTHON_BACKEND_API_THEMES_LIST, authOptions(token));
+}
+
 export {
     getLoaderPromise,
     runQueryOnPythonBackend,
@@ -158,4 +163,5 @@ export {
     getPublication,
     getAuthor,
     getDomain,
+    getDomainsList,
 };

@@ -155,6 +155,21 @@ class IndexView(APIView):
         return Response({"hello": "world! API server is alive"})
 
 
+class GetThemesListView(APIView):
+    renderer_classes = (JSONRenderer, )
+    permission_classes = (IsAuthenticated, )
+
+    def get(self,request):
+        try:
+            return Response(NeoQuerier().get_themes_list())
+        except GraphError as e:
+            print(e)
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 class SearchView(APIView):
     renderer_classes = (JSONRenderer,)
     permission_classes = (IsAuthenticated, )
@@ -184,7 +199,7 @@ class SearchView(APIView):
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class GetPublication(APIView):
+class GetPublicationView(APIView):
     renderer_classes = (JSONRenderer,)
     permission_classes = (IsAuthenticated,)
 
@@ -206,7 +221,7 @@ class GetPublication(APIView):
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class GetAuthor(APIView):
+class GetAuthorView(APIView):
     renderer_classes = (JSONRenderer,)
     permission_classes = (IsAuthenticated,)
 
@@ -226,7 +241,7 @@ class GetAuthor(APIView):
             print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
-class GetDomain(APIView):
+class GetDomainView(APIView):
     renderer_classes = (JSONRenderer,)
     permission_classes = (IsAuthenticated,)
 
@@ -251,6 +266,7 @@ class GetDomain(APIView):
 @api_view(['POST'])
 @permission_classes((AllowAny,))
 def login(request):
+    print("login envoked")
     username = request.data.get("username", )
     password = request.data.get("password", )
     if username is None or password is None:

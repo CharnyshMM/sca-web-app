@@ -16,7 +16,7 @@ class NeoQuerier:
     THEME_RELATION_LABEL = "THEME_RELATION"
     KEYWORDS_RELATION_LABEL = "KEYWORDS"
     LINKS_TO_RELATION_LABEL = "LINKS_TO"
-    THEME_RELATION_PROBABILITY = 0.01
+    THEME_RELATION_PROBABILITY = 0.07
 
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
@@ -32,6 +32,15 @@ class NeoQuerier:
             query = "MATCH(a:{}) RETURN COUNT(a)".format(label)
         c = self.graph.evaluate(query)
         return c
+
+    def get_themes_list(self):
+        query = """
+            MATCH (t:Theme)
+            RETURN t AS theme, ID(t) as id
+        """
+
+        themes = self.graph.run(query).data()
+        return themes
 
     def get_authorities_in_domains(self, domains_list):
         lower_domains = [d.lower() for d in domains_list]   # that's important to send low_case domains name!
@@ -275,7 +284,7 @@ class NeoQuerier:
         top_10_authors_in_domain_by_publications_count_query = f"""
             MATCH 
             (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})-[tr:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
-            WHERE ID(t)={domain_id} AND tr.probability > {self.THEME_RELATION_PROBABILITY}
+            WHERE ID(t)={domain_id} AND tr.probability > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name)
             RETURN a as author, ID(a) as author_id, count(DISTINCT p) as publications_count
             ORDER BY publications_count
             DESC

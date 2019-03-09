@@ -121,15 +121,17 @@ class Domain extends Component {
                     }
                     <div>
                         <h5>Publications dynamics</h5>
-                    <XYPlot margin={{bottom: 70}} xType="ordinal" width={900} height={300}>
-                        <VerticalGridLines />
-                        <HorizontalGridLines />
-                        <XAxis tickLabelAngle={-45} />
-                        <YAxis />
-                        <VerticalBarSeries
-                            data={yearlyDynamicsChart}
-                        />      
+                        <div style={{overflowY: 'scroll'}}>
+                        <XYPlot margin={{bottom: 70}} xType="ordinal" width={1800} height={300}>
+                            <VerticalGridLines />
+                            <HorizontalGridLines />
+                            <XAxis tickLabelAngle={-45} />
+                            <YAxis />
+                            <VerticalBarSeries
+                                data={yearlyDynamicsChart}
+                            />      
                         </XYPlot>  
+                        </div>
                     </div>
                     
                 </section>

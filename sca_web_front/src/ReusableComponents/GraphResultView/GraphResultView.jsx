@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import { Graph, Node } from 'react-d3-graph';
-import ErrorAlert from '../ReusableComponents/ErrorAlert';
+import ErrorAlert from '../ErrorAlert';
 
 import { buildSimpleGraph } from './graph_unilities';
-import CustomQueryObjectTextView from './CustomQueryObjectTextView';
+import CustomQueryObjectTextView from '../ObjectTextView';
 
-import './CustomQueryGraphResultView.css';
+import './GraphResultView.css';
 
 
 const myConfig = {
@@ -24,13 +24,14 @@ const myConfig = {
     },
     nodeHighlightBehavior: true,
     
-    
+    height:400,
+    width: 620,
     highlightDegree: 0,
     directed: true,
-    linkHighlightBehavior:true,
+    linkHighlightBehavior:true
 };
 
-class CustomQueryGraphResultView extends Component {
+class GraphResultView extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -40,7 +41,7 @@ class CustomQueryGraphResultView extends Component {
             hasError: false,
             errorMessage: "",
         };
-        
+        this.graphRef = React.createRef();
     }
 
     componentDidCatch(error, errorInfo) {
@@ -63,8 +64,9 @@ class CustomQueryGraphResultView extends Component {
         if (nodeId === this.state.lastNodeClickedId) {
             this.setState({
                 nodeInfoLock: true,
-                nodeInfo: this.props.unique_nodes[nodeId]
+                nodeInfo: this.props.unique_nodes[nodeId],
             });
+            
         } else {
             this.setState({
                 nodeInfo: this.props.unique_nodes[nodeId],
@@ -76,7 +78,8 @@ class CustomQueryGraphResultView extends Component {
     onMouseOutNode = () => {
         if (!this.state.nodeInfoLock) {
            this.setState({
-                nodeInfo: null
+                nodeInfo: null,
+                data: {...this.state.data}
             });
         }
     }
@@ -93,12 +96,13 @@ class CustomQueryGraphResultView extends Component {
         if (this.state.hasError) {
             return (<ErrorAlert errorName="Error" errorMessage={this.state.errorMessage} />);
         }
-
         
         let graph = "";
-        const data = buildSimpleGraph(this.props.unique_nodes, this.props.unique_links);
+        const data =  buildSimpleGraph(this.props.unique_nodes, this.props.unique_links);
+
         graph = (<Graph
             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
+            ref={this.graphRef}
             data={data}
             config={myConfig}
             onClickNode={this.onNodeClick}
@@ -109,7 +113,8 @@ class CustomQueryGraphResultView extends Component {
         return (
             <section className="container graph_container">
                 <div className="graph_container__graph">
-                {graph}
+                    <button className="graph_container__graph__fullscreen_button">X</button>
+                    {graph}
                 </div>
                 <div className="graph_container__node_info">
                     {this.state.nodeInfo && 
@@ -140,4 +145,4 @@ class CustomQueryGraphResultView extends Component {
 }
 
 
-export default CustomQueryGraphResultView;
+export default GraphResultView;

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import CustomQueryGraphResponse from './CustomQueryGraphResultView';
+import GraphResultView from '../ReusableComponents/GraphResultView/GraphResultView';
 import CustomQueryTextResultView from './CustomQueryTextResultView';
-import { getUniqueNodesAndLinks, checkIfLinksAreValid } from './graph_unilities'
+import { getUniqueNodesAndLinks, checkIfLinksAreValid } from '../ReusableComponents/GraphResultView/graph_unilities';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import BeautifulSwitch from '../ReusableComponents/BeautifulSwitch/BeautifulSwitch';
 
@@ -35,7 +35,7 @@ class CustomQueryResult extends Component {
         }
         let resultView = "";
         if (this.state.resultViewMode === "graph") {
-            resultView = <CustomQueryGraphResponse unique_nodes={uniqueNodes} unique_links={uniqueLinks} />;
+            resultView = <GraphResultView unique_nodes={uniqueNodes} unique_links={uniqueLinks} />;
         } else {
             resultView = <CustomQueryTextResultView result={this.props.result} />
         }

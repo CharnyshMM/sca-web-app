@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import CustomQueryObjectTextView from './CustomQueryObjectTextView';
+import ObjectTextView from '../ReusableComponents/ObjectTextView';
 
 class CustomQueryTextResultView extends Component {
     constructor(props) {
@@ -19,7 +19,7 @@ class CustomQueryTextResultView extends Component {
                                             <tr key={j}>
                                                 <th scope="row">{key}</th>
                                                 <td style={{ maxWidth: '70%' }}>
-                                                    <CustomQueryObjectTextView object={record[key]} />
+                                                    <ObjectTextView object={record[key]} />
                                                 </td>
                                             </tr>
                                         ))}

@@ -4,11 +4,12 @@ import ErrorAlert from '../ErrorAlert';
 
 import { buildSimpleGraph } from './graph_unilities';
 import CustomQueryObjectTextView from '../ObjectTextView';
+import FullScreenGraph from './FullscreenGraph';
 
 import './GraphResultView.css';
 
 
-const myConfig = {
+const GraphConfig = {
     
     node: {
         color: 'red',
@@ -24,7 +25,7 @@ const myConfig = {
     },
     nodeHighlightBehavior: true,
     
-    height:400,
+    height: 400,
     width: 620,
     highlightDegree: 0,
     directed: true,
@@ -40,6 +41,7 @@ class GraphResultView extends Component {
             lastNodeClickedId: undefined,
             hasError: false,
             errorMessage: "",
+            isFullScreen: false,
         };
         this.graphRef = React.createRef();
     }
@@ -60,7 +62,7 @@ class GraphResultView extends Component {
         return {hasError: true, errorMessage};
     }
 
-    onNodeClick = (nodeId) => {
+    onNodeClick = nodeId => {
         if (nodeId === this.state.lastNodeClickedId) {
             this.setState({
                 nodeInfoLock: true,
@@ -89,31 +91,47 @@ class GraphResultView extends Component {
             nodeInfoLock: false,
             nodeInfo: null
         });
-        
+    }
+
+    onFullScreenClick = () => {
+        this.setState({isFullScreen: !this.state.isFullScreen});
     }
 
     render() {
         if (this.state.hasError) {
             return (<ErrorAlert errorName="Error" errorMessage={this.state.errorMessage} />);
         }
+
+        if (this.state.isFullScreen) {
+            return (<FullScreenGraph
+                      uniqueNodes={this.props.unique_nodes}
+                      uniqueLinks={this.props.unique_links}
+                      onClick={this.onFullScreenClick}
+                    />);
+        }
         
         let graph = "";
         const data =  buildSimpleGraph(this.props.unique_nodes, this.props.unique_links);
-
+        console.log(this.props.unique_nodes);
         graph = (<Graph
             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
             ref={this.graphRef}
             data={data}
-            config={myConfig}
+            config={GraphConfig}
             onClickNode={this.onNodeClick}
             onMouseOutNode={this.onMouseOutNode}
-            style="width: 400px, height: 400px"
         />);
         
         return (
             <section className="container graph_container">
                 <div className="graph_container__graph">
-                    <button className="graph_container__graph__fullscreen_button">X</button>
+                    <button 
+                        className="graph_container__graph__fullscreen_button" 
+                        onClick={this.onFullScreenClick}
+                        title="Click to enter fullscreen mode"
+                        >
+                        X
+                    </button>
                     {graph}
                 </div>
                 <div className="graph_container__node_info">

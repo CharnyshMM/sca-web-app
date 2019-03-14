@@ -11,7 +11,7 @@ import SearchWithResults from './Search/SearchWithResults/SearchWithResults';
 import Publication from './EntityViews/Publication';
 import Author from './EntityViews/Author';
 import Domain from './EntityViews/Domain';
-import CustomQueryGraph from './CustomQuery/CustomQueryGraph';
+import Test from './Test/Test';
 
 
 const Main = () => (
@@ -26,7 +26,7 @@ const Main = () => (
       <Route path='/authorities-query' component={AuthoritiesQuery}/>
       <Route path='/domains-query' component={DomainsQuery}/>
       <Route path='/articles-query' component={ArticlesQuery}/>
-      <Route path='/graph' component={CustomQueryGraph} />
+      <Route path='/test' component={Test} />
       <Route path='/custom-query' component={CustomQuery}/>
       <Route path='/status' component={Status} />
     </Switch>

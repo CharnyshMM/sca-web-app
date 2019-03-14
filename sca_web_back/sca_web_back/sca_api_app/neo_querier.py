@@ -16,7 +16,7 @@ class NeoQuerier:
     THEME_RELATION_LABEL = "THEME_RELATION"
     KEYWORDS_RELATION_LABEL = "KEYWORDS"
     LINKS_TO_RELATION_LABEL = "LINKS_TO"
-    THEME_RELATION_PROBABILITY = 0.07
+    THEME_RELATION_PROBABILITY = 0.02
 
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
@@ -212,8 +212,39 @@ class NeoQuerier:
                 collect(DISTINCT ID(t)) as themes_ids
         """
 
-        result = self.graph.run(query)
-        return result.data()
+        linked_publications_authors_query = f"""
+            MATCH (a:Author)-[a_p:WROTE]-(p:Publication)
+            WHERE ID(p)={publication_id}
+            MATCH (p)<-[l_p:LINKS_TO]-(another_p:Publication)
+            MATCH (another_p)-[ap_aa:WROTE]-(another_a:Author)
+            RETURN 
+                a as author, 
+                a_p,
+                p as publication, 
+                another_a as another_author,
+                COLLECT(DISTINCT another_p) as linked_publications,
+                COLLECT(DISTINCT ap_aa) as linked_publications_author_publication_links,
+                COLLECT(DISTINCT l_p) as citation_links
+            ORDER BY SIZE(linked_publications) DESC
+            LIMIT 10
+        """
+
+        result = self.graph.run(query).data()
+        linked_publications_authors = self.graph.run(linked_publications_authors_query).data()
+        # destructing linked_publications_authors into single long list with nodes & links
+        citation_graph = []
+
+        for entry in linked_publications_authors:
+            citation_graph.append(linked_publications_authors[0]["author"])
+            citation_graph.append(linked_publications_authors[0]["publication"])
+            citation_graph.append(linked_publications_authors[0]["a_p"])
+            citation_graph.append(entry["another_author"])
+            citation_graph += entry["linked_publications"]
+            citation_graph += entry["linked_publications_author_publication_links"]
+            citation_graph += entry["citation_links"]
+
+        print(citation_graph)
+        return [{ "general": result[0], "linked_publications_graph": citation_graph }]
 
     def get_author_with_details(self, author_id):
         author_info_query = f"""
@@ -327,6 +358,37 @@ class NeoQuerier:
             "top_10_authors_in_domain": top_10_authors_in_domain_by_publications_count,
             "top_10_cited_publications": top_10_cited_publications,
             "yearly_dynamics": domain_dynamics
+        }
+
+    def get_publication_graph(self, publication_id):
+        author_publication_query = f"""
+            match (p:{self.PUBLICATION_NODE_LABEL})-[p_a:{self.WROTE_RELATION_LABEL}]-(a:{self.AUTHOR_NODE_LABEL})
+            where ID(p)={publication_id}
+            return p, p_a, a
+        """
+
+        publication_themes_query = f"""
+            match (p:{self.PUBLICATION_NODE_LABEL})-[t_r:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
+            where ID(p)={publication_id} AND t_r.probability>{self.THEME_RELATION_PROBABILITY}
+            return t_r as theme_relation, t as theme
+        """
+
+        publication_referenses_query = f"""
+            match (p:{self.PUBLICATION_NODE_LABEL})-[l_t:{self.LINKS_TO_RELATION_LABEL}]-(another_p:{self.PUBLICATION_NODE_LABEL})
+            where ID(p)={publication_id}
+            return l_t as links_to_relation, another_p as publication
+        """
+
+        author_publication = self.graph.run(author_publication_query).data()[0]
+        publication_themes = self.graph.run(publication_themes_query).data()
+        publication_referenses = self.graph.run(publication_referenses_query).data()
+
+        return {
+            "author": author_publication["a"],
+            "author_publication_link": author_publication["p_a"],
+            "publication": author_publication["p"],
+            "themes_and_theme_relations": publication_themes,
+            "referensed_publications": publication_referenses
         }
 
     @staticmethod

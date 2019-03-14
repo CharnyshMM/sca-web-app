@@ -10,12 +10,14 @@ function getStringLabelForNode(neo_node) {
 }
 
 function getUniqueNodesAndLinks(data) {
+    console.log("data", data);
     const unique_nodes = {};
     const unique_links = {};
     const others = {};
     for(let i = 0; i < data.length; i++) {
         for (let j in data[i]) {
             const entity = data[i][j];
+            console.log(entity);
             const id = String(entity["identity"]);
             if (entity["type"] === "Node" && !unique_nodes.hasOwnProperty(id)) {
                 unique_nodes[id] = entity;
@@ -26,6 +28,30 @@ function getUniqueNodesAndLinks(data) {
             }
         }
     }
+    console.log([unique_nodes, unique_links]);
+    return [unique_nodes, unique_links, others];
+}
+
+function getUniqueNodesAndLinksPlainList(dataList) {
+    const unique_nodes = {};
+    const unique_links = {};
+    const others = {};
+    for (let j in dataList) {
+        const entity = dataList[j];
+        if (!entity) {
+            continue;
+        }
+        console.log(entity);
+        const id = String(entity["identity"]);
+        if (entity["type"] === "Node" && !unique_nodes.hasOwnProperty(id)) {
+            unique_nodes[id] = entity;
+        } else if (entity["type"] && entity["type"] != "Node" && !unique_links.hasOwnProperty(id)) {
+            unique_links[id] = entity;
+        } else {
+            others[j] = entity;
+        }
+    }
+    console.log([unique_nodes, unique_links]);
     return [unique_nodes, unique_links, others];
 }
 
@@ -44,7 +70,7 @@ function buildSimpleGraph(unique_nodes, unique_links) {
    
     let data = {
         nodes: [],
-        links: [],
+        links: []
     }
 
     let labelColorMappings = {};
@@ -81,4 +107,5 @@ export {
     getUniqueNodesAndLinks,
     checkIfLinksAreValid,
     getStringLabelForNode,
+    getUniqueNodesAndLinksPlainList,
 }

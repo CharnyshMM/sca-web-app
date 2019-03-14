@@ -200,7 +200,7 @@ class SearchView(APIView):
 
 
 class GetPublicationView(APIView):
-    renderer_classes = (JSONRenderer,)
+    renderer_classes = (MyJSONRenderer,)
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
@@ -210,6 +210,28 @@ class GetPublicationView(APIView):
 
             nq = NeoQuerier()
             return Response(nq.get_publication_with_details(pid)[0])
+        except ValueError as e:
+            print(e)
+            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            print(e)
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+class GetPublicationGraph(APIView):
+    renderer_classes = (MyJSONRenderer,)
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request):
+        try:
+            print(request.query_params.get("id"))
+            pid = int(request.query_params.get("id"))
+
+            nq = NeoQuerier()
+            return Response(nq.get_publication_graph(pid))
         except ValueError as e:
             print(e)
             return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
@@ -240,6 +262,7 @@ class GetAuthorView(APIView):
         except Exception as e:
             print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class GetDomainView(APIView):
     renderer_classes = (JSONRenderer,)

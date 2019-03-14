@@ -4,7 +4,7 @@ import './EntityTitle.css';
 
 const EntityTitle = ({title}) => (
   <div className="entity_title">
-    <h1>{title}</h1>
+    <h2>{title}</h2>
   </div>
 );
 

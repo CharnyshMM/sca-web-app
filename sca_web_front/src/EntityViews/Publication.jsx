@@ -7,9 +7,11 @@ import {
     createAuthoritiesInDomainsLink,
 } from '../utilities/links_creators';
 
-import {getPublication} from '../verbose_loaders';
+import { getPublication } from '../verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
+import GraphResultView from '../ReusableComponents/GraphResultView/GraphResultView';
+import { getUniqueNodesAndLinksPlainList, checkIfLinksAreValid } from '../ReusableComponents/GraphResultView/graph_unilities';
 
 class Publication extends Component {
     constructor(props) {
@@ -56,10 +58,16 @@ class Publication extends Component {
     }
 
     render() {
-        const {result, error, hasError} = this.state; 
-
+        let {result, error, hasError} = this.state; 
+        
         let content = null;
         if (result) {
+            
+            const [uniqueNodes, uniqueLinks, others] = getUniqueNodesAndLinksPlainList(result["linked_publications_graph"]);
+            result = result["general"];
+
+            const graphViewModeAllowed = checkIfLinksAreValid(uniqueLinks, uniqueNodes);
+            
             const linked_pubs = result["linked_publications"].map((v, i)=> 
                     <li key={i}><a href={createPublicationLink(result["linked_publications_ids"][i])}>{v["name"]}</a></li>
                 );
@@ -75,7 +83,7 @@ class Publication extends Component {
                 }
             }
 
-            console.log(linked_pubs);
+
             content = (
                 <section className="container">
                     <h1>{result["publication"]["name"]}</h1>
@@ -98,10 +106,17 @@ class Publication extends Component {
                     <p>{result["publication"]["pages"]} pages</p>
                     {linked_pubs && linked_pubs.length > 0 && 
                         <React.Fragment>
-                            <h3>REFERS PUBLICATIONS</h3>
+                            <h3>Refers publications</h3>
                             <ul>
                                 {linked_pubs}
                             </ul>
+                        </React.Fragment>
+                    }
+
+                    {graphViewModeAllowed &&
+                        <React.Fragment>
+                        <h3>Citation graph</h3>
+                        <GraphResultView unique_nodes={uniqueNodes} unique_links={uniqueLinks} />
                         </React.Fragment>
                     }
                 </section>
@@ -112,9 +127,9 @@ class Publication extends Component {
                 );
         }
         return (
-            <section>
+            <React.Fragment>
                 {content}
-            </section>
+            </React.Fragment>
         );
     }
 }

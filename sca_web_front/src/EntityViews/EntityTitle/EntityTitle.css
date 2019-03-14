@@ -1,0 +1,8 @@
+/*{position: "relative", background: "red"}*/
+
+.entity_title {
+  position: relative;
+  background: whitesmoke;
+  border-radius: 5px;
+  border: 1px solid gray;
+}

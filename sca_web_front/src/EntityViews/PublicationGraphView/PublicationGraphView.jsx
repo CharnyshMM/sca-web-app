@@ -5,6 +5,7 @@ import { Graph } from 'react-d3-graph';
 import Spinner from '../../ReusableComponents/Spinner';
 import EntityTitle from '../EntityTitle/EntityTitle';
 import EntityInfo from '../EntityInfo/EntityInfo';
+import EntityInfoItem from '../EntityInfo/EntityInfoItem';
 
 import './PublicationGraphView.css';
 
@@ -171,7 +172,8 @@ class PublicationGraphView extends Component {
       <section style={{ position: "relative", padding: "1% 10%" }}>
         <EntityTitle title={publication["name"]} />
         <EntityInfo>
-          <details>
+          <EntityInfoItem>
+          <details open>
             <summary>
               Publication details:
             </summary>
@@ -194,7 +196,8 @@ class PublicationGraphView extends Component {
             </li>
             </ul>
           </details>
-
+          </EntityInfoItem>
+          <EntityInfoItem>
           <details>
             <summary>
               Display nodes:
@@ -202,7 +205,9 @@ class PublicationGraphView extends Component {
 
               <input type="checkbox" id="displayReferences" name="displayReferences" value={displayReferences} onChange={this.onDisplayCheckboxChanged} />
               <label for="displayReferences"> Display references</label>
+
           </details>
+          </EntityInfoItem>
         </EntityInfo>
 
 

@@ -2,8 +2,10 @@
 
 .entity_title {
   position: relative;
+  z-index: 10;
   background: whitesmoke;
   border-radius: 5px;
   border: 1px solid gray;
   padding: 2px 1%;
+
 }

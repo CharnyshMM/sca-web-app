@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
-import { Graph } from 'react-d3-graph';
+
 
 import Spinner from '../../ReusableComponents/Spinner';
 import EntityTitle from '../EntityTitle/EntityTitle';
 import EntityInfo from '../EntityInfo/EntityInfo';
 import EntityInfoItem from '../EntityInfo/EntityInfoItem';
+import EntityGraph from '../EntityGraph/EntityGraph';
 
 import './PublicationGraphView.css';
 
@@ -46,11 +47,12 @@ class PublicationGraphView extends Component {
     this.state = {
       loading: false,
       data: undefined,
+      result: undefined,
       error: undefined,
       hasError: false,
       displayReferences: false,
+      showingHintNodeId: null,
     };
-
   }
 
   componentDidMount() {
@@ -88,18 +90,27 @@ class PublicationGraphView extends Component {
       );
   }
 
+  prepareGraphDict = (result) => {
+    const nodes = {};
+    const links = {};
+
+    
+  }
+
   prepareGraphData = (result, displayReferences = false) => {
     const NODE_SIZE = 1000;
 
     const authorNode = {
       id: result["author"]["identity"],
-      label: result["author"]["name"],
+      label: "Author",
       color: "red",
-      size: NODE_SIZE * 3
+      size: NODE_SIZE * 3,
+      ...result["author"]
     };
+
     const publicationNode = {
       id: result["publication"]["identity"],
-      label: result["publication"]["name"],
+      label: "Publication",
       color: "green",
       size: NODE_SIZE * 5,
       cx: 20,
@@ -147,25 +158,36 @@ class PublicationGraphView extends Component {
     this.setState({[e.target.name]: !checked});
   }
 
+  onMouseOverGraphNode = nodeId => {
+    
+    this.setState({showingHintNodeId: nodeId});
+  }
+
+  onMouseOutGraphNode = () => {
+    
+    this.setState({showingHintNodeId: null});
+  }
+
   render() {
-    const { result, error, hasError, loading, displayReferences } = this.state;
+    const { result, error, hasError, loading, displayReferences, showingHintNodeId } = this.state;
 
     if (hasError) {
-      return <ErrorAlert errorName={error.name} errorMessage={error.message} />
+      return <ErrorAlert errorName={error.name} errorMessage={error.message} />;
     }
+
     if (loading) {
-      return <Spinner />
+      return <Spinner />;
     }
 
     if (!result) {
-      return <ErrorAlert errorName="404 - Not found" errorMessage="Sorry, didn't found that page" />
+      return <ErrorAlert errorName="404 - Not found" errorMessage="Sorry, didn't found that page" />;
     }
 
     const publication = result["publication"];
     const author = result["author"];
 
     const data = this.prepareGraphData(result, displayReferences);
-    console.log(data);
+    
     GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
     return (
@@ -173,9 +195,9 @@ class PublicationGraphView extends Component {
         <EntityTitle title={publication["name"]} />
         <EntityInfo>
           <EntityInfoItem>
-          <details open>
+            <details open>
             <summary>
-              Publication details:
+              Publication:
             </summary>
 
             <ul>
@@ -198,7 +220,7 @@ class PublicationGraphView extends Component {
           </details>
           </EntityInfoItem>
           <EntityInfoItem>
-          <details>
+            <details>
             <summary>
               Display nodes:
               </summary>
@@ -211,10 +233,13 @@ class PublicationGraphView extends Component {
         </EntityInfo>
 
 
-        <div style={{ position: "absolute", left: 0 }}>
-          <Graph id="graph" data={data} config={GraphConfig} />
-
-        </div>
+        <EntityGraph 
+          graphConfig={GraphConfig}
+          graphData={data} 
+          onMouseOverNode={this.onMouseOverGraphNode} 
+          onMouseOutNode={this.onMouseOutGraphNode} 
+          nodeHint={showingHintNodeId}
+          />
       </section>
     );
   }

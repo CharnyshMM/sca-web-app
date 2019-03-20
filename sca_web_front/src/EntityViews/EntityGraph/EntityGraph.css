@@ -1,0 +1,11 @@
+.entity_graph {
+  position: absolute;
+  left: 0;
+}
+
+.entity_graph__hint {
+  position: absolute;
+  z-index: 1000;
+  background: black;
+  color: white;
+}

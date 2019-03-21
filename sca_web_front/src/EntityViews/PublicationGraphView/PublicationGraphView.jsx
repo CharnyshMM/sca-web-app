@@ -90,11 +90,23 @@ class PublicationGraphView extends Component {
       );
   }
 
-  prepareGraphDict = (result) => {
-    const nodes = {};
-    const links = {};
+  prepareGraph = result => {
+    let nodes = {
+      ...result["author_publication"].nodes,
+      ...result["publication_themes"].nodes,
+      ...result["publication_referenses"].nodes
+    };
 
-    
+    let links = {
+      ...result["author_publication"].relationships,
+      ...result["publication_themes"].relationships,
+      ...result["publication_referenses"].relationships
+    };
+
+    return {
+      nodes: nodes,
+      links: links,
+    };
   }
 
   prepareGraphData = (result, displayReferences = false) => {
@@ -149,7 +161,7 @@ class PublicationGraphView extends Component {
 
     return {
       nodes: [authorNode, publicationNode, ...themesNodes, ...referencesNodes],
-      links: [result["author_publication_link"], ...themesLinks, ...referencesLinks]
+      links: [result["author_publication"].link , ...themesLinks, ...referencesLinks]
     };
   }
 
@@ -169,6 +181,7 @@ class PublicationGraphView extends Component {
   }
 
   render() {
+    console.log("rerender");
     const { result, error, hasError, loading, displayReferences, showingHintNodeId } = this.state;
 
     if (hasError) {
@@ -186,7 +199,7 @@ class PublicationGraphView extends Component {
     const publication = result["publication"];
     const author = result["author"];
 
-    const data = this.prepareGraphData(result, displayReferences);
+    const data = this.prepareGraph(result);
     
     GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
@@ -235,7 +248,7 @@ class PublicationGraphView extends Component {
 
         <EntityGraph 
           graphConfig={GraphConfig}
-          graphData={data} 
+          graphObject={data} 
           onMouseOverNode={this.onMouseOverGraphNode} 
           onMouseOutNode={this.onMouseOutGraphNode} 
           nodeHint={showingHintNodeId}

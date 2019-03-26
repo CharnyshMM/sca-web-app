@@ -6,7 +6,6 @@ import './EntityGraph.css';
 // this.props.graphData
 // this.props.nodeHint
 // this.props.onNodeClick
-
 // this.props.graphDataDict
 
 

@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Graph } from 'react-d3-graph';
 
 import { buildSimpleGraph } from './graph_unilities';
-import paperImage from './paper.jpg';
 
 
 const GraphConfig = {

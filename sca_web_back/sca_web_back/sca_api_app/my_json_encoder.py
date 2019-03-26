@@ -77,6 +77,7 @@ def node_to_dict(node):
     return {
         "type": type(node).__name__,
         "identity": node.identity,
+        "id":node.identity,
         "labels": list(node.labels),
         **dict(node)
     }
@@ -85,6 +86,7 @@ def relationship_to_dict(rel):
     return {
         "type": type(rel).__name__,
         "identity": rel.identity,
+        "id": rel.identity,
         "labels": list(rel.labels),
         "source": rel.start_node.identity,
         "target": rel.end_node.identity,

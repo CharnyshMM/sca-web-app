@@ -115,7 +115,11 @@ class PublicationGraphView extends Component {
     const referencesNodes = {};
     Object.keys(result["publication_referenses"].nodes).forEach(
       (k) => {
-        referencesNodes[k] = {...result["publication_referenses"].nodes[k], color: "lightblue"};
+        referencesNodes[k] = {
+          ...result["publication_referenses"].nodes[k], 
+          color: "lightblue",
+          href: createPublicationLink(result["publication_referenses"].nodes[k]["identity"])
+        };
       }
     );
 
@@ -138,76 +142,11 @@ class PublicationGraphView extends Component {
     };
   }
 
-  // prepareGraphData = (result, displayReferences = false) => {
-    
-
-  //   const authorNode = {
-  //     id: result["author"]["identity"],
-  //     label: "Author",
-  //     color: "red",
-  //     size: NODE_SIZE * 3,
-  //     ...result["author"]
-  //   };
-
-  //   const publicationNode = {
-  //     id: result["publication"]["identity"],
-  //     label: "Publication",
-  //     color: "green",
-  //     size: NODE_SIZE * 5,
-  //     cx: 20,
-  //     cy: 2
-  //   };
-
-  //   const themesNodes = [];
-  //   const themesLinks = [];
-
-  //   for (let i = 0; i < result["themes_and_theme_relations"].length; i++) {
-  //     const entry = result["themes_and_theme_relations"][i];
-  //     themesNodes.push({
-  //       id: entry["theme"]["identity"],
-  //       label: entry["theme"]["name"],
-  //       color: "gray",
-  //       size: NODE_SIZE * 2,
-  //     });
-  //     themesLinks.push(entry["theme_relation"]);
-
-  //   }
-
-  //   const referencesNodes = [];
-  //   const referencesLinks = [];
-
-  //   if (displayReferences)
-  //     for (let i = 0; i < result["referensed_publications"].length; i++) {
-  //       const entry = result["referensed_publications"][i];
-  //       referencesNodes.push({
-  //         id: entry["publication"]["identity"],
-  //         label: entry["publication"]["name"],
-  //         color: "lightblue"
-  //       });
-  //       referencesLinks.push(entry["links_to_relation"]);
-  //     }
-
-
-  //   return {
-  //     nodes: [authorNode, publicationNode, ...themesNodes, ...referencesNodes],
-  //     links: [result["author_publication"].link , ...themesLinks, ...referencesLinks]
-  //   };
-  // }
-
   onDisplayCheckboxChanged = e => {
     const checked = this.state[e.target.name];
     this.setState({[e.target.name]: !checked});
   }
 
-  onMouseOverGraphNode = nodeId => {
-    
-    this.setState({showingHintNodeId: nodeId});
-  }
-
-  onMouseOutGraphNode = () => {
-    
-    this.setState({showingHintNodeId: null});
-  }
 
   render() {
     console.log("rerender");

@@ -2,7 +2,7 @@
 #  All methods except run_cypher_query contain Cypher language strings hardcoded
 #  You can edit them here.
 
-from py2neo import Graph
+from py2neo import Graph, Node
 from .neo_config import neo_password, neo_user, neo_port, neo_host, neo_scheme
 
 
@@ -10,7 +10,7 @@ class NeoQuerier:
     AUTHOR_NODE_LABEL = "Author"
     PUBLICATION_NODE_LABEL = "Publication"
     THEME_NODE_LABEL = "Theme"
-    KEYWORD_PHRASE_NODE_LABEL = "KeywordPhrase"
+    KEYWORD_PHRASE_NODE_LABEL = "Token"
 
     WROTE_RELATION_LABEL = "WROTE"
     THEME_RELATION_LABEL = "THEME_RELATION"
@@ -83,7 +83,7 @@ class NeoQuerier:
         return rd
 
     def get_articles_by_keywords(self, keywords_list):
-        keywords_list = [k.toLower for k in keywords_list]
+        keywords_list = [k.lower() for k in keywords_list]
         query = f"""
             MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
              (p)-[r:{self.KEYWORDS_RELATION_LABEL}]-(d:{self.KEYWORD_PHRASE_NODE_LABEL}) 
@@ -127,7 +127,7 @@ class NeoQuerier:
         maximum_publications_in_period_count = 0
         for entry in yearly_dynamics:
 
-            dynamics = NeoQuerier.split_domain_dynamics(entry["publications_years"]);
+            dynamics = NeoQuerier.split_domain_dynamics(entry["publications_years"])
             maximum_publications_in_period_count = max(maximum_publications_in_period_count, dynamics["maximum_count"])
 
             domains_yearly_dynamics_response.append({
@@ -379,17 +379,44 @@ class NeoQuerier:
             return l_t as links_to_relation, another_p as publication
         """
 
-        author_publication = self.graph.run(author_publication_query).data()[0]
+        author_publication = self.graph.run(author_publication_query).data()
         publication_themes = self.graph.run(publication_themes_query).data()
         publication_referenses = self.graph.run(publication_referenses_query).data()
 
         return {
-            "author": author_publication["a"],
-            "author_publication_link": author_publication["p_a"],
-            "publication": author_publication["p"],
-            "themes_and_theme_relations": publication_themes,
-            "referensed_publications": publication_referenses
+            "author": author_publication[0]["a"],
+            "publication": author_publication[0]["p"],
+            "author_publication": NeoQuerier.separate_nodes_and_relationships_from_list(author_publication),
+            "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
+            "publication_referenses": NeoQuerier.separate_nodes_and_relationships_from_list(publication_referenses)
         }
+
+    @staticmethod
+    def separate_nodes_and_relationships_from_list(graph_data_list):
+        nodes = {}
+        relationships = {}
+        for entry in graph_data_list:
+            entry_nodes, entry_relationships = NeoQuerier.separate_nodes_and_relationships(entry)
+            nodes.update(entry_nodes)
+            relationships.update(entry_relationships)
+        
+        return { 
+            "nodes": nodes,
+            "relationships": relationships
+        }
+
+    @staticmethod
+    def separate_nodes_and_relationships(graph_data_entry):
+        nodes = {}
+        relationships = {}
+
+        for entry in graph_data_entry.values():
+            
+            if type(entry) == Node:
+                nodes[entry.identity] = entry
+            else:
+                relationships[entry.identity] = entry
+        return nodes, relationships
 
     @staticmethod
     def split_domain_dynamics(years):

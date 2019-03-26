@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Graph } from 'react-d3-graph';
 
+import NodeHint from './NodeHint';
 
 import './EntityGraph.css';
 // this.props.graphData
@@ -32,12 +33,14 @@ class EntityGraph extends Component {
 
   state = {
     nodeHint: null,
+    mouseOverNode: false,
+    mouseOverHint: false,
   }
 
-  onMouseMoveHandler = () => {
+  createOnMouseMoveHandler = () => {
       let mouseEventCounter = 0;
       return e => {
-      if (mouseEventCounter > 3) {
+      if (mouseEventCounter > 2) {
         this.mouseX = e.clientX;
         this.mouseY = e.clientY - 120;
         this.mouseEventCounter = 0;
@@ -47,31 +50,69 @@ class EntityGraph extends Component {
     }
   }
 
-  onMouseOverNode = nodeId => {
-    const node = this.props.graphObject.nodes[nodeId];
+  getNodeHintText = node => {
+    let nodeHint = "";
+
     if (node["name"]) {
-      this.setState({nodeHint: `${node["labels"][0]}: ${node["name"]}`});
+      nodeHint = `${node["labels"][0]}: ${node["name"]}`;
     } else {
-      this.setState({nodeHint: node["labels"][0]});
+      nodeHint = node["labels"];
+    }
+
+    if (node["href"]) {
+      return <span>
+        {nodeHint} 
+        <br />
+        <a href={node["href"]}>More</a>
+        </span>
+    } else {
+      return <span>{nodeHint}</span>
     }
   }
 
+  onMouseOverNode = nodeId => {
+    const node = this.props.graphObject.nodes[nodeId];
+    this.setState({
+      nodeHint: this.getNodeHintText(node),
+      mouseOverNode: true
+    });
+  }
+
+  onMouseOverHint = () => {
+    console.log("OVERHINT");
+    this.setState({mouseOverHint: true});
+  }
+
+  onMouseLeaveHint = () => {
+    this.setState({mouseOverHint: false});
+  }
+
   onMouseOutNode = () => {
-    this.setState({nodeHint: undefined});
+    this.setState({
+      mouseOverNode: false
+    });
   }
 
   getGraphData = getGraphDataMemoizable.call(this)
 
   render() {
     const { graphConfig } = this.props;
-    const { nodeHint } = this.state;
+    const { nodeHint, mouseOverHint, mouseOverNode } = this.state;
+    const hintIsVisible = mouseOverHint || mouseOverNode;
+    const hintX = this.mouseX;
+    const hintY = this.mouseY;
 
     return (
-      <div className="entity_graph" onMouseMove={this.onMouseMoveHandler()}>
-        {nodeHint &&
-          <div className="entity_graph__hint" style={{left: this.mouseX+10, top: this.mouseY}}>
+      <div className="entity_graph" onMouseMove={this.createOnMouseMoveHandler()}>
+        {hintIsVisible &&
+          <NodeHint 
+            left={hintX} 
+            top={hintY}
+            onMouseEnter={this.onMouseOverHint}
+            onMouseLeave={this.onMouseLeaveHint}
+            >
             {nodeHint}
-          </div>
+          </NodeHint>
         }
         <Graph 
           id="graph" 

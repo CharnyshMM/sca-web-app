@@ -4,7 +4,7 @@ import Home from './Home/Home';
 import AuthoritiesQuery from './AuthoritiesQuery/AuthoritiesQuery';
 import SingleAuthorityView from './AuthoritiesQuery/SignleAuthorityView';
 import DomainsQuery from './DomainsQuery/DomainsQuery';
-import ArticlesQuery from './ArticlesQuery/ArticlesQuery';
+import ArticlesQuery from './ArticlesQuery/ArticlesQueryDeprecated';
 import CustomQuery from './CustomQuery/CustomQuery';
 import Status from './Status/Status';
 import SearchWithResults from './Search/SearchWithResults/SearchWithResults';

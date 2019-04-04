@@ -148,8 +148,6 @@ class AuthorGraphView extends Component {
       }
     );
    
-    console.log(linkedPublicationsRelationships);
-
     return {
       nodes: {
         [authorNode["id"]]: authorNode,
@@ -168,6 +166,31 @@ class AuthorGraphView extends Component {
   onDisplayCheckboxChanged = e => {
     const checked = this.state[e.target.name];
     this.setState({[e.target.name]: !checked});
+  }
+
+  nodeHintGenerator = node => {
+    let nodeHint = "";
+    if (node["name"]) {
+      nodeHint = `${node["labels"][0]}: ${node["name"]}`;
+    } else {
+      nodeHint = node["labels"];
+    }
+
+    if (node["href"]) {
+      return <span>
+        {nodeHint} 
+         <br/>
+         <i>click node for more info</i>
+        </span>
+    } else {
+      return <span>{nodeHint}</span>
+    }
+  }
+
+  onNodeClick = node => {
+    if (node["href"]) {
+      this.props.history.push(node["href"]);
+    }
   }
 
 
@@ -212,6 +235,8 @@ class AuthorGraphView extends Component {
         <EntityGraph 
           graphConfig={GraphConfig}
           graphObject={data} 
+          onNodeClick={this.onNodeClick}
+          hintExtractor={this.nodeHintGenerator}
           />
       </section>
     );

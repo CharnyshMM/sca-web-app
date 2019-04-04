@@ -8,6 +8,7 @@ import './EntityGraph.css';
 // this.props.nodeHint
 // this.props.onNodeClick
 // this.props.graphDataDict
+// this.props.hintExtractor(Node n)
 
 
 function getGraphDataMemoizable() {
@@ -51,23 +52,10 @@ class EntityGraph extends Component {
   }
 
   getNodeHintText = node => {
-    let nodeHint = "";
-
-    if (node["name"]) {
-      nodeHint = `${node["labels"][0]}: ${node["name"]}`;
-    } else {
-      nodeHint = node["labels"];
+    if (typeof(this.props.hintExtractor) === "function") {
+      return this.props.hintExtractor(node)
     }
-
-    if (node["href"]) {
-      return <span>
-        {nodeHint} 
-        <br />
-        <a href={node["href"]}>More</a>
-        </span>
-    } else {
-      return <span>{nodeHint}</span>
-    }
+    return <span>this.props.node["id"]</span>
   }
 
   onMouseOverNode = nodeId => {

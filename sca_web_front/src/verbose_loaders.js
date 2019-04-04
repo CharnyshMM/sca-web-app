@@ -11,7 +11,8 @@ import {
     PYTHON_BACKEND_API_AUTHOR,
     PYTHON_BACKEND_API_DOMAIN,
     PYTHON_BACKEND_API_THEMES_LIST,
-    PYTHON_BACKEND_API_PUBLICATION_GRAPH
+    PYTHON_BACKEND_API_PUBLICATION_GRAPH,
+    PYTHON_BACKEND_API_AUTHOR_GRAPH
 } from './constant_urls';
 
 // ========================================================================
@@ -141,6 +142,11 @@ const getPublicationGraph = (id, token) => {
     return getLoaderPromise(query, authOptions(token));
 }
 
+const getAuthorGraph = (id, token) => {
+    const query = `${PYTHON_BACKEND_API_AUTHOR_GRAPH}?id=${id}`;
+    return getLoaderPromise(query, authOptions(token));
+}
+
 const getAuthor = (id, token) => {
     const query = `${PYTHON_BACKEND_API_AUTHOR}?id=${id}`;
     return getLoaderPromise(query, authOptions(token));
@@ -170,5 +176,6 @@ export {
     getAuthor,
     getDomain,
     getDomainsList,
-    getPublicationGraph
+    getPublicationGraph,
+    getAuthorGraph
 };

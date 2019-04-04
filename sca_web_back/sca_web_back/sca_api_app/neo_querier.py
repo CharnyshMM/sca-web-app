@@ -97,22 +97,6 @@ class NeoQuerier:
         return result.data()
 
     def get_domains_by_popularity_index(self, popularity_index=0, higher=True):
-        nascent_query = f"""
-            match (theme:{self.THEME_NODE_LABEL}),
-            (title:{self.PUBLICATION_NODE_LABEL})-[r:{self.THEME_RELATION_LABEL}]-(theme) 
-            where r.probability > {self.THEME_RELATION_PROBABILITY} 
-            with theme, count(title) as popularity 
-                where popularity > {popularity_index} 
-            return theme.name as name, popularity order by popularity desc
-            """
-        uninteresting_query = f"""
-            match (theme:{self.THEME_NODE_LABEL}), 
-            (title:{self.PUBLICATION_NODE_LABEL})-[r:{self.THEME_RELATION_LABEL}]-(theme) 
-            where r.probability > {self.THEME_RELATION_PROBABILITY} with theme, count(title) as popularity 
-            where popularity < {popularity_index} 
-            return theme.name as name, popularity order by popularity
-        """
-
         yearly_dynamics_query = f"""
             MATCH (t:{self.THEME_NODE_LABEL})<-[t_r:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
                 WHERE t_r.probability > {self.THEME_RELATION_PROBABILITY}
@@ -390,6 +374,45 @@ class NeoQuerier:
             "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
             "publication_referenses": NeoQuerier.separate_nodes_and_relationships_from_list(publication_referenses)
         }
+
+    def get_author_graph(self, author_id):
+        
+        author_query = f"""
+            match (a:Author)-[:WROTE]-(p:Publication)
+            where ID(a) = {author_id}
+            return a as author, count(p) as publications_count
+        """
+
+        # TODO: INTERPOLATE
+        relations_and_themes_query = f"""
+            match (p:Publication)-[w:WROTE]-(a:Author)
+	            WHERE ID(a)={author_id}
+            optional match (p)-[t_r:THEME_RELATION]-(t:Theme)
+                WHERE t_r.probability>0.1
+            optional match (p)-[r_r:LINKS_TO]-(another_p:Publication)
+            optional match (another_p)-[another_w:WROTE]-(another_p_a:Author)
+                where EXISTS(another_p_a.name)
+            return p as publication,
+                w as author_publication_relationship,
+                collect(distinct t_r) as themes_relations,
+                collect(DISTINCT t) as themes,
+                collect(distinct r_r) as references_relations,
+                collect(distinct another_p) as linked_publications,
+                collect(distinct another_w) as linked_publications_author_relations,  
+                collect(distinct another_p_a) as linked_publication_authors
+            order by size(linked_publications) desc
+            limit 10
+        """
+
+        author_pubcount = self.graph.run(author_query).data()[0]# ???
+        publications_relations_and_themes = self.graph.run(relations_and_themes_query).data()
+
+        return {
+            "author": author_pubcount["author"],
+            "publications_count": author_pubcount["publications_count"],
+            "publications_relations_themes": publications_relations_and_themes
+        }
+
 
     @staticmethod
     def separate_nodes_and_relationships_from_list(graph_data_list):

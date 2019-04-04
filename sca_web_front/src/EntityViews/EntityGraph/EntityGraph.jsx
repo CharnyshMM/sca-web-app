@@ -93,6 +93,13 @@ class EntityGraph extends Component {
     });
   }
 
+  onNodeClick = (nodeId) => {
+    console.log("click");
+    if (typeof(this.props.onNodeClick) === "function") {
+      this.props.onNodeClick(this.props.graphObject.nodes[nodeId]);
+    }
+  }
+
   getGraphData = getGraphDataMemoizable.call(this)
 
   render() {
@@ -120,6 +127,7 @@ class EntityGraph extends Component {
           config={graphConfig} 
           onMouseOverNode={this.onMouseOverNode} 
           onMouseOutNode={this.onMouseOutNode} 
+          onClickNode={this.onNodeClick}
         />
       </div>
     );

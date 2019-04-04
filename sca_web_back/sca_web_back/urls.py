@@ -29,7 +29,8 @@ from .sca_api_app.views import CustomQueryView, \
     GetAuthorView, \
     GetDomainView, \
     GetThemesListView, \
-    GetPublicationGraph
+    GetPublicationGraph, \
+    GetAuthorGraph
 
 urlpatterns = [
     path('', view=IndexView.as_view(), name="index"),
@@ -47,6 +48,7 @@ urlpatterns = [
     path('domain/', view=GetDomainView.as_view(), name="domain"),
     path('themes-list/', view=GetThemesListView.as_view(), name="themes-list"),
     path('publicationgraph/', view=GetPublicationGraph.as_view(), name="publicationgraph"),
+    path('authorgraph/', view=GetAuthorGraph.as_view(), name="authorgraph"),
 
     path('status/', view=GetStatusView.as_view(), name="status"),
 ]

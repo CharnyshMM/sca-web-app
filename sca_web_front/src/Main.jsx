@@ -13,6 +13,7 @@ import Author from './EntityViews/Author';
 import Domain from './EntityViews/Domain';
 import Test from './Test/Test';
 import PublicationGraphView from './EntityViews/PublicationGraphView/PublicationGraphView';
+import AuthorGraphView from './EntityViews/AuthorGraphView';
 
 
 const Main = () => (
@@ -27,7 +28,7 @@ const Main = () => (
       <Route path='/authorities-query' component={AuthoritiesQuery}/>
       <Route path='/domains-query' component={DomainsQuery}/>
       <Route path='/articles-query' component={ArticlesQuery}/>
-      <Route path='/test' component={PublicationGraphView} />
+      <Route path='/test' component={AuthorGraphView} />
       <Route path='/custom-query' component={CustomQuery}/>
       <Route path='/status' component={Status} />
     </Switch>

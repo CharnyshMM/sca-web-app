@@ -48,8 +48,8 @@ class PublicationGraphView extends Component {
       result: undefined,
       error: undefined,
       hasError: false,
-      displayReferences: false,
-      showingHintNodeId: null,
+      displayIncomingReferences: false,
+      displayOutcomingReferences: false,
     };
   }
 
@@ -88,7 +88,7 @@ class PublicationGraphView extends Component {
       );
   }
 
-  prepareGraph = result => {
+  prepareGraph = (result, showOutcomingReferences, showIncomingReferences) => {
     const NODE_SIZE = 500;
 
     const authorNode = {
@@ -116,29 +116,52 @@ class PublicationGraphView extends Component {
           };
       }
     );
+    
 
     const referencesNodes = {};
-    Object.keys(result["publication_referenses"].nodes).forEach(
-      (k) => {
-        referencesNodes[k] = {
-          ...result["publication_referenses"].nodes[k], 
-          color: "lightblue",
-          href: createPublicationLink(result["publication_referenses"].nodes[k]["identity"])
-        };
-      }
-    );
+    let referencesRelationships = {};
+    if (showIncomingReferences) {
+      console.log("showing incomming");
+      Object.keys(result["publication_referenses"]["incoming"].nodes).forEach(
+        (k) => {
+          const node = result["publication_referenses"]["incoming"].nodes[k];
+          referencesNodes[k] = { 
+            color: "lightblue",
+            href: createPublicationLink(node["identity"]),
+            ...node
+          };
+        }
+      );
+      referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["incoming"].relationships);
+    }
 
-    let nodes = {
+    if (showOutcomingReferences) {
+      console.log("showing outcomming");
+      Object.keys(result["publication_referenses"]["outcoming"].nodes).forEach(
+        (k) => {
+          const node = result["publication_referenses"]["outcoming"].nodes[k];
+          referencesNodes[k] = { 
+            color: "lightblue",
+            href: createPublicationLink(node["identity"]),
+            ...node
+          };
+        }
+      );
+      referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["outcoming"].relationships);
+    }
+    
+
+    const nodes = {
       [authorNode["identity"]]: authorNode,
       [publicationNode["identity"]]: publicationNode,
       ...themeNodes,
       ...referencesNodes
     };
 
-    let links = {
+    const links = {
       ...result["author_publication"].relationships,
       ...result["publication_themes"].relationships,
-      ...result["publication_referenses"].relationships
+      ...referencesRelationships
     };
 
     return {
@@ -179,7 +202,7 @@ class PublicationGraphView extends Component {
 
   render() {
     console.log("rerender");
-    const { result, error, hasError, loading, displayReferences, showingHintNodeId } = this.state;
+    const { result, error, hasError, loading, displayIncomingReferences, displayOutcomingReferences} = this.state;
 
     if (hasError) {
       return <ErrorAlert errorName={error.name} errorMessage={error.message} />;
@@ -198,7 +221,7 @@ class PublicationGraphView extends Component {
     const themes = result["publication_themes"].nodes;
 
 
-    const data = this.prepareGraph(result);
+    const data = this.prepareGraph(result, displayIncomingReferences, displayOutcomingReferences);
     
     GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
@@ -252,9 +275,16 @@ class PublicationGraphView extends Component {
               Display nodes:
               </summary>
 
-              <input type="checkbox" id="displayReferences" name="displayReferences" value={displayReferences} onChange={this.onDisplayCheckboxChanged} />
-              <label htmlFor="displayReferences"> Display references</label>
-
+              <ul style={{listStyle: "none"}}>
+                <li>
+                  <input type="checkbox" id="displayIncomingReferences" name="displayIncomingReferences" value={displayIncomingReferences} onChange={this.onDisplayCheckboxChanged} />
+                  <label htmlFor="displayIncomingReferences"> Display incoming references</label>
+                </li>
+                <li>
+                  <input type="checkbox" id="displayOutcomingReferences" name="displayOutcomingReferences" value={displayOutcomingReferences} onChange={this.onDisplayCheckboxChanged} />
+                  <label htmlFor="displayOutcomingReferences"> Display outcoming references</label>
+                </li>
+              </ul>
           </details>
           </EntityInfoItem>
         </EntityInfo>

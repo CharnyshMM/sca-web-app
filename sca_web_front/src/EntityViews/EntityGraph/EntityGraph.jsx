@@ -96,7 +96,7 @@ class EntityGraph extends Component {
     const hintIsVisible = mouseOverHint || mouseOverNode;
     const hintX = this.mouseX;
     const hintY = this.mouseY;
-
+    
     return (
       <div className="entity_graph" onMouseMove={this.createOnMouseMoveHandler()}>
         {hintIsVisible &&

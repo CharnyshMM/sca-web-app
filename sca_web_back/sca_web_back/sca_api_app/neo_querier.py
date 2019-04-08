@@ -360,19 +360,20 @@ class NeoQuerier:
         publication_referenses_query = f"""
             match (p:{self.PUBLICATION_NODE_LABEL})-[l_t:{self.LINKS_TO_RELATION_LABEL}]-(another_p:{self.PUBLICATION_NODE_LABEL})
             where ID(p)={publication_id}
-            return l_t as links_to_relation, another_p as publication
+            return collect(distinct l_t) as referenses_relationships
+            limit 10
         """
 
         author_publication = self.graph.run(author_publication_query).data()
         publication_themes = self.graph.run(publication_themes_query).data()
-        publication_referenses = self.graph.run(publication_referenses_query).data()
+        publication_referenses = self.graph.run(publication_referenses_query).data()[0]["referenses_relationships"]
 
         return {
             "author": author_publication[0]["a"],
             "publication": author_publication[0]["p"],
             "author_publication": NeoQuerier.separate_nodes_and_relationships_from_list(author_publication),
             "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
-            "publication_referenses": NeoQuerier.separate_nodes_and_relationships_from_list(publication_referenses)
+            "publication_referenses": NeoQuerier.process_references_graph(publication_id, publication_referenses)
         }
 
     def get_author_graph(self, author_id):
@@ -440,6 +441,33 @@ class NeoQuerier:
             else:
                 relationships[entry.identity] = entry
         return nodes, relationships
+
+    @staticmethod
+    def process_references_graph(central_node_id, relationships_list):
+        outcoming_references_relationships = {}
+        outcoming_references_nodes = {}
+        incoming_references_relationships = {}
+        incoming_references_nodes = {}
+
+        for relationship in relationships_list:
+            rel_id = f"{relationship.start_node.identity}>{relationship.end_node.identity}"
+            if (relationship.start_node.identity == central_node_id):
+                outcoming_references_nodes[relationship.end_node.identity] = relationship.end_node
+                outcoming_references_relationships[rel_id] = relationship
+            else:
+                incoming_references_nodes[relationship.start_node.identity] = relationship.start_node
+                incoming_references_relationships[rel_id] = relationship
+        
+        return {
+            "outcoming": {
+                "nodes": outcoming_references_nodes,
+                "relationships": outcoming_references_relationships
+            },
+            "incoming": {
+                "nodes": incoming_references_nodes,
+                "relationships": incoming_references_relationships
+            }
+        }
 
     @staticmethod
     def split_domain_dynamics(years):

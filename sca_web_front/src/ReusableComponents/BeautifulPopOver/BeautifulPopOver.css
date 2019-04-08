@@ -1,0 +1,18 @@
+.beautiful_pop_over {
+  position: absolute;
+  top: 0%;
+  left: 0%; 
+  z-index: 10;
+  background: rgba(1,1,1,0.5);
+  color: white;
+  height: 100%;
+  width: 100%;
+  padding: 5% 10%;
+}
+
+.beautiful_pop_over__content {
+  background: white;
+  height: inherit;
+  overflow: auto;
+  padding: 1%;
+}

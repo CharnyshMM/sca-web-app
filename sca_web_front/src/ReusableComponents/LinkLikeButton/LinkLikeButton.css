@@ -1,0 +1,7 @@
+.link_like_button {
+  background: none;
+  border: none;
+  text-decoration: underline;
+  color: dodgerblue;
+  cursor: pointer;
+}

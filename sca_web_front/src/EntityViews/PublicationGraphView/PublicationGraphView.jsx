@@ -41,8 +41,6 @@ const GraphConfig = {
   linkHighlightBehavior: true
 };
 
-const REFERENCES_DISPLAYED_LIMIT = 30;
-
 class PublicationGraphView extends Component {
   constructor(props) {
     super(props);
@@ -125,36 +123,28 @@ class PublicationGraphView extends Component {
     const referencesNodes = {};
     let referencesRelationships = {};
     if (showIncomingReferences) {
-      let count = 0;
-      for(const k in result["publication_referenses"]["incoming"].nodes) {
+      Object.keys(result["publication_referenses"]["incoming"].nodes).forEach( 
+        k => {
           const node = result["publication_referenses"]["incoming"].nodes[k];
           referencesNodes[k] = { 
             color: "lightblue",
             href: createPublicationLink(node["identity"]),
             ...node
           };
-          count++;
-          if (count > REFERENCES_DISPLAYED_LIMIT) {
-            break;
-          }
-      }
+      });
       referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["incoming"].relationships);
     }
 
     if (showOutcomingReferences) {
-      let count = 0;
-      for(const k in result["publication_referenses"]["outcoming"].nodes) {
+      Object.keys(result["publication_referenses"]["outcoming"].nodes).forEach(
+        k => {
           const node = result["publication_referenses"]["outcoming"].nodes[k];
           referencesNodes[k] = { 
             color: "lightblue",
             href: createPublicationLink(node["identity"]),
             ...node
           };
-          count++;
-          if (count > REFERENCES_DISPLAYED_LIMIT) {
-            break;
-          }
-      }
+      });
       referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["outcoming"].relationships);
     }
     
@@ -232,7 +222,7 @@ class PublicationGraphView extends Component {
     
 
     const data = this.prepareGraph(result, displayIncomingReferences, displayOutcomingReferences);
-    
+    console.log(data);
     GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
     return (

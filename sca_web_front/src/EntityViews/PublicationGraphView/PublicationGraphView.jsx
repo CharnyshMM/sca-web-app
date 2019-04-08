@@ -7,6 +7,8 @@ import EntityTitle from '../EntityTitle/EntityTitle';
 import EntityInfo from '../EntityInfo/EntityInfo';
 import EntityInfoItem from '../EntityInfo/EntityInfoItem';
 import EntityGraph from '../EntityGraph/EntityGraph';
+import LegendBlock from '../EntityInfo/LegendBlock';
+import CheckableLegendBlock from '../EntityInfo/CheckableLegendBlock';
 
 
 import {
@@ -38,6 +40,8 @@ const GraphConfig = {
   directed: true,
   linkHighlightBehavior: true
 };
+
+const REFERENCES_DISPLAYED_LIMIT = 30;
 
 class PublicationGraphView extends Component {
   constructor(props) {
@@ -88,7 +92,7 @@ class PublicationGraphView extends Component {
       );
   }
 
-  prepareGraph = (result, showOutcomingReferences, showIncomingReferences) => {
+  prepareGraph = (result, showIncomingReferences, showOutcomingReferences) => {
     const NODE_SIZE = 500;
 
     const authorNode = {
@@ -121,32 +125,36 @@ class PublicationGraphView extends Component {
     const referencesNodes = {};
     let referencesRelationships = {};
     if (showIncomingReferences) {
-      console.log("showing incomming");
-      Object.keys(result["publication_referenses"]["incoming"].nodes).forEach(
-        (k) => {
+      let count = 0;
+      for(const k in result["publication_referenses"]["incoming"].nodes) {
           const node = result["publication_referenses"]["incoming"].nodes[k];
           referencesNodes[k] = { 
             color: "lightblue",
             href: createPublicationLink(node["identity"]),
             ...node
           };
-        }
-      );
+          count++;
+          if (count > REFERENCES_DISPLAYED_LIMIT) {
+            break;
+          }
+      }
       referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["incoming"].relationships);
     }
 
     if (showOutcomingReferences) {
-      console.log("showing outcomming");
-      Object.keys(result["publication_referenses"]["outcoming"].nodes).forEach(
-        (k) => {
+      let count = 0;
+      for(const k in result["publication_referenses"]["outcoming"].nodes) {
           const node = result["publication_referenses"]["outcoming"].nodes[k];
           referencesNodes[k] = { 
             color: "lightblue",
             href: createPublicationLink(node["identity"]),
             ...node
           };
-        }
-      );
+          count++;
+          if (count > REFERENCES_DISPLAYED_LIMIT) {
+            break;
+          }
+      }
       referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["outcoming"].relationships);
     }
     
@@ -219,7 +227,9 @@ class PublicationGraphView extends Component {
     const publication = result["publication"];
     const author = result["author"];
     const themes = result["publication_themes"].nodes;
-
+    const outcomingReferencesCount = Object.keys(result["publication_referenses"]["outcoming"].nodes).length;
+    const incomingReferencesCount = Object.keys(result["publication_referenses"]["incoming"].nodes).length;
+    
 
     const data = this.prepareGraph(result, displayIncomingReferences, displayOutcomingReferences);
     
@@ -272,17 +282,29 @@ class PublicationGraphView extends Component {
           <EntityInfoItem>
             <details>
             <summary>
-              Display nodes:
+              Graph:
               </summary>
 
               <ul style={{listStyle: "none"}}>
                 <li>
-                  <input type="checkbox" id="displayIncomingReferences" name="displayIncomingReferences" value={displayIncomingReferences} onChange={this.onDisplayCheckboxChanged} />
-                  <label htmlFor="displayIncomingReferences"> Display incoming references</label>
+                  <LegendBlock color="red">
+                    Author
+                  </LegendBlock>
                 </li>
                 <li>
-                  <input type="checkbox" id="displayOutcomingReferences" name="displayOutcomingReferences" value={displayOutcomingReferences} onChange={this.onDisplayCheckboxChanged} />
-                  <label htmlFor="displayOutcomingReferences"> Display outcoming references</label>
+                  <LegendBlock color="green">
+                    Publication
+                  </LegendBlock>
+                </li>
+                <li>
+                  <CheckableLegendBlock color="lightBlue" id="displayIncomingReferences" name="displayIncomingReferences" value={displayIncomingReferences} onChange={this.onDisplayCheckboxChanged}>
+                   Incoming references ({incomingReferencesCount})
+                  </CheckableLegendBlock>
+                </li>
+                <li>
+                  <CheckableLegendBlock color="lightBlue" id="displayOutcomingReferences" name="displayOutcomingReferences" value={displayOutcomingReferences} onChange={this.onDisplayCheckboxChanged}>
+                    Outcoming references ({outcomingReferencesCount})
+                  </CheckableLegendBlock>
                 </li>
               </ul>
           </details>

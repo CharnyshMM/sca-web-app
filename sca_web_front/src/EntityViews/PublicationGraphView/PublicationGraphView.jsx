@@ -8,12 +8,12 @@ import EntityInfo from '../EntityInfo/EntityInfo';
 import EntityInfoItem from '../EntityInfo/EntityInfoItem';
 import EntityGraph from '../EntityGraph/EntityGraph';
 
-import './PublicationGraphView.css';
 
 import {
   createAuthorLink,
   createPublicationLink,
   createAuthoritiesInDomainsLink,
+  createDomainLink,
 } from '../../utilities/links_creators';
 
 import { getPublicationGraph } from '../../verbose_loaders';
@@ -94,6 +94,7 @@ class PublicationGraphView extends Component {
     const authorNode = {
       color: "red",
       size: NODE_SIZE * 3,
+      href: createAuthorLink(result["author"]["id"]),
       ...result["author"]
     };
 
@@ -108,7 +109,11 @@ class PublicationGraphView extends Component {
     const themeNodes = {};
     Object.keys(result["publication_themes"].nodes).forEach(
       (k) => {
-         themeNodes[k] = {...result["publication_themes"].nodes[k], color: "gray"};
+         themeNodes[k] = {
+            color: "gray",
+            href: createDomainLink(result["publication_themes"].nodes[k]["id"]),
+            ...result["publication_themes"].nodes[k] 
+          };
       }
     );
 
@@ -147,6 +152,30 @@ class PublicationGraphView extends Component {
     this.setState({[e.target.name]: !checked});
   }
 
+  onNodeClick = node => {
+    if (node["href"]) {
+      this.props.history.replace(node["href"]);
+    }
+  }
+
+  nodeHintGenerator = node => {
+    let nodeHint = "";
+    if (node["name"]) {
+      nodeHint = `${node["labels"][0]}: ${node["name"]}`;
+    } else {
+      nodeHint = node["labels"];
+    }
+
+    if (node["href"]) {
+      return <span>
+        {nodeHint} 
+         <br/>
+         <i>click node for more info</i>
+        </span>
+    } else {
+      return <span>{nodeHint}</span>
+    }
+  }
 
   render() {
     console.log("rerender");
@@ -166,6 +195,8 @@ class PublicationGraphView extends Component {
 
     const publication = result["publication"];
     const author = result["author"];
+    const themes = result["publication_themes"].nodes;
+
 
     const data = this.prepareGraph(result);
     
@@ -200,6 +231,21 @@ class PublicationGraphView extends Component {
             </ul>
           </details>
           </EntityInfoItem>
+
+          <EntityInfoItem>
+          <details>
+            <summary>
+              Publication Domains:
+            </summary>
+
+            <ul>
+             {Object.values(themes).map(t => <li key={t["identity"]}> {t["name"]} </li>)}
+            </ul>
+
+            {/* <a href={createAuthoritiesInDomainsLink()} */}
+          </details>
+          </EntityInfoItem>
+
           <EntityInfoItem>
             <details>
             <summary>
@@ -217,8 +263,8 @@ class PublicationGraphView extends Component {
         <EntityGraph 
           graphConfig={GraphConfig}
           graphObject={data} 
-        
-          nodeHint={showingHintNodeId}
+          onNodeClick={this.onNodeClick}
+          hintExtractor={this.nodeHintGenerator}
           />
       </section>
     );

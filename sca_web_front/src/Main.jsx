@@ -21,9 +21,9 @@ const Main = () => (
     <Switch>
       <Route exact path='/' component={Home}/>
       <Route path='/search/' component={SearchWithResults} />
-      <Route path="/author/" component={Author}/>
+      <Route path="/author/" component={AuthorGraphView}/>
       <Route path="/domain/" component={Domain}/>
-      <Route path="/publication" component={Publication}/>
+      <Route path="/publication" component={PublicationGraphView}/>
       <Route path="/authorities-query/authority/" component={SingleAuthorityView} /> 
       <Route path='/authorities-query' component={AuthoritiesQuery}/>
       <Route path='/domains-query' component={DomainsQuery}/>

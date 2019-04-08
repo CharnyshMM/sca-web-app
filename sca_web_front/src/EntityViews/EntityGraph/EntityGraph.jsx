@@ -55,7 +55,7 @@ class EntityGraph extends Component {
     if (typeof(this.props.hintExtractor) === "function") {
       return this.props.hintExtractor(node)
     }
-    return <span>this.props.node["id"]</span>
+    return <span>{node["id"]}</span>
   }
 
   onMouseOverNode = nodeId => {

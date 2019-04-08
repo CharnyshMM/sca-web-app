@@ -212,7 +212,13 @@ class AuthorGraphView extends Component {
 
     const publicationsCount = result["publications_count"];
     const author = result["author"];
-
+    const mostCitedPublications = result["publications_relations_themes"].map(
+      v => {
+        return <li key={v["publication"]["id"]}>
+          <a href={createPublicationLink(v["publication"]["id"])}>{v["publication"]["name"]}</a>
+        </li>;
+      }
+      );
 
     const data = this.prepareGraph(result);
     console.log(data);
@@ -223,11 +229,30 @@ class AuthorGraphView extends Component {
         <EntityTitle title={author["name"]} />
         <EntityInfo>
           <EntityInfoItem>
-            <ul>
-              <li>
-                <b>{publicationsCount}</b> publications
-              </li>
-            </ul>
+            <details>
+              <summary>
+                Author details:
+              </summary>
+            
+              <ul>
+                <li>
+                  <b>{publicationsCount}</b> publication(s)
+                </li>
+                <li>
+                  Belarusian State University of Informatics and RadioElectronics
+                </li>
+              </ul>
+            </details>
+          </EntityInfoItem>
+          <EntityInfoItem>
+            <details>
+              <summary>
+                Most cited publications
+              </summary>
+              <ul>
+                {mostCitedPublications}
+              </ul>
+            </details>
           </EntityInfoItem>
         </EntityInfo>
 

@@ -3,13 +3,14 @@ import queryString from 'query-string';
 
 
 import Spinner from '../../ReusableComponents/Spinner';
+import LinkLikeButton from '../../ReusableComponents/LinkLikeButton/LinkLikeButton';
 import EntityTitle from '../EntityTitle/EntityTitle';
 import EntityInfo from '../EntityInfo/EntityInfo';
 import EntityInfoItem from '../EntityInfo/EntityInfoItem';
 import EntityGraph from '../EntityGraph/EntityGraph';
 import LegendBlock from '../EntityInfo/LegendBlock';
 import CheckableLegendBlock from '../EntityInfo/CheckableLegendBlock';
-
+import BeautifulPopOver from '../../ReusableComponents/BeautifulPopOver/BeautifulPopOver';
 
 import {
   createAuthorLink,
@@ -52,6 +53,8 @@ class PublicationGraphView extends Component {
       hasError: false,
       displayIncomingReferences: false,
       displayOutcomingReferences: false,
+      displayOutcomingReferencesList: false,
+      displayIncomingReferencesList: false,
     };
   }
 
@@ -169,8 +172,8 @@ class PublicationGraphView extends Component {
   }
 
   onDisplayCheckboxChanged = e => {
-    const checked = this.state[e.target.name];
-    this.setState({[e.target.name]: !checked});
+    const checked = this.state[e.target.id];
+    this.setState({[e.target.id]: !checked});
   }
 
   onNodeClick = node => {
@@ -198,9 +201,22 @@ class PublicationGraphView extends Component {
     }
   }
 
+  toggleReferencesList = referencesType => {
+    this.setState({[referencesType]: !this.state[referencesType]});
+  }
+
   render() {
     console.log("rerender");
-    const { result, error, hasError, loading, displayIncomingReferences, displayOutcomingReferences} = this.state;
+    const { 
+      result, 
+      error, 
+      hasError, 
+      loading, 
+      displayIncomingReferences, 
+      displayOutcomingReferences,
+      displayIncomingReferencesList,
+      displayOutcomingReferencesList
+    } = this.state;
 
     if (hasError) {
       return <ErrorAlert errorName={error.name} errorMessage={error.message} />;
@@ -220,6 +236,32 @@ class PublicationGraphView extends Component {
     const outcomingReferencesCount = Object.keys(result["publication_referenses"]["outcoming"].nodes).length;
     const incomingReferencesCount = Object.keys(result["publication_referenses"]["incoming"].nodes).length;
     
+    if (displayIncomingReferencesList) {
+      return <BeautifulPopOver onSideClick={()=>this.toggleReferencesList("displayIncomingReferencesList")}>
+        <ul>
+          {Object.values(result["publication_referenses"]["incoming"].nodes).map(
+            n => (
+              <li key={n["identity"]}>
+                <a href={createPublicationLink(n["identity"])}>{n["name"]}</a>
+              </li>
+            )
+          )}
+        </ul>
+      </BeautifulPopOver>
+    }
+    if (displayOutcomingReferencesList) {
+      return <BeautifulPopOver onSideClick={()=>this.toggleReferencesList("displayOutcomingReferencesList")}>
+        <ul>
+          {Object.values(result["publication_referenses"]["outcoming"].nodes).map(
+            n => (
+              <li key={n["identity"]}>
+                <a href={createPublicationLink(n["identity"])}>{n["name"]}</a>
+              </li>
+            )
+          )}
+        </ul>
+      </BeautifulPopOver>
+    }
 
     const data = this.prepareGraph(result, displayIncomingReferences, displayOutcomingReferences);
     console.log(data);
@@ -286,16 +328,36 @@ class PublicationGraphView extends Component {
                     Publication
                   </LegendBlock>
                 </li>
+                { incomingReferencesCount  > 0 && 
                 <li>
-                  <CheckableLegendBlock color="lightBlue" id="displayIncomingReferences" name="displayIncomingReferences" value={displayIncomingReferences} onChange={this.onDisplayCheckboxChanged}>
-                   Incoming references ({incomingReferencesCount})
+                  <CheckableLegendBlock 
+                    color="lightBlue" 
+                    id="displayIncomingReferences" 
+                    value={displayIncomingReferences} 
+                    onChange={this.onDisplayCheckboxChanged}
+                  >
+                    Incoming references  
+                    <LinkLikeButton onClick={()=>this.toggleReferencesList("displayIncomingReferencesList")}>
+                        View list
+                    </LinkLikeButton>
                   </CheckableLegendBlock>
                 </li>
+                }
+                {outcomingReferencesCount > 0 && 
                 <li>
-                  <CheckableLegendBlock color="lightBlue" id="displayOutcomingReferences" name="displayOutcomingReferences" value={displayOutcomingReferences} onChange={this.onDisplayCheckboxChanged}>
-                    Outcoming references ({outcomingReferencesCount})
+                  <CheckableLegendBlock 
+                    color="lightBlue" 
+                    id="displayOutcomingReferences" 
+                    value={displayOutcomingReferences} 
+                    onChange={this.onDisplayCheckboxChanged}
+                  >
+                    Outcoming references
+                    <LinkLikeButton onClick={()=>this.toggleReferencesList("displayOutcomingReferencesList")}>
+                        View list
+                    </LinkLikeButton>
                   </CheckableLegendBlock>
                 </li>
+                }
               </ul>
           </details>
           </EntityInfoItem>

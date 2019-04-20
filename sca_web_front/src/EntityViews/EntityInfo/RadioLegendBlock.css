@@ -1,0 +1,27 @@
+.radio_legend_block__input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.radio_legend_block__label {
+  cursor: pointer;
+  margin-bottom: 0px;
+}
+
+.radio_legend_block__checkmark {
+  width: 1em;
+  display: inline-block;
+  height: 1em;
+  background-color: rgba(0, 0, 0, 0);
+  border: 1px solid #eee;
+  margin-right: 1ex;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.radio_legend_block__input:checked + .checkable_legend_block__checkmark {
+  background-color: aqua;
+}

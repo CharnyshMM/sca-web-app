@@ -11,6 +11,7 @@ import EntityGraph from '../EntityGraph/EntityGraph';
 import LegendBlock from '../EntityInfo/LegendBlock';
 import CheckableLegendBlock from '../EntityInfo/CheckableLegendBlock';
 import BeautifulPopOver from '../../ReusableComponents/BeautifulPopOver/BeautifulPopOver';
+import { paintNodes } from '../utilities';
 
 import {
   createAuthorLink,
@@ -111,51 +112,46 @@ class PublicationGraphView extends Component {
       ...result["publication"]
     }
 
-    const themeNodes = {};
-    Object.keys(result["publication_themes"].nodes).forEach(
-      (k) => {
-         themeNodes[k] = {
-            color: "gray",
-            href: createDomainLink(result["publication_themes"].nodes[k]["id"]),
-            ...result["publication_themes"].nodes[k] 
-          };
-      }
-    );
+    const themesNodes = paintNodes(result["publication_themes"].nodes, "gray");
     
 
-    const referencesNodes = {};
+    let referencesNodes = {};
     let referencesRelationships = {};
     if (showIncomingReferences) {
-      Object.keys(result["publication_referenses"]["incoming"].nodes).forEach( 
-        k => {
-          const node = result["publication_referenses"]["incoming"].nodes[k];
-          referencesNodes[k] = { 
-            color: "lightblue",
-            href: createPublicationLink(node["identity"]),
-            ...node
-          };
-      });
-      referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["incoming"].relationships);
+      referencesNodes = {
+        ...paintNodes(
+          result["publication_referenses"]["incoming"].nodes, 
+          "lightblue", 
+          n => ({href: createPublicationLink(n["identity"])})
+        ),
+        ...referencesNodes
+      };
+      referencesRelationships = {
+        ...result["publication_referenses"]["incoming"].relationships,
+        ...referencesRelationships
+      };    
     }
 
     if (showOutcomingReferences) {
-      Object.keys(result["publication_referenses"]["outcoming"].nodes).forEach(
-        k => {
-          const node = result["publication_referenses"]["outcoming"].nodes[k];
-          referencesNodes[k] = { 
-            color: "lightblue",
-            href: createPublicationLink(node["identity"]),
-            ...node
-          };
-      });
-      referencesRelationships = Object.assign(referencesRelationships, result["publication_referenses"]["outcoming"].relationships);
+      referencesNodes = {
+        ...paintNodes(
+          result["publication_referenses"]["outcoming"].nodes, 
+          "lightblue", 
+          n => ({href: createPublicationLink(n["identity"])})
+        ),
+        ...referencesNodes
+      };
+      referencesRelationships = {
+        ...result["publication_referenses"]["outcoming"].relationships,
+        ...referencesRelationships
+      };
     }
     
 
     const nodes = {
       [authorNode["identity"]]: authorNode,
       [publicationNode["identity"]]: publicationNode,
-      ...themeNodes,
+      ...themesNodes,
       ...referencesNodes
     };
 
@@ -264,7 +260,7 @@ class PublicationGraphView extends Component {
     }
 
     const data = this.prepareGraph(result, displayIncomingReferences, displayOutcomingReferences);
-    console.log(data);
+    
     GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
     return (
@@ -306,8 +302,6 @@ class PublicationGraphView extends Component {
             <ul>
              {Object.values(themes).map(t => <li key={t["identity"]}> {t["name"]} </li>)}
             </ul>
-
-            {/* <a href={createAuthoritiesInDomainsLink()} */}
           </details>
           </EntityInfoItem>
 
@@ -328,7 +322,7 @@ class PublicationGraphView extends Component {
                     Publication
                   </LegendBlock>
                 </li>
-                { incomingReferencesCount  > 0 && 
+                {incomingReferencesCount  > 0 && 
                 <li>
                   <CheckableLegendBlock 
                     color="lightBlue" 

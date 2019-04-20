@@ -7,7 +7,10 @@ import EntityTitle from './EntityTitle/EntityTitle';
 import EntityInfo from './EntityInfo/EntityInfo';
 import EntityInfoItem from './EntityInfo/EntityInfoItem';
 import EntityGraph from './EntityGraph/EntityGraph';
-
+import LegendBlock from './EntityInfo/LegendBlock';
+import RadioLegendBlock from './EntityInfo/RadioLegendBlock';
+import CheckableLegendBlock from './EntityInfo/CheckableLegendBlock';
+import {prepareAuthorGraph} from './utilities';
 
 import {
   createAuthorLink,
@@ -24,12 +27,13 @@ const GraphConfig = {
 
     highlightStrokeColor: 'blue',
     labelProperty: n => {
-      if (n.labels)
-        return n.labels[0];
+        return n.id;
     }
 
   },
   link: {
+    renderLabel: true,
+    labelProperty: true,
     highlightColor: 'red'
   },
   nodeHighlightBehavior: true,
@@ -47,8 +51,8 @@ class AuthorGraphView extends Component {
       result: undefined,
       error: undefined,
       hasError: false,
-      displayReferences: false,
-      showingHintNodeId: null,
+      loadingGraph: true,
+      referencesShowingMode: "showIncomingReferencesAuthors"
     };
   }
 
@@ -73,6 +77,7 @@ class AuthorGraphView extends Component {
           if (status != 200) {
             throw new Error(response.error);
           }
+          console.log(response);
           this.setState({
             result: response,
             loading: false
@@ -87,86 +92,6 @@ class AuthorGraphView extends Component {
       );
   }
 
-  prepareGraph = result => {
-    const NODE_SIZE = 500;
-    console.log(result);
-
-    const authorNode = {
-      color: "red",
-      size: NODE_SIZE*2,
-      cx: 20,
-      cy: 2,
-      ...result["author"]
-    };
-
-    const publications = {};
-    const authorPublicationsRelationships = [];
-    const linkedPublications = {};
-    const linkedPublicationsAuthors = {};
-    let linkedPublicationsRelationships = [];
-    const distinctAuthorPublicationsRelationships = {};
-
-    result["publications_relations_themes"].forEach(
-      entry => {
-        publications[entry["publication"]["id"]] = {
-          color: "green",
-          href: createPublicationLink(entry["publication"]["id"]),
-          ...entry["publication"],
-        };
-        authorPublicationsRelationships.push(entry["author_publication_relationship"]);
-
-        entry["linked_publications"].forEach(
-          item => {
-            linkedPublications[item["id"]] = {
-              color: "lightblue",
-              href: createPublicationLink(item["id"]),
-              ...item
-            };
-          }
-        );
-
-        entry["linked_publication_authors"].forEach(
-          item => {
-            linkedPublicationsAuthors[item["id"]] = {
-              color: "pink",
-              href: createAuthorLink(item["id"]),
-              ...item
-            };
-          }
-        );
-
-        linkedPublicationsRelationships = [
-          ...linkedPublicationsRelationships,
-          ...entry["references_relations"],
-        ];
-
-        entry["linked_publications_author_relations"].forEach(
-          item => {
-            distinctAuthorPublicationsRelationships[item["id"]] = item;
-          }
-        )
-      }
-    );
-   
-    return {
-      nodes: {
-        [authorNode["id"]]: authorNode,
-        ...publications,
-        ...linkedPublications,
-        ...linkedPublicationsAuthors
-      },
-      links: [
-        ...authorPublicationsRelationships,
-        ...linkedPublicationsRelationships,
-        ...Object.values(distinctAuthorPublicationsRelationships)
-      ],
-    };
-  }
-
-  onDisplayCheckboxChanged = e => {
-    const checked = this.state[e.target.name];
-    this.setState({[e.target.name]: !checked});
-  }
 
   nodeHintGenerator = node => {
     let nodeHint = "";
@@ -193,10 +118,25 @@ class AuthorGraphView extends Component {
     }
   }
 
+  onReferencesRadioLegendChanged = e => {
+    this.setState({referencesShowingMode: e.target.id});
+  }
+
+  onDisplayCheckboxChanged = e => {
+    const checked = this.state[e.target.id];
+    this.setState({[e.target.id]: !checked});
+  }
 
   render() {
     console.log("rerender");
-    const { result, error, hasError, loading, displayReferences } = this.state;
+    const { 
+      result, 
+      error, 
+      hasError, 
+      loading, 
+      referencesShowingMode,
+      showPublicationThemes
+    } = this.state;
 
     if (hasError) {
       return <ErrorAlert errorName={error.name} errorMessage={error.message} />;
@@ -210,19 +150,18 @@ class AuthorGraphView extends Component {
       return <ErrorAlert errorName="404 - Not found" errorMessage="Sorry, didn't found that page" />;
     }
 
+    const data = prepareAuthorGraph(result, referencesShowingMode, showPublicationThemes);
     const publicationsCount = result["publications_count"];
     const author = result["author"];
-    const mostCitedPublications = result["publications_relations_themes"].map(
+    const mostCitedPublications = result["top_publications"].map(
       v => {
         return <li key={v["publication"]["id"]}>
           <a href={createPublicationLink(v["publication"]["id"])}>{v["publication"]["name"]}</a>
         </li>;
       }
-      );
+    );
 
-    const data = this.prepareGraph(result);
-    console.log(data);
-    GraphConfig.height = window.innerHeight * 0.8;
+    GraphConfig.height = window.innerHeight * 0.7;
     GraphConfig.width = window.innerWidth;
     return (
       <section style={{ position: "relative", padding: "1% 10%" }}>
@@ -251,6 +190,72 @@ class AuthorGraphView extends Component {
               </summary>
               <ul>
                 {mostCitedPublications}
+              </ul>
+            </details>
+          </EntityInfoItem>
+          <EntityInfoItem>
+            <details>
+              <summary>Graph</summary>
+              <ul style={{listStyle: "none"}}>
+                <li>
+                  <LegendBlock color="red">
+                    Author
+                  </LegendBlock>
+                </li>
+                <li>
+                  <LegendBlock color="green">
+                    Publication
+                  </LegendBlock>
+                </li>
+                <li>
+                  <CheckableLegendBlock 
+                    color="gray" 
+                    id="showPublicationThemes"
+                    value={showPublicationThemes} 
+                    onChange={this.onDisplayCheckboxChanged}>
+                    Themes
+                  </CheckableLegendBlock>
+                </li>
+                <li>
+                  <RadioLegendBlock 
+                    color="pink" 
+                    id="showIncomingReferencesAuthors"
+                    name="graph"
+                    value={referencesShowingMode == "showIncomingReferencesAuthors"} 
+                    onChange={this.onReferencesRadioLegendChanged}>
+                    Authors who referenced to author's publications
+                  </RadioLegendBlock>
+                </li>
+                <li>
+                  <RadioLegendBlock 
+                    color="pink" 
+                    id="showOutcomingReferencesAuthors"
+                    name="graph"
+                    value={referencesShowingMode == "showOutcomingReferencesAuthors"} 
+                    onChange={this.onReferencesRadioLegendChanged}>
+                    Authors whose publications where referenced by current author
+                  </RadioLegendBlock>
+                </li>
+                <li>
+                  <RadioLegendBlock 
+                    color="lightblue" 
+                    id="showIncomingReferencesPublications"
+                    name="graph"
+                    value={referencesShowingMode == "showIncomingReferencesPublications"} 
+                    onChange={this.onReferencesRadioLegendChanged}>
+                    Incoming references publications
+                  </RadioLegendBlock>
+                </li>
+                <li>
+                  <RadioLegendBlock 
+                    color="lightblue" 
+                    id="showOutcomingReferencesPublications"
+                    value={referencesShowingMode == "showOutcomingReferencesPublications"} 
+                    onChange={this.onReferencesRadioLegendChanged}>
+                    Outcoming references publications
+                  </RadioLegendBlock>
+                </li>
+
               </ul>
             </details>
           </EntityInfoItem>

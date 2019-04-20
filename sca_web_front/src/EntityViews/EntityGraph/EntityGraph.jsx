@@ -4,6 +4,7 @@ import { Graph } from 'react-d3-graph';
 import NodeHint from './NodeHint';
 
 import './EntityGraph.css';
+import Spinner from '../../ReusableComponents/Spinner';
 // this.props.graphData
 // this.props.nodeHint
 // this.props.onNodeClick
@@ -91,12 +92,15 @@ class EntityGraph extends Component {
   getGraphData = getGraphDataMemoizable.call(this)
 
   render() {
-    const { graphConfig } = this.props;
+    const { graphConfig, loadingGraph } = this.props;
     const { nodeHint, mouseOverHint, mouseOverNode } = this.state;
     const hintIsVisible = mouseOverHint || mouseOverNode;
     const hintX = this.mouseX;
     const hintY = this.mouseY;
     
+    if (loadingGraph) {
+      return <Spinner />;
+    }
     return (
       <div className="entity_graph" onMouseMove={this.createOnMouseMoveHandler()}>
         {hintIsVisible &&

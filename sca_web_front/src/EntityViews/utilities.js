@@ -24,10 +24,25 @@ function paintNodes(nodes_object, color, attributesGenerator) {
   return paintedNodes;
 }
 
-function prepareAuthorGraph(result, referencesShowingMode, showPublicationThemes) {
-  const NODE_SIZE = 500;
-  console.log(result);
+function cacheableGraphPreparation(graphPreparingFunction) {
+  let memoizedResult = undefined;
+  let cachedData = {};
 
+  return (result, nodesShowingMode) => {
+    if (memoizedResult != result) {
+      memoizedResult = result
+      cachedData = {
+        [nodesShowingMode]: graphPreparingFunction(result, nodesShowingMode)
+      };
+    } else if (!cachedData.hasOwnProperty(nodesShowingMode)) {
+      cachedData[nodesShowingMode] = graphPreparingFunction(result, nodesShowingMode);
+    }
+    return cachedData[nodesShowingMode];
+  }
+}
+
+function prepareAuthorGraph(result, referencesShowingMode) {
+  const NODE_SIZE = 500;
   const authorNode = {
     color: "red",
     size: NODE_SIZE * 2,
@@ -48,18 +63,17 @@ function prepareAuthorGraph(result, referencesShowingMode, showPublicationThemes
       };
       publicationsRelationships[entry["author_publication_relationship"].identity] = entry["author_publication_relationship"];
 
-      if (showPublicationThemes) {
-        publicationsNodes = {
-          ...paintNodes(entry["themes"].nodes, "gray"),
-          ...publicationsNodes
-        };
-        publicationsRelationships = {
-          ...entry["themes"].relationships,
-          ...publicationsRelationships
-        };
-      }
-
       switch (referencesShowingMode) {
+        case "showPublicationThemes":
+          publicationsNodes = {
+            ...paintNodes(entry["themes"].nodes, "gray"),
+            ...publicationsNodes
+          };
+          publicationsRelationships = {
+            ...entry["themes"].relationships,
+            ...publicationsRelationships
+          };
+          break;
         case "showIncomingReferencesPublications":
           {
             referencesNodes = {
@@ -151,6 +165,7 @@ function getPrepareAuthorGraphPromise (result, referencesShowingMode, showPublic
 export {
   paintNodes,
   getPrepareAuthorGraphPromise,
-  prepareAuthorGraph
+  prepareAuthorGraph,
+  cacheableGraphPreparation
 };
 

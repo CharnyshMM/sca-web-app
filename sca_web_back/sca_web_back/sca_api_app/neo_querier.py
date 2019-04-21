@@ -358,22 +358,27 @@ class NeoQuerier:
         """
 
         publication_referenses_query = f"""
-            match (p:{self.PUBLICATION_NODE_LABEL})-[l_t:{self.LINKS_TO_RELATION_LABEL}]-(another_p:{self.PUBLICATION_NODE_LABEL})
+            match (p:{self.PUBLICATION_NODE_LABEL})-[out_l_t:{self.LINKS_TO_RELATION_LABEL}]->(:{self.PUBLICATION_NODE_LABEL})
             where ID(p)={publication_id}
-            return collect(distinct l_t) as referenses_relationships
-            limit 10
+            match (p)<-[in_l_t:{self.LINKS_TO_RELATION_LABEL}]-(:{self.PUBLICATION_NODE_LABEL})
+            return 
+                collect(distinct out_l_t) as outcoming_references_relationships,
+                collect(distinct in_l_t) as incoming_references_relationships
         """
 
         author_publication = self.graph.run(author_publication_query).data()
         publication_themes = self.graph.run(publication_themes_query).data()
-        publication_referenses = self.graph.run(publication_referenses_query).data()[0]["referenses_relationships"]
+        publication_referenses = self.graph.run(publication_referenses_query).data()[0]
 
         return {
             "author": author_publication[0]["a"],
             "publication": author_publication[0]["p"],
             "author_publication": NeoQuerier.separate_nodes_and_relationships_from_list(author_publication),
             "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
-            "publication_referenses": NeoQuerier.process_references_graph(publication_id, publication_referenses)
+            "publication_referenses": {
+               "outcoming": NeoQuerier.get_relationships_graph(publication_referenses["outcoming_references_relationships"], "end_node"),
+               "incoming": NeoQuerier.get_relationships_graph(publication_referenses["incoming_references_relationships"], "start_node")
+            }
         }
 
     def get_author_graph(self, author_id):
@@ -388,31 +393,70 @@ class NeoQuerier:
         relations_and_themes_query = f"""
             match (p:Publication)-[w:WROTE]-(a:Author)
 	            WHERE ID(a)={author_id}
-            optional match (p)-[t_r:THEME_RELATION]-(t:Theme)
+            optional match (p)-[t_r:THEME_RELATION]->(t:Theme)
                 WHERE t_r.probability>0.1
-            optional match (p)-[r_r:LINKS_TO]-(another_p:Publication)
-            optional match (another_p)-[another_w:WROTE]-(another_p_a:Author)
-                where EXISTS(another_p_a.name)
+            optional match (p)-[out_r_r:LINKS_TO]->(:Publication)<-[out_author_wrote:WROTE]-(out_author:Author)
+                where EXISTS(out_author.name)
+            optional match (p)<-[in_r_r:LINKS_TO]-(:Publication)<-[in_author_wrote:WROTE]-(in_author:Author)
+                where EXISTS(in_author.name)
             return p as publication,
                 w as author_publication_relationship,
                 collect(distinct t_r) as themes_relations,
-                collect(DISTINCT t) as themes,
-                collect(distinct r_r) as references_relations,
-                collect(distinct another_p) as linked_publications,
-                collect(distinct another_w) as linked_publications_author_relations,  
-                collect(distinct another_p_a) as linked_publication_authors
-            order by size(linked_publications) desc
-            limit 10
+                collect(distinct out_r_r) as outcoming_references_relations,
+                collect(distinct in_r_r) as incoming_references_relations,
+                collect(distinct out_author_wrote) as out_linked_publications_author_relations,
+                collect(distinct in_author_wrote) as in_linked_publications_author_relations
+            order by size(incoming_references_relations) desc
+            limit 5
         """
 
-        author_pubcount = self.graph.run(author_query).data()[0]# ???
+        author_pubcount = self.graph.run(author_query).data()[0] # ???
         publications_relations_and_themes = self.graph.run(relations_and_themes_query).data()
+        top_publications = []
+        for entry in publications_relations_and_themes:
+            outcoming_references_graph = NeoQuerier.get_relationships_graph(entry["outcoming_references_relations"], "end_node")
+            incoming_references_graph = NeoQuerier.get_relationships_graph(entry["incoming_references_relations"], "start_node")
+            themes_graph = NeoQuerier.get_relationships_graph(entry["themes_relations"], "end_node")
 
-        return {
+            outcoming_authors_nodes = {}
+            outcoming_authors_links = {}
+            incoming_authors_nodes = {}
+            incoming_authors_links = {}
+            for wrote_relationship in entry["out_linked_publications_author_relations"]:
+                author = wrote_relationship.start_node
+                outcoming_authors_nodes[author.identity] = author
+                outcoming_authors_links[wrote_relationship.identity] = wrote_relationship
+            for wrote_relationship in entry["in_linked_publications_author_relations"]:
+                author = wrote_relationship.start_node
+                incoming_authors_nodes[author.identity] = author
+                incoming_authors_links[wrote_relationship.identity] = wrote_relationship
+            
+            outcoming_references_graph["authors"] = {
+                "nodes": outcoming_authors_nodes,
+                "relationships": outcoming_authors_links
+            }
+            incoming_references_graph["authors"] = {
+                "nodes": incoming_authors_nodes,
+                "relationships": incoming_authors_links
+            }
+
+            top_publications.append({
+                "publication": entry["publication"],
+                "author_publication_relationship": entry["author_publication_relationship"],
+                "themes": themes_graph,
+                "references": {
+                    "incoming": incoming_references_graph,
+                    "outcoming": outcoming_references_graph
+                }
+            })
+
+        result = {
             "author": author_pubcount["author"],
             "publications_count": author_pubcount["publications_count"],
-            "publications_relations_themes": publications_relations_and_themes
+            "top_publications": top_publications
         }
+
+        return result
 
 
     @staticmethod
@@ -443,30 +487,17 @@ class NeoQuerier:
         return nodes, relationships
 
     @staticmethod
-    def process_references_graph(central_node_id, relationships_list):
-        outcoming_references_relationships = {}
-        outcoming_references_nodes = {}
-        incoming_references_relationships = {}
-        incoming_references_nodes = {}
-
+    def get_relationships_graph(relationships_list, attribute_name):
+        nodes = {}
+        relationships = {}
         for relationship in relationships_list:
             rel_id = f"{relationship.start_node.identity}>{relationship.end_node.identity}"
-            if (relationship.start_node.identity == central_node_id):
-                outcoming_references_nodes[relationship.end_node.identity] = relationship.end_node
-                outcoming_references_relationships[rel_id] = relationship
-            else:
-                incoming_references_nodes[relationship.start_node.identity] = relationship.start_node
-                incoming_references_relationships[rel_id] = relationship
-        
+            relationships[rel_id] = relationship
+            node = getattr(relationship, attribute_name)
+            nodes[node.identity] = node
         return {
-            "outcoming": {
-                "nodes": outcoming_references_nodes,
-                "relationships": outcoming_references_relationships
-            },
-            "incoming": {
-                "nodes": incoming_references_nodes,
-                "relationships": incoming_references_relationships
-            }
+            "nodes": nodes,
+            "relationships": relationships
         }
 
     @staticmethod

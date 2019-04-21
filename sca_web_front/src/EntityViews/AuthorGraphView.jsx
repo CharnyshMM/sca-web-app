@@ -10,7 +10,7 @@ import EntityGraph from './EntityGraph/EntityGraph';
 import LegendBlock from './EntityInfo/LegendBlock';
 import RadioLegendBlock from './EntityInfo/RadioLegendBlock';
 import CheckableLegendBlock from './EntityInfo/CheckableLegendBlock';
-import {prepareAuthorGraph} from './utilities';
+import {prepareAuthorGraph, cacheableGraphPreparation} from './utilities';
 
 import {
   createAuthorLink,
@@ -51,8 +51,8 @@ class AuthorGraphView extends Component {
       result: undefined,
       error: undefined,
       hasError: false,
-      loadingGraph: true,
-      referencesShowingMode: "showIncomingReferencesAuthors"
+      loadingGraph: false,
+      referencesShowingMode: ""
     };
   }
 
@@ -119,7 +119,17 @@ class AuthorGraphView extends Component {
   }
 
   onReferencesRadioLegendChanged = e => {
-    this.setState({referencesShowingMode: e.target.id});
+    // the strange code below makes graph lib clear graph before changing graph data,
+    // because it used to have problems with links dublicating
+    const mode = e.target.id;
+    if (this.state.referencesShowingMode == e.target.id) {
+      this.setState({referencesShowingMode: null});
+    } else {
+      setTimeout(() => {
+        this.setState({referencesShowingMode: mode});
+      }, 15);
+      this.setState({referencesShowingMode: null});
+    }
   }
 
   onDisplayCheckboxChanged = e => {
@@ -127,15 +137,15 @@ class AuthorGraphView extends Component {
     this.setState({[e.target.id]: !checked});
   }
 
+  buildGraph = cacheableGraphPreparation(prepareAuthorGraph);
+
   render() {
-    console.log("rerender");
     const { 
       result, 
       error, 
       hasError, 
       loading, 
-      referencesShowingMode,
-      showPublicationThemes
+      referencesShowingMode
     } = this.state;
 
     if (hasError) {
@@ -150,7 +160,8 @@ class AuthorGraphView extends Component {
       return <ErrorAlert errorName="404 - Not found" errorMessage="Sorry, didn't found that page" />;
     }
 
-    const data = prepareAuthorGraph(result, referencesShowingMode, showPublicationThemes);
+    
+    const data = this.buildGraph(result, referencesShowingMode);
     const publicationsCount = result["publications_count"];
     const author = result["author"];
     const mostCitedPublications = result["top_publications"].map(
@@ -208,13 +219,14 @@ class AuthorGraphView extends Component {
                   </LegendBlock>
                 </li>
                 <li>
-                  <CheckableLegendBlock 
+                  <RadioLegendBlock 
                     color="gray" 
                     id="showPublicationThemes"
-                    value={showPublicationThemes} 
-                    onChange={this.onDisplayCheckboxChanged}>
+                    name="graph"
+                    value={referencesShowingMode == "showPublicationThemes"} 
+                    onChange={this.onReferencesRadioLegendChanged}>
                     Themes
-                  </CheckableLegendBlock>
+                  </RadioLegendBlock>
                 </li>
                 <li>
                   <RadioLegendBlock 
@@ -264,7 +276,7 @@ class AuthorGraphView extends Component {
 
         <EntityGraph 
           graphConfig={GraphConfig}
-          graphObject={data} 
+          graphObject={data}
           onNodeClick={this.onNodeClick}
           hintExtractor={this.nodeHintGenerator}
           />

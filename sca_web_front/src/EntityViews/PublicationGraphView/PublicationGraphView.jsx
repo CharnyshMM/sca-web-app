@@ -11,6 +11,7 @@ import EntityGraph from '../EntityGraph/EntityGraph';
 import LegendBlock from '../EntityInfo/LegendBlock';
 import RadioLegendBlock from '../EntityInfo/RadioLegendBlock';
 import BeautifulPopOver from '../../ReusableComponents/BeautifulPopOver/BeautifulPopOver';
+import SimpleNodesLinksList from '../../ReusableComponents/SimpleNodesLinksList';
 import { preparePublicationGraph, cacheableGraphPreparation } from '../utilities';
 
 import {
@@ -136,10 +137,8 @@ class PublicationGraphView extends Component {
     this.setState({[referencesType]: !this.state[referencesType]});
   }
 
-  
 
   render() {
-    console.log("rerender");
     const { 
       result, 
       error, 
@@ -161,7 +160,7 @@ class PublicationGraphView extends Component {
     if (!result) {
       return <ErrorAlert errorName="404 - Not found" errorMessage="Sorry, didn't found that page" />;
     }
-
+    console.log(result);
     const publication = result["publication"];
     const author = result["author"];
     const themes = result["publication_themes"].nodes;
@@ -170,29 +169,17 @@ class PublicationGraphView extends Component {
     
     if (displayIncomingReferencesList) {
       return <BeautifulPopOver onSideClick={()=>this.toggleReferencesList("displayIncomingReferencesList")}>
-        <ul>
-          {Object.values(result["publication_referenses"]["incoming"].nodes).map(
-            n => (
-              <li key={n["identity"]}>
-                <a href={createPublicationLink(n["identity"])}>{n["name"]}</a>
-              </li>
-            )
-          )}
-        </ul>
-      </BeautifulPopOver>
+                <SimpleNodesLinksList linksCreator={createPublicationLink}>
+                  {Object.values(result["publication_referenses"]["incoming"].nodes)}
+                </SimpleNodesLinksList>
+              </BeautifulPopOver>;
     }
     if (displayOutcomingReferencesList) {
       return <BeautifulPopOver onSideClick={()=>this.toggleReferencesList("displayOutcomingReferencesList")}>
-        <ul>
-          {Object.values(result["publication_referenses"]["outcoming"].nodes).map(
-            n => (
-              <li key={n["identity"]}>
-                <a href={createPublicationLink(n["identity"])}>{n["name"]}</a>
-              </li>
-            )
-          )}
-        </ul>
-      </BeautifulPopOver>
+                <SimpleNodesLinksList linksCreator={createPublicationLink}>
+                  {Object.values(result["publication_referenses"]["outcoming"].nodes)}
+                </SimpleNodesLinksList>
+              </BeautifulPopOver>;
     }
 
     const data = this.prepareGraph(result, referencesShowingMode);

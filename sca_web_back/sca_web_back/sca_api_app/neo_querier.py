@@ -7,6 +7,7 @@ from .neo_config import neo_password, neo_user, neo_port, neo_host, neo_scheme
 
 
 class NeoQuerier:
+    REFERENCES_LIMIT = 30
     AUTHOR_NODE_LABEL = "Author"
     PUBLICATION_NODE_LABEL = "Publication"
     THEME_NODE_LABEL = "Theme"
@@ -358,9 +359,10 @@ class NeoQuerier:
         """
 
         publication_referenses_query = f"""
-            match (p:{self.PUBLICATION_NODE_LABEL})-[out_l_t:{self.LINKS_TO_RELATION_LABEL}]->(:{self.PUBLICATION_NODE_LABEL})
+            match (p:{self.PUBLICATION_NODE_LABEL})
             where ID(p)={publication_id}
-            match (p)<-[in_l_t:{self.LINKS_TO_RELATION_LABEL}]-(:{self.PUBLICATION_NODE_LABEL})
+            optional match (p)-[out_l_t:{self.LINKS_TO_RELATION_LABEL}]->(:{self.PUBLICATION_NODE_LABEL})
+            optional match (p)<-[in_l_t:{self.LINKS_TO_RELATION_LABEL}]-(:{self.PUBLICATION_NODE_LABEL})
             return 
                 collect(distinct out_l_t) as outcoming_references_relationships,
                 collect(distinct in_l_t) as incoming_references_relationships
@@ -369,7 +371,7 @@ class NeoQuerier:
         author_publication = self.graph.run(author_publication_query).data()
         publication_themes = self.graph.run(publication_themes_query).data()
         publication_referenses = self.graph.run(publication_referenses_query).data()[0]
-
+        
         return {
             "author": author_publication[0]["a"],
             "publication": author_publication[0]["p"],
@@ -414,14 +416,20 @@ class NeoQuerier:
         publications_relations_and_themes = self.graph.run(relations_and_themes_query).data()
         top_publications = []
         for entry in publications_relations_and_themes:
-            outcoming_references_graph = NeoQuerier.get_relationships_graph(entry["outcoming_references_relations"], "end_node")
-            incoming_references_graph = NeoQuerier.get_relationships_graph(entry["incoming_references_relations"], "start_node")
+            outcoming_references_graph = NeoQuerier.get_relationships_graph(
+                entry["outcoming_references_relations"][:NeoQuerier.REFERENCES_LIMIT], 
+                "end_node"
+                )
+            incoming_references_graph = NeoQuerier.get_relationships_graph(
+                entry["incoming_references_relations"][:NeoQuerier.REFERENCES_LIMIT], 
+                "start_node")
             themes_graph = NeoQuerier.get_relationships_graph(entry["themes_relations"], "end_node")
 
             outcoming_authors_nodes = {}
             outcoming_authors_links = {}
             incoming_authors_nodes = {}
             incoming_authors_links = {}
+            
             for wrote_relationship in entry["out_linked_publications_author_relations"]:
                 author = wrote_relationship.start_node
                 outcoming_authors_nodes[author.identity] = author

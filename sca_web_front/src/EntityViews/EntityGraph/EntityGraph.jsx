@@ -5,11 +5,6 @@ import NodeHint from './NodeHint';
 
 import './EntityGraph.css';
 import Spinner from '../../ReusableComponents/Spinner';
-// this.props.graphData
-// this.props.nodeHint
-// this.props.onNodeClick
-// this.props.graphDataDict
-// this.props.hintExtractor(Node n)
 
 
 function getGraphDataMemoizable() {

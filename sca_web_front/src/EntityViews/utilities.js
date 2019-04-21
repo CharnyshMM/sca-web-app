@@ -1,4 +1,4 @@
-import { resolve } from "upath";
+import {createAuthorLink, createPublicationLink} from '../utilities/links_creators'; 
 
 function paintNodes(nodes_object, color, attributesGenerator) {
   const paintedNodes = {};
@@ -77,7 +77,11 @@ function prepareAuthorGraph(result, referencesShowingMode) {
         case "showIncomingReferencesPublications":
           {
             referencesNodes = {
-              ...paintNodes(entry["references"]["incoming"].nodes, "lightblue"),
+              ...paintNodes(
+                  entry["references"]["incoming"].nodes, 
+                  "lightblue", 
+                  n => ({href: createPublicationLink(n["identity"])})
+                  ),
               ...referencesNodes
             };
             referencesRelationships = {
@@ -89,7 +93,11 @@ function prepareAuthorGraph(result, referencesShowingMode) {
         case "showOutcomingReferencesPublications":
           {
             referencesNodes = {
-              ...paintNodes(entry["references"]["outcoming"].nodes, "lightblue"),
+              ...paintNodes(
+                entry["references"]["outcoming"].nodes, 
+                "lightblue",
+                n => ({href: createPublicationLink(n["identity"])})
+                ),
               ...referencesNodes
             };
             referencesRelationships = {
@@ -101,7 +109,11 @@ function prepareAuthorGraph(result, referencesShowingMode) {
         case "showIncomingReferencesAuthors":
           {
             referencesNodes = {
-              ...paintNodes(entry["references"]["incoming"]["authors"].nodes, "pink"),
+              ...paintNodes(
+                entry["references"]["incoming"]["authors"].nodes, 
+                "pink",
+                n => ({href: createAuthorLink(n["identity"])})
+                ),
               ...referencesNodes
             };
             Object.values(entry["references"]["incoming"]["authors"].relationships).forEach(
@@ -119,7 +131,11 @@ function prepareAuthorGraph(result, referencesShowingMode) {
           {
             console.log(referencesShowingMode);
             referencesNodes = {
-              ...paintNodes(entry["references"]["outcoming"]["authors"].nodes, "pink"),
+              ...paintNodes(
+                entry["references"]["outcoming"]["authors"].nodes,
+                "pink",
+                n => ({href: createAuthorLink(n["identity"])})
+                ),
               ...referencesNodes
             };
             Object.values(entry["references"]["outcoming"]["authors"].relationships).forEach(
@@ -152,20 +168,86 @@ function prepareAuthorGraph(result, referencesShowingMode) {
   };
 }
 
+function preparePublicationGraph(result, referencesShowingMode) {
+  const NODE_SIZE = 500;
 
-function getPrepareAuthorGraphPromise (result, referencesShowingMode, showPublicationThemes) {
-  return new Promise(
-    (resolve, reject) => {
-      let data = prepareAuthorGraph(result, referencesShowingMode, showPublicationThemes);
-      resolve(data);
-    }  
-  );
+  const authorNode = {
+    color: "red",
+    size: NODE_SIZE * 3,
+    href: createAuthorLink(result["author"]["id"]),
+    ...result["author"]
+  };
+
+  const publicationNode = {
+    color: "green",
+    size: NODE_SIZE * 5,
+    cx: 20,
+    cy: 2,
+    ...result["publication"]
+  }
+
+  const themesNodes = paintNodes(result["publication_themes"].nodes, "gray");
+  
+  let referencesNodes = {};
+  let referencesRelationships = {};
+
+  switch(referencesShowingMode)
+  {
+    case "showIncomingReferencesPublications":
+      referencesNodes = {
+        ...paintNodes(
+          result["publication_referenses"]["incoming"].nodes, 
+          "lightblue", 
+          n => ({href: createPublicationLink(n["identity"])})
+        ),
+        ...referencesNodes
+      };
+      referencesRelationships = {
+        ...result["publication_referenses"]["incoming"].relationships,
+        ...referencesRelationships
+      }; 
+      break;
+    case "showOutcomingReferencesPublications":
+      referencesNodes = {
+        ...paintNodes(
+          result["publication_referenses"]["outcoming"].nodes, 
+          "lightblue", 
+          n => ({href: createPublicationLink(n["identity"])})
+        ),
+        ...referencesNodes
+      };
+      referencesRelationships = {
+        ...result["publication_referenses"]["outcoming"].relationships,
+        ...referencesRelationships
+      };
+      break;
+    default:
+      break;
+  }
+
+  const nodes = {
+    [authorNode["identity"]]: authorNode,
+    [publicationNode["identity"]]: publicationNode,
+    ...themesNodes,
+    ...referencesNodes
+  };
+
+  const links = {
+    ...result["author_publication"].relationships,
+    ...result["publication_themes"].relationships,
+    ...referencesRelationships
+  };
+
+  return {
+    nodes: nodes,
+    links: links,
+  };
 }
 
 export {
   paintNodes,
-  getPrepareAuthorGraphPromise,
   prepareAuthorGraph,
-  cacheableGraphPreparation
+  cacheableGraphPreparation,
+  preparePublicationGraph
 };
 

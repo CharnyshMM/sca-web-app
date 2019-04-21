@@ -9,9 +9,9 @@ import EntityInfo from '../EntityInfo/EntityInfo';
 import EntityInfoItem from '../EntityInfo/EntityInfoItem';
 import EntityGraph from '../EntityGraph/EntityGraph';
 import LegendBlock from '../EntityInfo/LegendBlock';
-import CheckableLegendBlock from '../EntityInfo/CheckableLegendBlock';
+import RadioLegendBlock from '../EntityInfo/RadioLegendBlock';
 import BeautifulPopOver from '../../ReusableComponents/BeautifulPopOver/BeautifulPopOver';
-import { paintNodes } from '../utilities';
+import { preparePublicationGraph, cacheableGraphPreparation } from '../utilities';
 
 import {
   createAuthorLink,
@@ -52,8 +52,7 @@ class PublicationGraphView extends Component {
       result: undefined,
       error: undefined,
       hasError: false,
-      displayIncomingReferences: false,
-      displayOutcomingReferences: false,
+      referencesShowingMode: null,
       displayOutcomingReferencesList: false,
       displayIncomingReferencesList: false,
     };
@@ -94,82 +93,18 @@ class PublicationGraphView extends Component {
       );
   }
 
-  prepareGraph = (result, showIncomingReferences, showOutcomingReferences) => {
-    const NODE_SIZE = 500;
+  prepareGraph = cacheableGraphPreparation(preparePublicationGraph);
 
-    const authorNode = {
-      color: "red",
-      size: NODE_SIZE * 3,
-      href: createAuthorLink(result["author"]["id"]),
-      ...result["author"]
-    };
-
-    const publicationNode = {
-      color: "green",
-      size: NODE_SIZE * 5,
-      cx: 20,
-      cy: 2,
-      ...result["publication"]
+  onRadioLegendBlockStateChanged = e => {
+    const mode = e.target.id;
+    if (this.state.referencesShowingMode == e.target.id) {
+      this.setState({referencesShowingMode: null});
+    } else {
+      setTimeout(() => {
+        this.setState({referencesShowingMode: mode});
+      }, 15);
+      this.setState({referencesShowingMode: null});
     }
-
-    const themesNodes = paintNodes(result["publication_themes"].nodes, "gray");
-    
-
-    let referencesNodes = {};
-    let referencesRelationships = {};
-    if (showIncomingReferences) {
-      referencesNodes = {
-        ...paintNodes(
-          result["publication_referenses"]["incoming"].nodes, 
-          "lightblue", 
-          n => ({href: createPublicationLink(n["identity"])})
-        ),
-        ...referencesNodes
-      };
-      referencesRelationships = {
-        ...result["publication_referenses"]["incoming"].relationships,
-        ...referencesRelationships
-      };    
-    }
-
-    if (showOutcomingReferences) {
-      referencesNodes = {
-        ...paintNodes(
-          result["publication_referenses"]["outcoming"].nodes, 
-          "lightblue", 
-          n => ({href: createPublicationLink(n["identity"])})
-        ),
-        ...referencesNodes
-      };
-      referencesRelationships = {
-        ...result["publication_referenses"]["outcoming"].relationships,
-        ...referencesRelationships
-      };
-    }
-    
-
-    const nodes = {
-      [authorNode["identity"]]: authorNode,
-      [publicationNode["identity"]]: publicationNode,
-      ...themesNodes,
-      ...referencesNodes
-    };
-
-    const links = {
-      ...result["author_publication"].relationships,
-      ...result["publication_themes"].relationships,
-      ...referencesRelationships
-    };
-
-    return {
-      nodes: nodes,
-      links: links,
-    };
-  }
-
-  onDisplayCheckboxChanged = e => {
-    const checked = this.state[e.target.id];
-    this.setState({[e.target.id]: !checked});
   }
 
   onNodeClick = node => {
@@ -201,6 +136,8 @@ class PublicationGraphView extends Component {
     this.setState({[referencesType]: !this.state[referencesType]});
   }
 
+  
+
   render() {
     console.log("rerender");
     const { 
@@ -208,8 +145,7 @@ class PublicationGraphView extends Component {
       error, 
       hasError, 
       loading, 
-      displayIncomingReferences, 
-      displayOutcomingReferences,
+      referencesShowingMode,
       displayIncomingReferencesList,
       displayOutcomingReferencesList
     } = this.state;
@@ -259,7 +195,7 @@ class PublicationGraphView extends Component {
       </BeautifulPopOver>
     }
 
-    const data = this.prepareGraph(result, displayIncomingReferences, displayOutcomingReferences);
+    const data = this.prepareGraph(result, referencesShowingMode);
     
     GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
@@ -322,34 +258,41 @@ class PublicationGraphView extends Component {
                     Publication
                   </LegendBlock>
                 </li>
+                <li>
+                  <LegendBlock color="gray">
+                    Themes
+                  </LegendBlock>
+                </li>
                 {incomingReferencesCount  > 0 && 
                 <li>
-                  <CheckableLegendBlock 
+                  <RadioLegendBlock 
                     color="lightBlue" 
-                    id="displayIncomingReferences" 
-                    value={displayIncomingReferences} 
-                    onChange={this.onDisplayCheckboxChanged}
+                    name="graph"
+                    id="showIncomingReferencesPublications" 
+                    value={referencesShowingMode == "showIncomingReferencesPublications"} 
+                    onChange={this.onRadioLegendBlockStateChanged}
                   >
                     Incoming references  
                     <LinkLikeButton onClick={()=>this.toggleReferencesList("displayIncomingReferencesList")}>
                         View list
                     </LinkLikeButton>
-                  </CheckableLegendBlock>
+                  </RadioLegendBlock>
                 </li>
                 }
                 {outcomingReferencesCount > 0 && 
                 <li>
-                  <CheckableLegendBlock 
+                  <RadioLegendBlock 
                     color="lightBlue" 
-                    id="displayOutcomingReferences" 
-                    value={displayOutcomingReferences} 
-                    onChange={this.onDisplayCheckboxChanged}
+                    name="graph"
+                    id="showOutcomingReferencesPublications" 
+                    value={referencesShowingMode== "showOutcomingReferencesPublications"} 
+                    onChange={this.onRadioLegendBlockStateChanged}
                   >
                     Outcoming references
                     <LinkLikeButton onClick={()=>this.toggleReferencesList("displayOutcomingReferencesList")}>
                         View list
                     </LinkLikeButton>
-                  </CheckableLegendBlock>
+                  </RadioLegendBlock>
                 </li>
                 }
               </ul>

@@ -4,12 +4,13 @@ import queryString from 'query-string';
 import { doSearchByName } from '../../verbose_loaders';
 import { createSearchLink } from '../../utilities/links_creators';
 
-import './search_and_results.css';
+import './SearchWithResults.css';
 import PublicationResult from '../SearchResults/PublicationResult';
 import AuthorResult from '../SearchResults/AuthorResult';
 import DomainResult from '../SearchResults/DomainResult';
 import SearchResultsFilter from './SearchResultsFilter';
 import Spinner from '../../ReusableComponents/Spinner';
+import SideBar from './SideBar/PublicationsSearchSideBar';
 
 
 const RESULTS_ON_PAGE_LIMIT = 10;
@@ -152,11 +153,14 @@ class SearchWithResults extends Component {
                 </form>
 
                 <SearchResultsFilter selected_value={type} onResultTypeClick={onResultTypeClick} />
-
-                <div className="container">
+                
+                <div className="filters_and_results_container">
+                
+                {/* <SideBar /> */}
+                
                     {!loading && hasError && JSON.stringify(error)}
                     {!hasError &&
-                        <div>{searchResults}</div>
+                        <div className="results_container">{searchResults}</div>
                     }
                     {loading && 
                         <Spinner />

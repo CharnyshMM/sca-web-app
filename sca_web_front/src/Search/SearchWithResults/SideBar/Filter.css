@@ -1,0 +1,28 @@
+.search_sidebar__filter {
+  border-bottom: 1px solid black;
+}
+
+.search_sidebar__filter__list {
+  list-style-type: none;
+  padding-left: 10px;
+  border: 1px solid gray;
+  margin: 7px 0px;
+  overflow-y: auto;
+  height: 200px;
+}
+
+.search_sidebar__filter__list__remove_button {
+  border: none;
+  color: red;
+  background: none;
+}
+
+.search_sidebar__filter__list__remove_button:hover {
+  border: 1px solid red;
+}
+
+.search_sidebar__filter__label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}

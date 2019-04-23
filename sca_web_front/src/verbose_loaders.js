@@ -10,7 +10,8 @@ import {
     PYTHON_BACKEND_API_PUBLICATION,
     PYTHON_BACKEND_API_AUTHOR,
     PYTHON_BACKEND_API_DOMAIN,
-    PYTHON_BACKEND_API_THEMES_LIST,
+    PYTHON_BACKEND_API_ALL_THEMES,
+    PYTHON_BACKEND_API_ALL_AUTHORS,
     PYTHON_BACKEND_API_PUBLICATION_GRAPH,
     PYTHON_BACKEND_API_AUTHOR_GRAPH
 } from './constant_urls';
@@ -157,8 +158,12 @@ const getDomain = (id, token) => {
     return getLoaderPromise(query, authOptions(token));
 }
 
-const getDomainsList = (token) => {
-    return getLoaderPromise(PYTHON_BACKEND_API_THEMES_LIST, authOptions(token));
+const getThemesList = (token) => {
+    return getLoaderPromise(PYTHON_BACKEND_API_ALL_THEMES, authOptions(token));
+}
+
+const getAuthorsList = (token) => {
+    return getLoaderPromise(PYTHON_BACKEND_API_ALL_AUTHORS, authOptions(token));
 }
 
 export {
@@ -175,7 +180,8 @@ export {
     getPublication,
     getAuthor,
     getDomain,
-    getDomainsList,
+    getThemesList,
+    getAuthorsList,
     getPublicationGraph,
     getAuthorGraph
 };

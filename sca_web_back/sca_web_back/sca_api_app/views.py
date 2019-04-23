@@ -155,13 +155,13 @@ class IndexView(APIView):
         return Response({"hello": "world! API server is alive"})
 
 
-class GetThemesListView(APIView):
+class GetAllThemesView(APIView):
     renderer_classes = (JSONRenderer, )
     permission_classes = (IsAuthenticated, )
 
     def get(self,request):
         try:
-            return Response(NeoQuerier().get_themes_list())
+            return Response(NeoQuerier().get_themes())
         except GraphError as e:
             print(e)
             return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
@@ -169,6 +169,19 @@ class GetThemesListView(APIView):
             print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
+class GetAllAuthorsView(APIView):
+    renderer_classes = (JSONRenderer, )
+    permission_classes = (IsAuthenticated, )
+
+    def get(self,request):
+        try:
+            return Response(NeoQuerier().get_authors())
+        except GraphError as e:
+            print(e)
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 class SearchView(APIView):
     renderer_classes = (JSONRenderer,)

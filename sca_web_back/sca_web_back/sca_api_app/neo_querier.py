@@ -34,14 +34,25 @@ class NeoQuerier:
         c = self.graph.evaluate(query)
         return c
 
-    def get_themes_list(self):
-        query = """
-            MATCH (t:Theme)
-            RETURN t AS theme, ID(t) as id
+    def get_themes(self):
+        query = f"""
+            MATCH (t:{self.THEME_NODE_LABEL})
+            WHERE EXISTS(t.name)
+            RETURN t.name AS name, ID(t) as id
         """
 
         themes = self.graph.run(query).data()
         return themes
+
+    def get_authors(self):
+        query = f"""
+            MATCH (a:{self.AUTHOR_NODE_LABEL})
+            WHERE EXISTS(a.name)
+            RETURN a.name AS name, ID(a) as id
+        """
+
+        authors = self.graph.run(query).data()
+        return authors
 
     def get_authorities_in_domains(self, domains_list):
         lower_domains = [d.lower() for d in domains_list]   # that's important to send low_case domains name!

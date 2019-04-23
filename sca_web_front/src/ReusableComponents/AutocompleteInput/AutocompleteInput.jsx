@@ -69,16 +69,22 @@ class AutocompleteInput extends Component {
         return;
       }
 
-      this.setState({ activeSuggestion: activeSuggestion - 1 });
+      this.setState({ 
+        activeSuggestion: activeSuggestion - 1,
+        userInput: this.props.getName(filteredSuggestions[activeSuggestion - 1])
+       });
     }
     // User pressed the down arrow, increment the index
     else if (e.keyCode === 40) {
       // on DOWN ARROW
-      if (activeSuggestion - 1 === filteredSuggestions.length) {
+      if (activeSuggestion + 1 >= filteredSuggestions.length) {
         return;
       }
-
-      this.setState({ activeSuggestion: activeSuggestion + 1 });
+      
+      this.setState({ 
+        activeSuggestion: activeSuggestion + 1,
+        userInput: this.props.getName(filteredSuggestions[activeSuggestion+1])
+      });
     }
   }
 
@@ -89,7 +95,7 @@ class AutocompleteInput extends Component {
     if (showSuggestions && userInput) {
       if (filteredSuggestions.length) {
         suggestionsListComponent = (
-          <ul className="suggestions">
+          <ul className="suggestions" ref={this.scrollableSuggestionsList}>
             {filteredSuggestions.map((suggestion, index) => {
               let className;
 

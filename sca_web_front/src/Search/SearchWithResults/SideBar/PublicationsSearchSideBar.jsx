@@ -71,7 +71,6 @@ class PublicationsSearchSideBar extends Component {
     .then(
       result => {
         if (status == 200) {
-          console.log(result);
           this.setState({
             allThemes: result,
             themesLoading: false,
@@ -88,7 +87,6 @@ class PublicationsSearchSideBar extends Component {
   }
 
   onToggleFilter = e => {
-    console.log(e.target.id);
     switch(e.target.id) {
       case "authorsFilter": {
         if (this.state.allAuthors.length == 0) {

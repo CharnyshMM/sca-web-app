@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 
+import {getThemesList, getAuthorsList} from '../../../verbose_loaders';
 import Filter from './Filter';
+
 
 import './SideBar.css';
 
@@ -11,16 +13,103 @@ class PublicationsSearchSideBar extends Component {
     themesFilterEnabled: false,
     themesFilterSelections: [],
     incomingRefsFilterEnabled: false,
-    incomingRefsFilterSelections: []
+    incomingRefsFilterSelections: [],
+    themesLoading: false,
+    authorsLoading: false,
+    allThemes: [],
+    allAuthors: [],
+  }
+
+  loadAuthorsList = () => {
+    const token = window.sessionStorage.getItem("token");
+    this.setState({authorsLoading: true});
+    let status = 0;
+    getAuthorsList(token)
+    .then(
+      result => {
+        status = result.status;
+        return result.response.json();
+      },
+      error => {
+        status = error.status;
+        return status;
+      }
+    )
+    .then(
+      result => {
+        if (status == 200) {
+          this.setState({
+            allAuthors: result,
+            authorsAreLoading: false,
+          })
+        } else {
+          throw Error(result.error);
+        }
+      }
+    )
+    .catch(e => {
+      this.setState({authorsLoading: false});
+      console.log("ERROR:", e);
+    });
+  }
+
+  loadThemesList = () => {
+    const token = window.sessionStorage.getItem("token");
+    this.setState({themesLoading: true});
+    let status = 0;
+    getThemesList(token)
+    .then(
+      result => {
+        status = result.status;
+        return result.response.json();
+      },
+      error => {
+        status = error.status;
+        return status;
+      }
+    )
+    .then(
+      result => {
+        if (status == 200) {
+          console.log(result);
+          this.setState({
+            allThemes: result,
+            themesLoading: false,
+          })
+        } else {
+          throw Error(result.error);
+        }
+      }
+    )
+    .catch(e => {
+      this.setState({ themesLoading: false});
+      console.log("ERROR:", e);
+    });
   }
 
   onToggleFilter = e => {
+    console.log(e.target.id);
+    switch(e.target.id) {
+      case "authorsFilter": {
+        if (this.state.allAuthors.length == 0) {
+          this.loadAuthorsList();
+        }
+        break;
+      }
+      case "themesFilter": {
+        if (this.state.allThemes.length == 0) {
+          this.loadThemesList();
+        }
+        break;
+      }
+    }
     const key = `${e.target.id}Enabled`;
     const enabled = this.state[key];
-    this.setState({[key]: !enabled});
+    this.setState({[key]: !enabled})
   }
 
   onAddFilterItem = (id, value) => {
+    console.log("onAddFilter", id, value);
     const key = `${id}Selections`;
     const selections = this.state[key];
     this.setState({[key]: [ ...selections, value]})
@@ -39,7 +128,9 @@ class PublicationsSearchSideBar extends Component {
       themesFilterEnabled,
       themesFilterSelections,
       incomingRefsFilterEnabled,
-      incomingRefsFilterSelections
+      incomingRefsFilterSelections,
+      allAuthors,
+      allThemes,
      } = this.state;
 
     const anyFilterNotEmpty = (authorsFilterEnabled && authorsFilterSelections && authorsFilterSelections.length > 0) ||
@@ -56,6 +147,7 @@ class PublicationsSearchSideBar extends Component {
           onAddValue={this.onAddFilterItem}
           onRemoveValue={this.onRemoveFilterItem}
           showAndOrCheckbox={true}
+          suggestions={allAuthors}
           />
 
         <Filter 
@@ -67,18 +159,10 @@ class PublicationsSearchSideBar extends Component {
           onAddValue={this.onAddFilterItem}
           onRemoveValue={this.onRemoveFilterItem}
           showAndOrCheckbox={true}
+          suggestions={allThemes}
           />
 
-        <Filter 
-          id="incomingRefsFilter"
-          title="Filter by incoming references"
-          selectedValues={incomingRefsFilterSelections}
-          enabled={incomingRefsFilterEnabled}
-          onToggleFilter={this.onToggleFilter}
-          onAddValue={this.onAddFilterItem}
-          onRemoveValue={this.onRemoveFilterItem}
-          showAndOrCheckbox={true}
-          />
+        
 
         {anyFilterNotEmpty && 
         <button className="search_sidebar__find_button">

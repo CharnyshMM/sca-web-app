@@ -6,28 +6,24 @@ import './AutocompleteInput.css';
 
 class AutocompleteInput extends Component {
   state = {
-    // The active selection's index
     activeSuggestion: 0,
-    // The suggestions that match the user's input
     filteredSuggestions: [],
-    // Whether or not the suggestion list is shown
     showSuggestions: false,
-    // What the user has entered
     userInput: ""
   };
 
   onInputChange = e => {
     const userInput = e.target.value;
     
-    if ([';', ',', '.'].includes(userInput[userInput.length - 1])) {
-      this.props.onSubmit(userInput.slice(0, -1));
-      this.setState({userInput: ""});
-      return;
-    }
+    // if ([';', ',', '.'].includes(userInput[userInput.length - 1])) {
+    //   this.props.onSubmit(userInput.slice(0, -1));
+    //   this.setState({userInput: ""});
+    //   return;
+    // }
 
     const filteredSuggestions = this.props.suggestions.filter(
       value =>
-        value.toLowerCase().indexOf(userInput.toLowerCase()) > -1
+        this.props.getName(value).toLowerCase().startsWith(userInput.toLowerCase())
     );
 
     this.setState({
@@ -38,13 +34,14 @@ class AutocompleteInput extends Component {
     });
   }
 
-  onSuggestionListItemClick = e => {
+  onSuggestionListItemClick = index => {
     // Update the user input and reset the rest of the state
+    this.props.onSubmit(this.state.filteredSuggestions[index]);
     this.setState({
       activeSuggestion: -1,
       filteredSuggestions: [],
       showSuggestions: false,
-      userInput: e.currentTarget.innerText
+      userInput: ""
     });
   };
 
@@ -56,6 +53,7 @@ class AutocompleteInput extends Component {
     // suggestions
     if (e.keyCode === 13) {
       // on Enter press
+      console.log("ON SUBMIT",activeSuggestion);
       this.props.onSubmit(filteredSuggestions[activeSuggestion]);
       this.setState({
         activeSuggestion: 0,
@@ -103,20 +101,14 @@ class AutocompleteInput extends Component {
               return (
                 <li
                   className={className}
-                  key={suggestion}
-                  onClick={this.onSuggestionListItemClick}
+                  key={this.props.getName(suggestion)}
+                  onClick={() => this.onSuggestionListItemClick(index)}
                 >
-                  {suggestion}
+                  {this.props.getName(suggestion)}
                 </li>
               );
             })}
           </ul>
-        );
-      } else {
-        suggestionsListComponent = (
-          <div class="no-suggestions">
-            <em>No suggestions, you're on your own!</em>
-          </div>
         );
       }
     }
@@ -125,7 +117,7 @@ class AutocompleteInput extends Component {
     <Fragment>
       <input
           type="text"
-          className="form-control" placeholder="Domain"
+          className="autocomplete_input" placeholder="Start typing"
           onChange={this.onInputChange}
           onKeyDown={this.onKeyDown}
           value={userInput}

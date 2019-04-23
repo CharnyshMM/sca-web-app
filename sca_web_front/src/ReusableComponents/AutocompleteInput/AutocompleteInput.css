@@ -1,11 +1,7 @@
-body {
-  font-family: sans-serif;
-}
-
-input {
+.autocomplete_input {
   border: 1px solid #999;
-  padding: 0.5rem;
-  width: 300px;
+  padding: 0.1rem;
+  width: 100%;
 }
 
 .no-suggestions {
@@ -22,6 +18,9 @@ input {
   overflow-y: auto;
   padding-left: 0;
   width: calc(300px + 1rem);
+  position: absolute;
+  background: white;
+  z-index: 100;
 }
 
 .suggestions li {

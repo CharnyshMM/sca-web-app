@@ -5,11 +5,13 @@ import { doSearchByName } from '../../verbose_loaders';
 import { createSearchLink } from '../../utilities/links_creators';
 
 import './SearchWithResults.css';
+
 import PublicationResult from '../SearchResults/PublicationResult';
 import AuthorResult from '../SearchResults/AuthorResult';
 import DomainResult from '../SearchResults/DomainResult';
 import SearchResultsFilter from './SearchResultsFilter';
 import Spinner from '../../ReusableComponents/Spinner';
+import ErrorAlert from '../../ReusableComponents/ErrorAlert';
 import PublicationsSideBar from './SideBar/PublicationsSearchSideBar';
 import PublicationsSearchSideBar from './SideBar/PublicationsSearchSideBar';
 
@@ -27,6 +29,7 @@ class SearchWithResults extends Component {
             type: "all",
             loading: false,
             hasError: false,
+            error: "",
             filters: {
                 authorsFilter: [],
                 themesFilter: []
@@ -106,6 +109,16 @@ class SearchWithResults extends Component {
         });
     }
 
+    onSidebarFilterDisabled = filterId => {
+        const filters = this.state.filters;
+        this.setState({
+            filters: {
+                ...filters,
+                [filterId]: []
+            }
+        });
+    }
+
     onSearchClick = e => {
         e.preventDefault();
         const {searchInput, type, filters} = this.state;
@@ -173,6 +186,7 @@ class SearchWithResults extends Component {
                     <PublicationsSearchSideBar 
                         onAddFilterValue={this.onSidebarFilterAddValue}
                         onRemoveFilterValue={this.onSidebarFilterRemoveValue}
+                        onFilterDisabled={this.onSidebarFilterDisabled}
                         authorsFilterValues={this.state.filters["authorsFilter"]}
                         themesFilterValues={this.state.filters["themesFilter"]}
                     />
@@ -197,13 +211,17 @@ class SearchWithResults extends Component {
                 <div className="filters_and_results_container">
                     {sideBar}
                     
-                    {!loading && hasError && JSON.stringify(error)}
-                    {!hasError &&
-                        <div className="results_container">{searchResults}</div>
-                    }
-                    {loading && 
-                        <Spinner />
-                    }
+                    <div className="results_container">
+                        {!loading && hasError && 
+                            <ErrorAlert errorName="Search Error" errorMessage={error.message} />
+                        }
+                        {!hasError &&
+                            searchResults
+                        }
+                        {loading && 
+                            <Spinner />
+                        }
+                    </div>
                 </div>
 
                 <footer className="pagination_footer">

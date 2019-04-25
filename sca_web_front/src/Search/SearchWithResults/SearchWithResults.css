@@ -58,7 +58,7 @@
 }
 
 .filters_and_results_container {
-    padding: 0 10%;
+    padding: 2% 10%;
 }
 
 .filters_and_results_container .sidebar {
@@ -77,6 +77,6 @@
     }
 
     .filters_and_results_container {
-        padding: 0 4%;
+        padding: 2% 4%;
     }
 }

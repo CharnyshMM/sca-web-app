@@ -99,7 +99,10 @@ class PublicationsSearchSideBar extends Component {
     }
     const key = `${e.target.id}Enabled`;
     const enabled = this.state[key];
-    this.setState({[key]: !enabled})
+    this.setState({[key]: !enabled});
+    if (!enabled == false) {
+      this.props.onFilterDisabled(e.target.id);
+    }
   }
 
   render() {

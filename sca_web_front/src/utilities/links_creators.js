@@ -12,6 +12,9 @@ import {
 function buildQueryParametersList(name, val_list) {
     let query = '';
 
+    if (val_list.length == 0) {
+        return "";
+    }
     for (let i = 0; i < val_list.length; i++) {
         query += `${name}=${val_list[i]}`;
         if (i + 1 < val_list.length) {
@@ -37,8 +40,19 @@ function createKeywordsQueryLink(keywords) {
     return `${ARTICLES_QUERY}?${buildQueryParametersList("keyword", keywords)}`;
 }
 
-function createSearchLink(name, type) {
-    return `${SEARCH}?search=${name.toLowerCase()}&type=${type}`;
+function createSearchLink(name, type, filters) {
+    let query = `${SEARCH}?search=${name.toLowerCase()}&type=${type}`;
+
+    const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
+    const authorsFilter = buildQueryParametersList('author', filters["authorsFilter"]);
+    // query = `${PYTHON_BACKEND_API_PUBLICATIONS_SEARCH}?search=${name}&limit=${limit}&offset=${offset}`;
+    if (themesFilter.length > 0 ) {
+        query += '&' + themesFilter;
+    }
+    if (authorsFilter.length > 0) {
+        query += '&' + authorsFilter;
+    }
+    return query;
 }
 
 function createAuthorLink(id) {

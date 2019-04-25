@@ -39,10 +39,21 @@ class SearchWithResults extends Component {
 
     componentDidMount() {
         const queryParams = queryString.parse(this.props.location.search);
-        if (queryParams.search != undefined && queryParams.search != "") {
-            this.doSearch(queryParams.search, 0, queryParams.type, {});
-            this.setState({ searchInput: queryParams.search, type: queryParams.type });
+        let authors = queryParams.author;
+        let themes = queryParams.theme;
+        
+        if (themes && !Array.isArray(themes)) {
+            themes = [themes];
         }
+        if (authors && !Array.isArray(authors)) {
+            authors = [authors];
+        }
+        const filters = {
+            authorsFilter:  authors || [],
+            themesFilter: themes || []
+        }
+        this.doSearch(queryParams.search || "", 0, queryParams.type, filters);
+        this.setState({ searchInput: queryParams.search, type: queryParams.type, filters: filters });
     }
 
     doSearch = (name, offset, type, filters) => {
@@ -122,7 +133,7 @@ class SearchWithResults extends Component {
     onSearchClick = e => {
         e.preventDefault();
         const {searchInput, type, filters} = this.state;
-        this.props.history.push(createSearchLink(searchInput, type));
+        this.props.history.push(createSearchLink(searchInput, type, filters));
         console.log(filters); 
         this.doSearch(searchInput, 0, type, filters);
     };
@@ -136,7 +147,7 @@ class SearchWithResults extends Component {
     onResultTypeClick = (e) => {
         e.preventDefault();
         if (e.target.value) {
-            this.props.history.push(createSearchLink(this.state.searchInput, e.target.value));
+            this.props.history.push(createSearchLink(this.state.searchInput, e.target.value, this.state.filters));
             this.setState({ type: e.target.value });
             this.doSearch(this.state.searchInput, 0, e.target.value, this.state.filters);
         }

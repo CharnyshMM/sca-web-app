@@ -8,8 +8,8 @@ import './SideBar.css';
 
 class PublicationsSearchSideBar extends Component {
   state = {
-    authorsFilterEnabled: false,
-    themesFilterEnabled: false,
+    authorsFilterEnabled: this.props.authorsFilterValues.length > 0,
+    themesFilterEnabled: this.props.themesFilterValues.length > 0,
     themesLoading: false,
     authorsLoading: false,
     allThemes: [],

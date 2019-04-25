@@ -10,7 +10,7 @@ const Filter = function ({title, id, selectedValues, onAddValue, onRemoveValue, 
   return <div className="search_sidebar__filter">
         <label className="search_sidebar__filter__label">
           <h5>{title}</h5>
-          <input id={id} type="checkbox" value={enabled} onChange={onToggleFilter}/>
+          <input id={id} type="checkbox" checked={enabled} onChange={onToggleFilter}/>
         </label>
         {enabled && 
         <Fragment>

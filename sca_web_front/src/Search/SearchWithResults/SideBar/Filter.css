@@ -4,11 +4,23 @@
 
 .search_sidebar__filter__list {
   list-style-type: none;
-  padding-left: 10px;
+  padding-left: 0px;
   border: 1px solid gray;
   margin: 7px 0px;
   overflow-y: auto;
   height: 200px;
+}
+
+.search_sidebar__filter__list li {
+  padding: 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.search_sidebar__filter__list li:hover {
+  background: lightgrey;
+  text-align: justify;
 }
 
 .search_sidebar__filter__list__remove_button {

@@ -211,6 +211,37 @@ class SearchView(APIView):
             print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
+class PublicationsSearchView(APIView):
+    renderer_classes = (JSONRenderer,)
+    permission_classes = (IsAuthenticated, )
+
+    def get(self, request, **kwargs):
+        name = request.query_params.get("search")
+        themes = request.query_params.getlist("theme")
+        authors = request.query_params.getlist("author")
+        query_is_not_empty =  name != "" or len(themes) > 0 or len(authors) > 0
+
+        if not query_is_not_empty:
+            return Response(getErrorResponce("empty query"), status=HTTP_400_BAD_REQUEST)
+        neo = NeoQuerier()
+        try:
+            limit = int(request.query_params.get("limit"))
+            offset = int(request.query_params.get("offset"))
+            
+            print("limit", limit)
+            print("offset", offset)
+            result = neo.find_publications(name, requested_themes_ids=themes, requested_authors_ids=authors, skip_n=offset, limit_n=limit)
+            return Response(result)
+        except ValueError as e:
+            print(e)
+            return Response(getErrorResponce("value and limit must be numeric"), status=HTTP_400_BAD_REQUEST)
+        except GraphError as e:
+            print(e)
+            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print(e)
+            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 class GetPublicationView(APIView):
     renderer_classes = (MyJSONRenderer,)

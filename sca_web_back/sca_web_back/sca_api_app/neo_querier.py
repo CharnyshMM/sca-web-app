@@ -191,6 +191,45 @@ class NeoQuerier:
         result = self.graph.run(query)
         return result.data()
 
+    def find_publications(self, name, requested_themes_ids=None, requested_authors_ids=None, skip_n=0, limit_n=10):
+        query = f"""
+            MATCH (p:Publication)-[:WROTE]-(a:Author), (p)-[tr:THEME_RELATION]-(t:Theme)
+            WHERE EXISTS(p.name) and toLower(p.name) STARTS WITH "{name}" and tr.probability>0
+            WITH collect(DISTINCT t) as themes, collect(DISTINCT toLower(t.name)) as themes_names, p, 
+                collect(DISTINCT a) as authors, 
+                collect(DISTINCT toLower(a.name)) as author_names
+        """
+
+        themes_query = f" ALL(t_id in {requested_themes_ids} WHERE toLower(t_id) in themes_names) "
+        authors_query = f" ANY(a_id in {requested_authors_ids} WHERE toLower(a_id) in author_names) "
+        return_statement = f""" 
+         RETURN 
+            DISTINCT p as node, 
+            LABELS(p) as type,
+            ID(p) as id,
+            themes,
+            authors[0] as author
+            SKIP {skip_n}
+            LIMIT {limit_n}
+        """
+        
+        authors_constraints_exists = requested_authors_ids != None and len(requested_authors_ids) > 0
+        themes_constraints_exists = requested_themes_ids != None and len(requested_themes_ids) > 0
+
+        if themes_constraints_exists & authors_constraints_exists:
+            query += "WHERE" + themes_query + "AND" + authors_query
+        elif themes_constraints_exists:
+            query += "WHERE" + themes_query
+        elif authors_constraints_exists:
+            query += "WHERE" + authors_query
+
+        query += return_statement
+
+        print(query)
+        return self.graph.run(query).data()
+           
+
+
     def get_publication_with_details(self, publication_id):
         query = f"""
             MATCH (p:{self.PUBLICATION_NODE_LABEL})

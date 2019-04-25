@@ -5,7 +5,7 @@ import AutocompleteInput from '../../../ReusableComponents/AutocompleteInput/Aut
 import './Filter.css';
 
 
-const Filter = function ({title, id, showAndOrCheckbox, selectedValues, onAddValue, onRemoveValue, enabled, onToggleFilter, suggestions}) {
+const Filter = function ({title, id, selectedValues, onAddValue, onRemoveValue, enabled, onToggleFilter, suggestions}) {
 
   return <div className="search_sidebar__filter">
         <label className="search_sidebar__filter__label">
@@ -17,12 +17,12 @@ const Filter = function ({title, id, showAndOrCheckbox, selectedValues, onAddVal
           <AutocompleteInput
             onSubmit={v => onAddValue(id, v)}
             suggestions={suggestions}
-            getName={v => v["name"]}
+            getName={v => v}
             />
           <ul className="search_sidebar__filter__list">
             {selectedValues && selectedValues.map( v =>
-              <li key={v["id"]}>
-                {v["name"]} <button onClick={() => {onRemoveValue(id, v)}} className="search_sidebar__filter__list__remove_button">X</button>
+              <li key={v}>
+                {v} <button onClick={() => {onRemoveValue(id, v)}} className="search_sidebar__filter__list__remove_button">X</button>
               </li>
             )
             }

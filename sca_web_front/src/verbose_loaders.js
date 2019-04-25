@@ -13,7 +13,8 @@ import {
     PYTHON_BACKEND_API_ALL_THEMES,
     PYTHON_BACKEND_API_ALL_AUTHORS,
     PYTHON_BACKEND_API_PUBLICATION_GRAPH,
-    PYTHON_BACKEND_API_AUTHOR_GRAPH
+    PYTHON_BACKEND_API_AUTHOR_GRAPH,
+    PYTHON_BACKEND_API_PUBLICATIONS_SEARCH
 } from './constant_urls';
 
 // ========================================================================
@@ -65,7 +66,9 @@ const authOptions = (token) => ({
 
 const buildQueryParametersList = (name, val_list) => {
     let query = '';
-
+    if (!val_list) {
+        return "";
+    }
     for (let i = 0; i < val_list.length; i++) {
         query += `${name}=${val_list[i]}`;
         if (i + 1 < val_list.length) {
@@ -123,13 +126,39 @@ const getHBaseStatus = () => {
     return getLoaderPromise(HBASE_STATUS_PATH);
 }
 
-const doSearchByName = (name, limit, offset, token, type=undefined) => {
-    
+// const doSearchByName = (name, limit, offset, token, type=undefined) => {
+//     if (type !== "all" && type !== "author" && type !== "publication" && type !== "theme") {
+//         type = "all"
+//     }
+
+//     const query = `${PYTHON_BACKEND_API_SEARCH}?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
+//     return getLoaderPromise(query, authOptions(token));
+// };
+
+const doSearchByName = (name, limit, offset, token, filters, type=undefined) => {
     if (type !== "all" && type !== "author" && type !== "publication" && type !== "theme") {
         type = "all"
     }
-    console.log("type in lodader", type);
-    const query = PYTHON_BACKEND_API_SEARCH + `?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
+    console.log(filters);
+    let query = null;
+    switch(type){
+        case "publication":
+            const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
+            const authorsFilter = buildQueryParametersList('author', filters["authorsFilter"]);
+            query = `${PYTHON_BACKEND_API_PUBLICATIONS_SEARCH}?search=${name}&limit=${limit}&offset=${offset}`;
+            if (themesFilter.length > 0 ) {
+                query += '&' + themesFilter;
+            }
+            if (authorsFilter.length > 0) {
+                query += '&' + authorsFilter;
+            }
+            break;
+        case "theme":
+        case "author":
+        default:
+            query = `${PYTHON_BACKEND_API_SEARCH}?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
+            break;
+    }
     return getLoaderPromise(query, authOptions(token));
 };
 

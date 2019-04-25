@@ -10,7 +10,8 @@ import AuthorResult from '../SearchResults/AuthorResult';
 import DomainResult from '../SearchResults/DomainResult';
 import SearchResultsFilter from './SearchResultsFilter';
 import Spinner from '../../ReusableComponents/Spinner';
-import SideBar from './SideBar/PublicationsSearchSideBar';
+import PublicationsSideBar from './SideBar/PublicationsSearchSideBar';
+import PublicationsSearchSideBar from './SideBar/PublicationsSearchSideBar';
 
 
 const RESULTS_ON_PAGE_LIMIT = 10;
@@ -22,22 +23,31 @@ class SearchWithResults extends Component {
             result: [],
             offset: 0,
             last_update_length: 0,
-            search_input: "",
+            searchInput: "",
             type: "all",
             loading: false,
             hasError: false,
-        };
-
-        this.doSearch = this.doSearch.bind(this);
+            filters: {
+                authorsFilter: [],
+                themesFilter: []
+            }
+        }; 
     }
 
-    doSearch(name, offset, type) {
+    componentDidMount() {
+        const queryParams = queryString.parse(this.props.location.search);
+        if (queryParams.search != undefined && queryParams.search != "") {
+            this.doSearch(queryParams.search, 0, queryParams.type, {});
+            this.setState({ searchInput: queryParams.search, type: queryParams.type });
+        }
+    }
+
+    doSearch = (name, offset, type, filters) => {
         const token = window.sessionStorage.getItem("token");
-        let status = 0;
 
         this.setState({ hasError: false, error: undefined, loading: true, type: type });
-
-        doSearchByName(name, RESULTS_ON_PAGE_LIMIT, offset, token, type)
+        let status = 0;
+        doSearchByName(name, RESULTS_ON_PAGE_LIMIT, offset, token, filters, type)
             .then(
                 result => {
                     status = result.status;
@@ -74,42 +84,58 @@ class SearchWithResults extends Component {
 
     }
 
-    componentDidMount() {
-        const queryParams = queryString.parse(this.props.location.search);
-        if (queryParams.search != undefined && queryParams.search != "") {
-            this.doSearch(queryParams.search, 0, queryParams.type);
-            this.setState({ search_input: queryParams.search, type: queryParams.type });
-        }
+    onSidebarFilterAddValue = (filterId, value) => {
+        const filters = this.state.filters;
+        const previousValues = filters[filterId];
+        this.setState({
+            filters: {
+                ...filters,
+                [filterId]: [...previousValues, value]
+            }
+        });
     }
+
+    onSidebarFilterRemoveValue = (filterId, value) => {
+        const filters = this.state.filters;
+        const previousValues = filters[filterId];
+        this.setState({
+            filters: {
+                ...filters,
+                [filterId]: previousValues.filter(v => v != value)
+            }
+        });
+    }
+
+    onSearchClick = e => {
+        e.preventDefault();
+        const {searchInput, type, filters} = this.state;
+        this.props.history.push(createSearchLink(searchInput, type));
+        console.log(filters); 
+        this.doSearch(searchInput, 0, type, filters);
+    };
 
     render() {
         const {result, loading, error, hasError, last_update_length, offset, type} = this.state;
-        console.log(result);
-        const onSearchClick = e => {
-            e.preventDefault();
-            this.props.history.push(createSearchLink(this.state.search_input, this.state.type));
-            this.doSearch(this.state.search_input, 0, this.state.type);
-        };
 
         const onSearchInputChange = (e) => {
-            this.setState({ search_input: e.target.value });
+            this.setState({ searchInput: e.target.value });
         }
 
         const onResultTypeClick = (e) => {
             e.preventDefault();
             if (e.target.value) {
-                this.props.history.push(createSearchLink(this.state.search_input, e.target.value));
+                this.props.history.push(createSearchLink(this.state.searchInput, e.target.value));
                 this.setState({ type: e.target.value });
-                this.doSearch(this.state.search_input, 0, e.target.value);
+                this.doSearch(this.state.searchInput, 0, e.target.value, this.state.filters);
             }
         }
 
         const onMoreClick = e => {
             const queryParams = queryString.parse(this.props.location.search);
             if (queryParams.search != undefined && queryParams.search != "") {
-                this.doSearch(queryParams.search, this.state.offset, this.state.type);
+                this.doSearch(queryParams.search, this.state.offset, this.state.type, this.state.filters);
 
-                this.setState({ search_input: queryParams.search });
+                this.setState({ searchInput: queryParams.search });
             }
         }
         /*
@@ -139,14 +165,28 @@ class SearchWithResults extends Component {
                 }
             });
         }
-        console.log(searchResults.length);
 
+        let sideBar = null;
+        switch(type){
+            case "publication":
+                sideBar = (
+                    <PublicationsSearchSideBar 
+                        onAddFilterValue={this.onSidebarFilterAddValue}
+                        onRemoveFilterValue={this.onSidebarFilterRemoveValue}
+                        authorsFilterValues={this.state.filters["authorsFilter"]}
+                        themesFilterValues={this.state.filters["themesFilter"]}
+                    />
+                );
+                break;
+            default:
+                break;
+        }
         return (
             <div>
-                <form method="GET" onSubmit={onSearchClick}>
+                <form method="GET" onSubmit={this.onSearchClick}>
                     <div className="top_search_form">
 
-                        <input className="top_search_form__input" value={this.state.search_input} onChange={onSearchInputChange} type="text" placeholder="Search for knowledge..." />
+                        <input className="top_search_form__input" value={this.state.searchInput} onChange={onSearchInputChange} type="text" placeholder="Search for knowledge..." />
                         <button className="top_search_form__button" type="submit">Go!</button>
 
                     </div>
@@ -155,9 +195,8 @@ class SearchWithResults extends Component {
                 <SearchResultsFilter selected_value={type} onResultTypeClick={onResultTypeClick} />
                 
                 <div className="filters_and_results_container">
-                
-                {/* <SideBar /> */}
-                
+                    {sideBar}
+                    
                     {!loading && hasError && JSON.stringify(error)}
                     {!hasError &&
                         <div className="results_container">{searchResults}</div>
@@ -172,13 +211,13 @@ class SearchWithResults extends Component {
                         <button className="more_button" onClick={onMoreClick}>More!</button>
                     }
                     {last_update_length == 0 && result.length > 0 &&
-                        <div className="alert">
+                        <div>
                             You reached the bottom! (Hoping you have found the truth too:))
                         </div>
                     }
-                    {!loading && last_update_length == 0 && result.length == 0 && this.state.search_input.length > 0 &&
-                        <div className="alert">
-                            Nothing was found on "<i>{this.state.search_input}</i>" so far
+                    {!loading && last_update_length == 0 && result.length == 0 && this.state.searchInput.length > 0 &&
+                        <div>
+                            Nothing was found on "<i>{this.state.searchInput}</i>" so far
                             <br />
                             Maybe you didn't push Go! button?
                             <br />

@@ -9,11 +9,7 @@ import './SideBar.css';
 class PublicationsSearchSideBar extends Component {
   state = {
     authorsFilterEnabled: false,
-    authorsFilterSelections: [],
     themesFilterEnabled: false,
-    themesFilterSelections: [],
-    incomingRefsFilterEnabled: false,
-    incomingRefsFilterSelections: [],
     themesLoading: false,
     authorsLoading: false,
     allThemes: [],
@@ -39,7 +35,7 @@ class PublicationsSearchSideBar extends Component {
       result => {
         if (status == 200) {
           this.setState({
-            allAuthors: result,
+            allAuthors: result.map(v => v["name"]),
             authorsAreLoading: false,
           })
         } else {
@@ -72,7 +68,7 @@ class PublicationsSearchSideBar extends Component {
       result => {
         if (status == 200) {
           this.setState({
-            allThemes: result,
+            allThemes: result.map(v => v["name"]),
             themesLoading: false,
           })
         } else {
@@ -106,67 +102,38 @@ class PublicationsSearchSideBar extends Component {
     this.setState({[key]: !enabled})
   }
 
-  onAddFilterItem = (id, value) => {
-    console.log("onAddFilter", id, value);
-    const key = `${id}Selections`;
-    const selections = this.state[key];
-    this.setState({[key]: [ ...selections, value]})
-  }
-
-  onRemoveFilterItem = (id, value) => {
-    const key = `${id}Selections`;
-    const selections = this.state[key];
-    this.setState({[key]: selections.filter(s => s != value)});
-  }
-
   render() {
     const {
       authorsFilterEnabled, 
-      authorsFilterSelections,
       themesFilterEnabled,
-      themesFilterSelections,
-      incomingRefsFilterEnabled,
-      incomingRefsFilterSelections,
       allAuthors,
       allThemes,
      } = this.state;
 
-    const anyFilterNotEmpty = (authorsFilterEnabled && authorsFilterSelections && authorsFilterSelections.length > 0) ||
-     (themesFilterEnabled && themesFilterSelections && themesFilterSelections.length > 0) ||
-     (incomingRefsFilterEnabled && incomingRefsFilterSelections && incomingRefsFilterSelections.length > 0);
     return (
       <div className="sidebar search_sidebar">
         <Filter 
           id="authorsFilter"
           title="Filter by authors"
-          selectedValues={authorsFilterSelections}
+          selectedValues={this.props.authorsFilterValues}
           enabled={authorsFilterEnabled}
           onToggleFilter={this.onToggleFilter}
-          onAddValue={this.onAddFilterItem}
-          onRemoveValue={this.onRemoveFilterItem}
-          showAndOrCheckbox={true}
+          onAddValue={this.props.onAddFilterValue}
+          onRemoveValue={this.props.onRemoveFilterValue}
           suggestions={allAuthors}
           />
 
         <Filter 
           id="themesFilter"
           title="Filter by themes"
-          selectedValues={themesFilterSelections}
+          selectedValues={this.props.themesFilterValues}
           enabled={themesFilterEnabled}
           onToggleFilter={this.onToggleFilter}
-          onAddValue={this.onAddFilterItem}
-          onRemoveValue={this.onRemoveFilterItem}
-          showAndOrCheckbox={true}
+          onAddValue={this.props.onAddFilterValue}
+          onRemoveValue={this.props.onRemoveFilterValue}
           suggestions={allThemes}
           />
 
-        
-
-        {anyFilterNotEmpty && 
-        <button className="search_sidebar__find_button">
-          Find
-        </button>
-        }
       </div>
     )
   }

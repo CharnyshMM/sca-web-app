@@ -6,7 +6,7 @@ import './AutocompleteInput.css';
 
 class AutocompleteInput extends Component {
   state = {
-    activeSuggestion: 0,
+    activeSuggestion: -1,
     filteredSuggestions: [],
     showSuggestions: false,
     userInput: ""
@@ -14,12 +14,6 @@ class AutocompleteInput extends Component {
 
   onInputChange = e => {
     const userInput = e.target.value;
-    
-    // if ([';', ',', '.'].includes(userInput[userInput.length - 1])) {
-    //   this.props.onSubmit(userInput.slice(0, -1));
-    //   this.setState({userInput: ""});
-    //   return;
-    // }
 
     const filteredSuggestions = this.props.suggestions.filter(
       value =>
@@ -27,7 +21,7 @@ class AutocompleteInput extends Component {
     );
 
     this.setState({
-      activeSuggestion: 0,
+      activeSuggestion: -1,
       filteredSuggestions,
       showSuggestions: true,
       userInput: userInput
@@ -54,7 +48,7 @@ class AutocompleteInput extends Component {
     if (e.keyCode === 13) {
       // on Enter press
       console.log("ON SUBMIT",activeSuggestion);
-      this.props.onSubmit(filteredSuggestions[activeSuggestion]);
+      this.props.onSubmit(this.state.userInput);
       this.setState({
         activeSuggestion: 0,
         showSuggestions: false,
@@ -65,7 +59,7 @@ class AutocompleteInput extends Component {
     // User pressed the up arrow, decrement the index
     else if (e.keyCode === 38) {
       // on UP ARROW
-      if (activeSuggestion === 0) {
+      if (activeSuggestion <= 0) {
         return;
       }
 

@@ -81,7 +81,7 @@ class SearchWithResults extends Component {
                 },
             )
             .catch(e => {
-                this.setState({ hasError: true, error: e, loading: false });
+                this.setState({ hasError: true, error: e, loading: false, last_update_length: 0, result: []});
                 console.log("ERROR:", e);
             });
 
@@ -127,30 +127,28 @@ class SearchWithResults extends Component {
         this.doSearch(searchInput, 0, type, filters);
     };
 
+    onMoreClick = e => {
+        const queryParams = queryString.parse(this.props.location.search);
+        this.doSearch(queryParams.search, this.state.offset, this.state.type, this.state.filters);
+        this.setState({ searchInput: queryParams.search });
+    }
+
+    onResultTypeClick = (e) => {
+        e.preventDefault();
+        if (e.target.value) {
+            this.props.history.push(createSearchLink(this.state.searchInput, e.target.value));
+            this.setState({ type: e.target.value });
+            this.doSearch(this.state.searchInput, 0, e.target.value, this.state.filters);
+        }
+    }
+
+    onSearchInputChange = (e) => {
+        this.setState({ searchInput: e.target.value });
+    }
+
     render() {
         const {result, loading, error, hasError, last_update_length, offset, type} = this.state;
-
-        const onSearchInputChange = (e) => {
-            this.setState({ searchInput: e.target.value });
-        }
-
-        const onResultTypeClick = (e) => {
-            e.preventDefault();
-            if (e.target.value) {
-                this.props.history.push(createSearchLink(this.state.searchInput, e.target.value));
-                this.setState({ type: e.target.value });
-                this.doSearch(this.state.searchInput, 0, e.target.value, this.state.filters);
-            }
-        }
-
-        const onMoreClick = e => {
-            const queryParams = queryString.parse(this.props.location.search);
-            if (queryParams.search != undefined && queryParams.search != "") {
-                this.doSearch(queryParams.search, this.state.offset, this.state.type, this.state.filters);
-
-                this.setState({ searchInput: queryParams.search });
-            }
-        }
+        
         /*
         RETURN n as node,
                 a as author, 
@@ -199,14 +197,12 @@ class SearchWithResults extends Component {
             <div>
                 <form method="GET" onSubmit={this.onSearchClick}>
                     <div className="top_search_form">
-
-                        <input className="top_search_form__input" value={this.state.searchInput} onChange={onSearchInputChange} type="text" placeholder="Search for knowledge..." />
+                        <input className="top_search_form__input" value={this.state.searchInput} onChange={this.onSearchInputChange} type="text" placeholder="Search for knowledge..." />
                         <button className="top_search_form__button" type="submit">Go!</button>
-
                     </div>
                 </form>
 
-                <SearchResultsFilter selected_value={type} onResultTypeClick={onResultTypeClick} />
+                <SearchResultsFilter selected_value={type} onResultTypeClick={this.onResultTypeClick} />
                 
                 <div className="filters_and_results_container">
                     {sideBar}
@@ -226,7 +222,7 @@ class SearchWithResults extends Component {
 
                 <footer className="pagination_footer">
                     {last_update_length != 0 && result.length > 0 && last_update_length == RESULTS_ON_PAGE_LIMIT &&
-                        <button className="more_button" onClick={onMoreClick}>More!</button>
+                        <button className="more_button" onClick={this.onMoreClick}>More!</button>
                     }
                     {last_update_length == 0 && result.length > 0 &&
                         <div>

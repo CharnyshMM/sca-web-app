@@ -14,9 +14,9 @@ const SearchResultsFilter = ({selected_value, onResultTypeClick}) => {
 
     for(const key in valuesAndLabels) {
         if (key === selected_value) {
-            buttons.push(<button className={activeClassName} value={key}>{valuesAndLabels[key]}</button>);
+            buttons.push(<button key={key} className={activeClassName} value={key}>{valuesAndLabels[key]}</button>);
         } else {
-            buttons.push(<button className={generalClassName} value={key}>{valuesAndLabels[key]}</button>);
+            buttons.push(<button key={key} className={generalClassName} value={key}>{valuesAndLabels[key]}</button>);
         }
     }
 

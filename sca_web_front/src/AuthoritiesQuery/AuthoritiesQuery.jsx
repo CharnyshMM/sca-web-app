@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import { getAuthoritiesInDomainsList } from '../verbose_loaders';
 import { createAuthoritiesInDomainsLink, createSearchLink } from '../utilities/links_creators';
 import Spinner from '../ReusableComponents/Spinner';
+import AutocompleteInput from '../ReusableComponents/AutocompleteInput/AutocompleteInput';
 import AuthoritiesQueryResult from './AuthoritiesQueryResult';
 import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
@@ -120,7 +121,17 @@ class AuthoritiesQuery extends Component {
                 ))}
               </ul>
             </div>
-            <input type="text"  placeholder="Domain" class="authorities_query__form__input" value={this.state.domainInputValue} onChange={changeDomainInput} aria-describedby="using" />
+            <div className="authorities_query__form__input">
+            <AutocompleteInput 
+              suggestions={[
+                "Biology",
+                "Birds",
+                "Science"
+              ]} 
+              onSubmit={addDomain}
+              getName={v=>v}
+              />
+              </div>
             <div>
               <button type="button" className="authorities_query__form__plus" onClick={() => addDomain()}>
                 <span className="oi oi-plus"></span>

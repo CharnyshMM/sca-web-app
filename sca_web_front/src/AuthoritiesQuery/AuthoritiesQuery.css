@@ -20,7 +20,11 @@
 
 .authorities_query__form__input {
   width: 100%;
+}
+
+.authorities_query__form__input > input {
   padding: 2px 5px;
+  height: 100%;
 }
 
 .authorities_query__form__themes {

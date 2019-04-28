@@ -14,7 +14,8 @@ import {
     PYTHON_BACKEND_API_ALL_AUTHORS,
     PYTHON_BACKEND_API_PUBLICATION_GRAPH,
     PYTHON_BACKEND_API_AUTHOR_GRAPH,
-    PYTHON_BACKEND_API_PUBLICATIONS_SEARCH
+    PYTHON_BACKEND_API_PUBLICATIONS_SEARCH,
+    PYTHON_BACKEND_API_AUTHORS_SEARCH
 } from './constant_urls';
 
 // ========================================================================
@@ -140,23 +141,33 @@ const doSearchByName = (name, limit, offset, token, filters, type=undefined) => 
         type = "all"
     }
     console.log(filters);
-    let query = null;
+    
+    
+    let query = `?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
     switch(type){
-        case "publication":
+        case "publication": {
+            query  = PYTHON_BACKEND_API_PUBLICATIONS_SEARCH + query;
             const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
             const authorsFilter = buildQueryParametersList('author', filters["authorsFilter"]);
-            query = `${PYTHON_BACKEND_API_PUBLICATIONS_SEARCH}?search=${name}&limit=${limit}&offset=${offset}`;
             if (themesFilter.length > 0 ) {
-                query += '&' + themesFilter;
+                query =  '&' + themesFilter;
             }
             if (authorsFilter.length > 0) {
                 query += '&' + authorsFilter;
             }
             break;
-        case "theme":
-        case "author":
+        }
+        case "author": {
+            query = PYTHON_BACKEND_API_AUTHORS_SEARCH + query;
+            const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
+            if (themesFilter.length > 0 ) {
+                query += '&' + themesFilter;
+            }
+            break;
+        }
+        case "theme": 
         default:
-            query = `${PYTHON_BACKEND_API_SEARCH}?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
+            query = PYTHON_BACKEND_API_SEARCH + query;
             break;
     }
     return getLoaderPromise(query, authOptions(token));

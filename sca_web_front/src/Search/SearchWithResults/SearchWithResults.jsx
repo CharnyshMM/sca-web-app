@@ -12,8 +12,8 @@ import DomainResult from '../SearchResults/DomainResult';
 import SearchResultsFilter from './SearchResultsFilter';
 import Spinner from '../../ReusableComponents/Spinner';
 import ErrorAlert from '../../ReusableComponents/ErrorAlert';
-import PublicationsSideBar from './SideBar/PublicationsSearchSideBar';
 import PublicationsSearchSideBar from './SideBar/PublicationsSearchSideBar';
+import AuthorsSearchSidebar from './SideBar/AuthorsSearchSideBar';
 
 
 const RESULTS_ON_PAGE_LIMIT = 10;
@@ -158,7 +158,7 @@ class SearchWithResults extends Component {
     }
 
     render() {
-        const {result, loading, error, hasError, last_update_length, offset, type} = this.state;
+        const {result, loading, error, hasError, last_update_length, type} = this.state;
         
         /*
         RETURN n as node,
@@ -201,12 +201,21 @@ class SearchWithResults extends Component {
                     />
                 );
                 break;
+            case "author":
+                sideBar = (
+                    <AuthorsSearchSidebar
+                        onAddFilterValue={this.onSidebarFilterAddValue}
+                        onRemoveFilterValue={this.onSidebarFilterRemoveValue}
+                        onFilterDisabled={this.onSidebarFilterDisabled}
+                        themesFilterValues={this.state.filters["themesFilter"]}
+                    />
+                )
             default:
                 break;
         }
         return (
             <div>
-                <form method="GET" onSubmit={this.onSearchClick}>
+                <form onSubmit={this.onSearchClick}>
                     <div className="top_search_form">
                         <input className="top_search_form__input" value={this.state.searchInput} onChange={this.onSearchInputChange} type="text" placeholder="Search for knowledge..." />
                         <button className="top_search_form__button" type="submit">Go!</button>

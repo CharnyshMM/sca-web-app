@@ -1,0 +1,52 @@
+.authorities_query__form {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.authorities_query__form__plus {
+  height: 100%;
+  border-radius: 0 5px 5px 0px;
+  border: 1px solid #4285F4;
+  padding: 5px 10px;
+  background: transparent;
+  color: #4285F4;
+}
+
+.authorities_query__form__plus:hover {
+  background: #4285F4;
+  color: white;
+}
+
+.authorities_query__form__input {
+  width: 100%;
+  padding: 2px 5px;
+}
+
+.authorities_query__form__themes {
+  display: flex;
+  flex-direction: row;
+  margin: 0px;
+  list-style: none;
+  padding: 1px 2px;
+  background: rgb(221, 221, 235);
+  height: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+
+.authorities_query__form__themes__item {
+  background: transparent;
+  border: 1px solid #d10101;;
+  border-radius: 5px;
+  color: #d10101;
+  white-space: nowrap;
+  margin: 0px 1px;
+}
+
+.authorities_query__form__themes__item:hover {
+  background: #d10101;
+  color: white;
+  cursor: pointer;
+}

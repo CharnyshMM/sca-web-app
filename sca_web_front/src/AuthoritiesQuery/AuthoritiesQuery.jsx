@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import queryString from 'query-string';
 
 import { getAuthoritiesInDomainsList } from '../verbose_loaders';
-import { createAuthoritiesInDomainsLink, createAuthorPublicationsInDomainsLink } from '../utilities/links_creators';
+import { createAuthoritiesInDomainsLink, createSearchLink } from '../utilities/links_creators';
 import Spinner from '../ReusableComponents/Spinner';
 import AuthoritiesQueryResult from './AuthoritiesQueryResult';
+import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 class AuthoritiesQuery extends Component {
@@ -50,9 +51,6 @@ class AuthoritiesQuery extends Component {
 
 
   componentDidMount() {
-    console.log("comp did mount");
-
-
     const search = queryString.parse(this.props.location.search);
     let domains = search.domain;
     if (domains == undefined) {
@@ -101,31 +99,34 @@ class AuthoritiesQuery extends Component {
 
     const onAuthorityClick = (resultItem) => {
       this.props.history.push(
-        createAuthorPublicationsInDomainsLink(resultItem["author"]["name"], this.state.domains)
-        );
+        createSearchLink("", "publication", {
+          authorsFilter: [resultItem["author"]["name"]],
+          themesFilter: this.state.domains
+        })
+      );
     }
 
     return (
       <div className="container">
         <h1>Search of experts in the domain</h1>
-        <form className="form" onSubmit={handleSubmit}>
-          <div className="form-group input-group">
-            <div className="input-group-prepend">
-              <ul className="list-inline input-group-text">
+        <form onSubmit={handleSubmit}>
+        <div className="authorities_query__form">
+            <div>
+              <ul className="authorities_query__form__themes">
                 {this.state.domains.map((domain, i) => (
-                  <li className="list-inline-item" key={i}>
-                    <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => removeDomain(i)}>{domain}</button>
+                  <li  key={i}>
+                    <button type="button" className="authorities_query__form__themes__item" onClick={() => removeDomain(i)}>{domain}</button>
                   </li>
                 ))}
               </ul>
             </div>
-            <input type="text" className="form-control" placeholder="Domain" value={this.state.domainInputValue} onChange={changeDomainInput} aria-describedby="using" />
-            <div className="input-group-append">
-              <button type="button" className="btn btn-outline-primary" onClick={() => addDomain()}>
+            <input type="text"  placeholder="Domain" class="authorities_query__form__input" value={this.state.domainInputValue} onChange={changeDomainInput} aria-describedby="using" />
+            <div>
+              <button type="button" className="authorities_query__form__plus" onClick={() => addDomain()}>
                 <span className="oi oi-plus"></span>
               </button>
             </div>
-          </div>
+            </div>
           <p><small id="using">Enter domain and type <kbd>;</kbd>, <kbd>,</kbd> or <kbd>.</kbd> to add it to the list. Click on domain to remove it from the list.</small></p>
           <button className="btn btn-primary" type="submit">Submit</button>
         </form>

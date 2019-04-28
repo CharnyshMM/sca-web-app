@@ -101,6 +101,9 @@ class SearchWithResults extends Component {
     onSidebarFilterAddValue = (filterId, value) => {
         const filters = this.state.filters;
         const previousValues = filters[filterId];
+        if (previousValues.includes(value)) {
+            return;
+        }
         this.setState({
             filters: {
                 ...filters,

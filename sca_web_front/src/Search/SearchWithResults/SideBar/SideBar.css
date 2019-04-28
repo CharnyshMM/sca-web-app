@@ -1,7 +1,6 @@
 .search_sidebar {
   padding: 10px;
+  background: #F8F8F8;
+  border-right: 1px solid #ececec;
 }
 
-.search_sidebar__find_button {
-  width: 100%;
-}

@@ -105,7 +105,7 @@ class AuthoritiesQuery extends Component {
 
     return (
       <div className="container">
-        <h1>Search of experts in the domain</h1>
+        <h1>Search for experts in particular domains</h1>
         <form onSubmit={this.handleSubmit}>
         <div className="authorities_query__form">
             <div>

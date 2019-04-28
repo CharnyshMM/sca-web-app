@@ -150,7 +150,7 @@ const doSearchByName = (name, limit, offset, token, filters, type=undefined) => 
             const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
             const authorsFilter = buildQueryParametersList('author', filters["authorsFilter"]);
             if (themesFilter.length > 0 ) {
-                query =  '&' + themesFilter;
+                query += '&' + themesFilter;
             }
             if (authorsFilter.length > 0) {
                 query += '&' + authorsFilter;

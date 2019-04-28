@@ -23,8 +23,9 @@
 }
 
 .authorities_query__form__input > input {
-  padding: 2px 5px;
+  padding: 6px 5px;
   height: 100%;
+  border-radius: 0 5px 5px 0;
 }
 
 .authorities_query__form__themes {
@@ -33,6 +34,7 @@
   margin: 0px;
   list-style: none;
   padding: 1px 2px;
+  border-radius: 5px 0 0 5px;
   background: rgb(221, 221, 235);
   height: 100%;
   align-items: center;

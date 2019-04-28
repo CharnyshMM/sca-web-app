@@ -64,59 +64,55 @@ class AuthoritiesQuery extends Component {
     this.makeQuery(domains);
   }
 
-  render() {
-    const changeDomainInput = event => {
-      if ([';', ',', '.'].includes(event.target.value[event.target.value.length - 1])) {
-        addDomain(event.target.value.slice(0, -1));
-      } else {
-        this.setState({ domainInputValue: event.target.value });
-      }
-    };
-
-    const addDomain = domain => {
-      if (!domain) {
-        domain = this.state.domainInputValue;
-      }
-      if (domain.length === 0) {
-        return;
-      }
-      this.setState(prev => ({ domainInputValue: '', domains: [...prev.domains, domain] }));
-    };
-
-    const removeDomain = index => {
-      this.setState(prev => ({
-        domains: [
-          ...prev.domains.slice(0, index),
-          ...prev.domains.slice(index + 1),
-        ]
-      }));
-    };
-
-    const handleSubmit = e => {
-      e.preventDefault();
-      this.props.history.push(createAuthoritiesInDomainsLink(this.state.domains));
-      this.makeQuery(this.state.domains);
-    };
-
-    const onAuthorityClick = (resultItem) => {
-      this.props.history.push(
-        createSearchLink("", "publication", {
-          authorsFilter: [resultItem["author"]["name"]],
-          themesFilter: this.state.domains
-        })
-      );
+  addDomain = domain => {
+    if (!domain) {
+      domain = this.state.domainInputValue;
     }
+    if (domain.length == 0) {
+      return;
+    }
+    if (this.state.domains.includes(domain)){
+      return;
+    }
+    this.setState(prev => ({ domainInputValue: '', domains: [...prev.domains, domain] }));
+  };
+
+  removeDomain = index => {
+    this.setState(prev => ({
+      domains: [
+        ...prev.domains.slice(0, index),
+        ...prev.domains.slice(index + 1),
+      ]
+    }));
+  };
+
+  handleSubmit = e => {
+    e.preventDefault();
+    this.props.history.push(createAuthoritiesInDomainsLink(this.state.domains));
+    this.makeQuery(this.state.domains);
+  };
+
+  onAuthorityClick = resultItem => {
+    this.props.history.push(
+      createSearchLink("", "publication", {
+        authorsFilter: [resultItem["author"]["name"]],
+        themesFilter: this.state.domains
+      })
+    );
+  }
+
+  render() {
 
     return (
       <div className="container">
         <h1>Search of experts in the domain</h1>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={this.handleSubmit}>
         <div className="authorities_query__form">
             <div>
               <ul className="authorities_query__form__themes">
                 {this.state.domains.map((domain, i) => (
                   <li  key={i}>
-                    <button type="button" className="authorities_query__form__themes__item" onClick={() => removeDomain(i)}>{domain}</button>
+                    <button type="button" className="authorities_query__form__themes__item" onClick={() => this.removeDomain(i)}>{domain}</button>
                   </li>
                 ))}
               </ul>
@@ -128,17 +124,17 @@ class AuthoritiesQuery extends Component {
                 "Birds",
                 "Science"
               ]} 
-              onSubmit={addDomain}
+              onSubmit={this.addDomain}
               getName={v=>v}
               />
               </div>
-            <div>
-              <button type="button" className="authorities_query__form__plus" onClick={() => addDomain()}>
+            {/* <div>
+              <button type="button" className="authorities_query__form__plus" onClick={() => this.addDomain()}>
                 <span className="oi oi-plus"></span>
               </button>
+            </div> */}
             </div>
-            </div>
-          <p><small id="using">Enter domain and type <kbd>;</kbd>, <kbd>,</kbd> or <kbd>.</kbd> to add it to the list. Click on domain to remove it from the list.</small></p>
+          <p><small>Start typing theme name and autocomplete will help you. Click on theme to remove it from the list.</small></p>
           <button className="btn btn-primary" type="submit">Submit</button>
         </form>
         {this.state.error && (
@@ -150,7 +146,7 @@ class AuthoritiesQuery extends Component {
         }
 
         {this.state.result && 
-          <AuthoritiesQueryResult result={this.state.result} onItemClick={onAuthorityClick} />
+          <AuthoritiesQueryResult result={this.state.result} onItemClick={this.onAuthorityClick} />
         }
       </div>
     );

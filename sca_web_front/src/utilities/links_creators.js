@@ -43,14 +43,16 @@ function createKeywordsQueryLink(keywords) {
 function createSearchLink(name, type, filters) {
     let query = `${SEARCH}?search=${name.toLowerCase()}&type=${type}`;
 
-    const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
-    const authorsFilter = buildQueryParametersList('author', filters["authorsFilter"]);
-    // query = `${PYTHON_BACKEND_API_PUBLICATIONS_SEARCH}?search=${name}&limit=${limit}&offset=${offset}`;
-    if (themesFilter.length > 0 ) {
-        query += '&' + themesFilter;
-    }
-    if (authorsFilter.length > 0) {
-        query += '&' + authorsFilter;
+    if (filters) {
+        const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);
+        const authorsFilter = buildQueryParametersList('author', filters["authorsFilter"]);
+        // query = `${PYTHON_BACKEND_API_PUBLICATIONS_SEARCH}?search=${name}&limit=${limit}&offset=${offset}`;
+        if (themesFilter.length > 0 ) {
+            query += '&' + themesFilter;
+        }
+        if (authorsFilter.length > 0) {
+            query += '&' + authorsFilter;
+        }
     }
     return query;
 }

@@ -59,12 +59,28 @@ class PublicationGraphView extends Component {
     };
   }
 
+  componentWillReceiveProps(nextProps) {
+    const currentQueryParams = queryString.parse(this.props.location.search);
+    const nextQueryParams = queryString.parse(nextProps.location.search);
+
+    if (nextQueryParams.publication != currentQueryParams.publication) {
+     
+      this.loadGraphData(nextQueryParams.publication);
+    }
+  }
+
   componentDidMount() {
+    
+    const queryParams = queryString.parse(this.props.location.search);
+    this.loadGraphData(queryParams.publication);
+  }
+
+  loadGraphData = publication => {
     this.setState({ loading: true, result: undefined, error: undefined, hasError: false });
     const token = window.sessionStorage.getItem("token");
-    const queryParams = queryString.parse(this.props.location.search);
     let status = 0;
-    getPublicationGraph(queryParams.publication, token)
+
+    getPublicationGraph(publication, token)
       .then(
         result => {
           status = result.status;

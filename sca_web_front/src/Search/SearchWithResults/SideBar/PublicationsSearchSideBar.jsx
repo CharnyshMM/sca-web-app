@@ -12,49 +12,29 @@ class PublicationsSearchSideBar extends Component {
     themesFilterEnabled: this.props.themesFilterValues.length > 0,
     themesLoading: false,
     authorsLoading: false,
-    allThemes: [],
-    allAuthors: [],
+    authorsFilter: [],
+    themesFilter: [],
   }
 
-  loadAuthorsList = () => {
-    const token = window.sessionStorage.getItem("token");
-    this.setState({authorsLoading: true});
-    let status = 0;
-    getAuthorsList(token)
-    .then(
-      result => {
-        status = result.status;
-        return result.response.json();
-      },
-      error => {
-        status = error.status;
-        return status;
-      }
-    )
-    .then(
-      result => {
-        if (status == 200) {
-          this.setState({
-            allAuthors: result.map(v => v["name"]),
-            authorsAreLoading: false,
-          })
-        } else {
-          throw Error(result.error);
-        }
-      }
-    )
-    .catch(e => {
-      this.setState({authorsLoading: false});
-      console.log("ERROR:", e);
-    });
-  }
 
-  loadThemesList = () => {
+  loadAutocompleteList = filterName => {
     const token = window.sessionStorage.getItem("token");
     this.setState({themesLoading: true});
+    
+    let promise = null;
+    switch(filterName) {
+      case "authorsFilter": {
+        promise = getAuthorsList(token);
+        break;
+      }
+      case "themesFilter": {
+        promise = getThemesList(token);
+        break;
+      }
+    }
+
     let status = 0;
-    getThemesList(token)
-    .then(
+    promise.then(
       result => {
         status = result.status;
         return result.response.json();
@@ -68,7 +48,7 @@ class PublicationsSearchSideBar extends Component {
       result => {
         if (status == 200) {
           this.setState({
-            allThemes: result.map(v => v["name"]),
+            [filterName]: result.map(v => v["name"]),
             themesLoading: false,
           })
         } else {
@@ -82,20 +62,10 @@ class PublicationsSearchSideBar extends Component {
     });
   }
 
+
   onToggleFilter = e => {
-    switch(e.target.id) {
-      case "authorsFilter": {
-        if (this.state.allAuthors.length == 0) {
-          this.loadAuthorsList();
-        }
-        break;
-      }
-      case "themesFilter": {
-        if (this.state.allThemes.length == 0) {
-          this.loadThemesList();
-        }
-        break;
-      }
+    if (this.state[e.target.id].length == 0) {
+      this.loadAutocompleteList(e.target.id);
     }
     const key = `${e.target.id}Enabled`;
     const enabled = this.state[key];
@@ -109,8 +79,8 @@ class PublicationsSearchSideBar extends Component {
     const {
       authorsFilterEnabled, 
       themesFilterEnabled,
-      allAuthors,
-      allThemes,
+      authorsFilter,
+      themesFilter,
      } = this.state;
 
     return (
@@ -123,7 +93,7 @@ class PublicationsSearchSideBar extends Component {
           onToggleFilter={this.onToggleFilter}
           onAddValue={this.props.onAddFilterValue}
           onRemoveValue={this.props.onRemoveFilterValue}
-          suggestions={allAuthors}
+          suggestions={authorsFilter}
           />
 
         <Filter 
@@ -134,7 +104,7 @@ class PublicationsSearchSideBar extends Component {
           onToggleFilter={this.onToggleFilter}
           onAddValue={this.props.onAddFilterValue}
           onRemoveValue={this.props.onRemoveFilterValue}
-          suggestions={allThemes}
+          suggestions={themesFilter}
           />
 
       </div>

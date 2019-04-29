@@ -7,11 +7,10 @@ import ArticlesQuery from './ArticlesQuery/ArticlesQueryDeprecated';
 import CustomQuery from './CustomQuery/CustomQuery';
 import Status from './Status/Status';
 import SearchWithResults from './Search/SearchWithResults/SearchWithResults';
-import Publication from './EntityViews/Publication';
-import Author from './EntityViews/Author';
+
 import Domain from './EntityViews/Domain';
 import Test from './Test/Test';
-import PublicationGraphView from './EntityViews/PublicationGraphView/PublicationGraphView';
+import PublicationGraphView from './EntityViews/PublicationGraphView';
 import AuthorGraphView from './EntityViews/AuthorGraphView';
 
 
@@ -26,7 +25,7 @@ const Main = () => (
       <Route path='/authorities-query' component={AuthoritiesQuery}/>
       <Route path='/domains-query' component={DomainsQuery}/>
       <Route path='/articles-query' component={ArticlesQuery}/>
-      <Route path='/test' component={AuthorGraphView} />
+      <Route path='/test' component={Test} />
       <Route path='/custom-query' component={CustomQuery}/>
       <Route path='/status' component={Status} />
     </Switch>

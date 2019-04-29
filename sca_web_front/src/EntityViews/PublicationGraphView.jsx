@@ -2,27 +2,27 @@ import React, { Component } from 'react';
 import queryString from 'query-string';
 
 
-import Spinner from '../../ReusableComponents/Spinner';
-import LinkLikeButton from '../../ReusableComponents/LinkLikeButton/LinkLikeButton';
-import EntityTitle from '../EntityTitle/EntityTitle';
-import EntityInfo from '../EntityInfo/EntityInfo';
-import EntityInfoItem from '../EntityInfo/EntityInfoItem';
-import EntityGraph from '../EntityGraph/EntityGraph';
-import LegendBlock from '../EntityInfo/LegendBlock';
-import RadioLegendBlock from '../EntityInfo/RadioLegendBlock';
-import BeautifulPopOver from '../../ReusableComponents/BeautifulPopOver/BeautifulPopOver';
-import SimpleNodesLinksList from '../../ReusableComponents/SimpleNodesLinksList';
-import { preparePublicationGraph, cacheableGraphPreparation } from '../utilities';
+import Spinner from '../ReusableComponents/Spinner';
+import LinkLikeButton from '../ReusableComponents/LinkLikeButton/LinkLikeButton';
+import EntityTitle from './EntityTitle/EntityTitle';
+import EntityInfo from './EntityInfo/EntityInfo';
+import EntityInfoItem from './EntityInfo/EntityInfoItem';
+import EntityGraph from './EntityGraph/EntityGraph';
+import LegendBlock from './EntityInfo/LegendBlock';
+import RadioLegendBlock from './EntityInfo/RadioLegendBlock';
+import BeautifulPopOver from '../ReusableComponents/BeautifulPopOver/BeautifulPopOver';
+import SimpleNodesLinksList from '../ReusableComponents/SimpleNodesLinksList';
+import { preparePublicationGraph, cacheableGraphPreparation } from './utilities';
 
 import {
   createAuthorLink,
   createPublicationLink,
   createAuthoritiesInDomainsLink,
   createDomainLink,
-} from '../../utilities/links_creators';
+} from '../utilities/links_creators';
 
-import { getPublicationGraph } from '../../verbose_loaders';
-import ErrorAlert from '../../ReusableComponents/ErrorAlert';
+import { getPublicationGraph } from '../verbose_loaders';
+import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 const GraphConfig = {
   node: {

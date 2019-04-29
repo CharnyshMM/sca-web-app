@@ -35,3 +35,11 @@
   -ms-flex-positive: 1;
   flex-grow: 1;
 }
+
+.features {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  margin: 10% 0;
+}

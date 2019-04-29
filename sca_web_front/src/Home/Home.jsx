@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import './Home.css';
+import Feature from './Feature';
 import {createSearchLink} from '../utilities/links_creators';
 
 class Home extends Component {
@@ -34,70 +34,41 @@ class Home extends Component {
           </div>
         </form>
 
-        <div className="row">
-          <div className="col-6 vertical-margin">
-            <div className="card h-100">
-              <div className="card-body">
-                <div className="media">
-                  <span className="oi oi-person primary-icon"></span>
-                  <div className="media-body">
-                    <h5 className="card-title">Search of experts in the domain</h5>
-                    <p className="card-text">Search for the most cited experts (authorities) in the domain.</p>
-                    <Link to="/authorities-query" className="btn btn-primary">Make query</Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 vertical-margin">
-            <div className="card h-100">
-              <div className="card-body">
-                <div className="media">
-                  <span className="oi oi-graph primary-icon"></span>
-                  <div className="media-body">
-                    <h5 className="card-title">Search for domains by dynamics</h5>
-                    <p className="card-text">Search for new nascent domains, as well as those to which interest has already disappeared.</p>
-                    <Link to="/domains-query" className="btn btn-primary">Make query</Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="row justify-content-center mb-5">
-          <div className="col-6 vertical-margin">
-            <div className="card h-100">
-              <div className="card-body">
-                <div className="media">
-                  <span className="oi oi-book primary-icon"></span>
-                  <div className="media-body">
-                    <h5 className="card-title">Search articles</h5>
-                    <p className="card-text">Search for articles on particular parameters.</p>
-                    <Link to="/articles-query" className="btn btn-primary">Make query</Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {isAdmin &&
-            <div className="col-6 vertical-margin ">
-              <div className="card h-100">
-                <div className="card-body">
-                  <div className="media">
-                    <span className="oi oi-spreadsheet primary-icon"></span>
-                    <div className="media-body">
-                      <h5 className="card-title">Query builder</h5>
-                      <p className="card-text">Compose and execute complex queries to the graph database using the query designer.</p>
-                      <Link to="/custom-query" className="btn btn-primary">Make query</Link>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <section className="features">
+          <Feature 
+            name="FIND EXPERTS"
+            iconClassName="oi oi-person"
+            href="/authorities-query"
+            >
+            in particular domains by selecting authors
+              with most cited publications
+          </Feature>
+          <Feature 
+            name="EXPLORE DOMAINS"
+            iconClassName="oi oi-bar-chart"
+            href="/domains-query"
+            >
+            their popularity and publicing dynamics through the time
+          </Feature>
+          {isAdmin && 
+          <Feature 
+            name="MAKE QUERIES"
+            iconClassName="oi oi-terminal"
+            href="/custom-query"
+            >
+            to the Graph of knowledge in Neo4j&trade; database by writing your own queries in CYPHER
+          </Feature>
           }
-        </div>
+          {isAdmin == false && 
+          <Feature 
+          name="ABOUT CAS"
+          iconClassName="oi oi-flag"
+          href="/custom-query"
+          >
+          to the Graph of knowledge in Neo4j&trade; database by writing your own queries in CYPHER
+        </Feature>
+          }
+        </section>
       </div>
     );
   }

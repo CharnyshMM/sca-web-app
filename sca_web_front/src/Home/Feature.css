@@ -1,0 +1,32 @@
+
+.feature {
+  flex-grow: 0;
+  flex-basis: 30%;
+  padding: 2em 2em;
+  text-align: justify;
+}
+
+.feature:nth-child(2) {
+  border-right: 1px solid;
+  border-left: 1px solid;
+}
+
+.feature__header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.feature__header h3 {
+  margin-bottom: 0;
+}
+
+.feature__header__icon {
+  font-size: 3em;
+  padding: 0 1ex 0 0;
+}
+
+.feature__description {
+  font-family: sans-serif
+}

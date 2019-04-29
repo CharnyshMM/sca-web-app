@@ -1,0 +1,14 @@
+.domains_filter {
+    padding: 10px 2% 10px 0px;
+}
+
+.domains_filter__input {
+    height: 25px;
+}
+
+.domains_filter__list {
+    list-style: none;
+    padding: 5px;
+    overflow: auto;
+    height: 300px;
+}

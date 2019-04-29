@@ -3,14 +3,11 @@ import React, { Component } from 'react';
 import './domains_query_result_sorting_selector.css';
 
 class DomainsQueryResultSortingSelector extends Component{ 
-    constructor(props) {
-        super(props);
-        this.state = {
-            sortingMode: "mostPublicationsFirst",
-            showPeriodsSelector: false,
-            fixedPeriodsSortingMode: "after_2010",
-            showPeriodsEdits: false,
-        }
+    state = {
+        sortingMode: "mostPublicationsFirst",
+        showPeriodsSelector: false,
+        fixedPeriodsSortingMode: "after_2010",
+        showPeriodsEdits: false,
     }
 
     onSortingOptionsChanged = (e) => {

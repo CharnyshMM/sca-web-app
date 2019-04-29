@@ -11,9 +11,7 @@ import DomainsQueryResultSortingSelector from './DomainsQueryResultSortingSelect
 
 
 class DomainsQuery extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
+    state = {
             result: undefined,
             sortingMode: "mostPublicationsFirst",
             period: undefined,
@@ -21,8 +19,7 @@ class DomainsQuery extends Component {
             loading: false,
             error: undefined,
             hasError: false
-        };
-    }
+    };
 
     loadData = (popularityKey) => {
         const token = window.sessionStorage.getItem("token");
@@ -149,11 +146,7 @@ class DomainsQuery extends Component {
         return (
             <div className="container">
                 <h1>Search for domains by dynamics</h1>
-
-                
-                    <DomainsQueryResultSortingSelector onSortingModeChanged={this.onSortingModeChanged} />
-               
-
+                <DomainsQueryResultSortingSelector onSortingModeChanged={this.onSortingModeChanged} />
                 {selectedDomains && selectedDomains.length > 0 &&
                     <div className="card">
                         <div className="card-body">

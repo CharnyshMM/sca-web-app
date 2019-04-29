@@ -10,17 +10,27 @@ import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 class AuthoritiesQuery extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
+  state = {
       domains: [],
       domainInputValue: '',
       error: undefined,
       loading: false,
-    };
   }
 
-  makeQuery(domains) {
+  componentDidMount() {
+    const search = queryString.parse(this.props.location.search);
+    let domains = search.domain;
+    if (domains == undefined) {
+      return;
+    }
+    if (!Array.isArray(domains)) {
+      domains = [domains];
+    }
+    console.log("domains", domains);
+    this.makeQuery(domains);
+  }
+
+  makeQuery = domains => {
     this.setState({ error: undefined, result: undefined, domains: domains, loading: true });
     const token = window.sessionStorage.getItem("token");
     let status = 0;
@@ -48,20 +58,6 @@ class AuthoritiesQuery extends Component {
         this.setState({ error: e, loading: false });
         console.log("ERROR:", e);
       });
-  }
-
-
-  componentDidMount() {
-    const search = queryString.parse(this.props.location.search);
-    let domains = search.domain;
-    if (domains == undefined) {
-      return;
-    }
-    if (!Array.isArray(domains)) {
-      domains = [domains];
-    }
-    console.log("domains", domains);
-    this.makeQuery(domains);
   }
 
   addDomain = domain => {

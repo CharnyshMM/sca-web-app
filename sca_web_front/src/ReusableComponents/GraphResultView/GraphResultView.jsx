@@ -46,15 +46,10 @@ class GraphResultView extends Component {
         this.graphRef = React.createRef();
     }
 
-    componentDidCatch(error, errorInfo) {
-        console.log("componentDidCatchv");
-        console.log("EEERORR", error.message);
-        console.log("descr", errorInfo);
-    }
 
     static getDerivedStateFromError(error) {
         // Update state so the next render will show the fallback UI.
-        console.log("derived state from error",error);
+        
         let errorMessage = error.message;
         if (error.message.includes("react-d3-graph")) {
             errorMessage = "Can't draw a beautiful graph for these results :'("

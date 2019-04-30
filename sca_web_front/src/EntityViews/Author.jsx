@@ -42,7 +42,7 @@ class Author extends Component {
                     if (status != 200) {
                         throw new Error(response.error);
                     }
-                    console.log('responsed:', response);
+                    
                     this.setState({ result: response });
                 },
         )

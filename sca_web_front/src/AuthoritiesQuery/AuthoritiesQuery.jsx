@@ -26,7 +26,6 @@ class AuthoritiesQuery extends Component {
     if (!Array.isArray(domains)) {
       domains = [domains];
     }
-    console.log("domains", domains);
     this.makeQuery(domains);
   }
 
@@ -45,11 +44,9 @@ class AuthoritiesQuery extends Component {
           return error.response.json();
         })
       .then(result => {
-        console.log('responsed:', result, status);
         if (status == 200) {
           this.setState({ result: result, loading: false });
         } else {
-          console.log("I throwed an error");
           throw Error(result.error);
         }
       },

@@ -9,7 +9,6 @@ import EntityInfoItem from './EntityInfo/EntityInfoItem';
 import EntityGraph from './EntityGraph/EntityGraph';
 import LegendBlock from './EntityInfo/LegendBlock';
 import RadioLegendBlock from './EntityInfo/RadioLegendBlock';
-import CheckableLegendBlock from './EntityInfo/CheckableLegendBlock';
 import {prepareAuthorGraph, cacheableGraphPreparation} from './utilities';
 
 import {
@@ -77,7 +76,6 @@ class AuthorGraphView extends Component {
           if (status != 200) {
             throw new Error(response.error);
           }
-          console.log(response);
           this.setState({
             result: response,
             loading: false
@@ -172,7 +170,7 @@ class AuthorGraphView extends Component {
       }
     );
 
-    GraphConfig.height = window.innerHeight * 0.7;
+    GraphConfig.height = window.innerHeight * 0.8;
     GraphConfig.width = window.innerWidth;
     return (
       <section style={{ position: "relative", padding: "1% 10%" }}>

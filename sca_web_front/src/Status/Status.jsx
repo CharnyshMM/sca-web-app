@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-
-import NeoContext from '../NeoContext';
 import { getNeoStatus, getHBaseStatus } from '../loaders';
 
 

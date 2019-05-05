@@ -5819,9 +5819,9 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-d3-graph@^2.0.0-rc2:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/react-d3-graph/-/react-d3-graph-2.0.1.tgz#956d43b498071f055301f0db58ec1780f0d850ec"
+react-d3-graph@2.0.0-rc1:
+  version "2.0.0-rc1"
+  resolved "https://registry.yarnpkg.com/react-d3-graph/-/react-d3-graph-2.0.0-rc1.tgz#0f307f5339dc858bb09d4fededc7c85b2849f08e"
 
 react-dev-utils@^5.0.1:
   version "5.0.3"

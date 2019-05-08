@@ -22,7 +22,7 @@ import {
 //      UTILITIES
 // ========================================================================
 const getLoaderPromise = function (path, requestOptions = null) {
-    const FETCH_TIMEOUT = 5000;
+    const FETCH_TIMEOUT = 10000;
     return new Promise((resolve, reject) => {
         // Set timeout timer
         let timer = setTimeout(
@@ -34,7 +34,7 @@ const getLoaderPromise = function (path, requestOptions = null) {
             response => {
                 console.log("responsed :", response);
                 if (response.status >= 200 && response.status<300) {
-                    console.log("status=200, resolving promise");
+                    console.log(`status=${response.status}, resolving promise`);
                     resolve({
                         "status": response.status,
                         "response": response,

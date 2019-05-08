@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { getDomainsByPopularity } from '../loaders';
+import { getDomainsByPopularity } from '../verbose_loaders';
 import queryString from 'query-string';
 import { createAuthoritiesInDomainsLink, createDomainsPopularityLink, createDomainLink } from '../utilities/links_creators';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
@@ -26,15 +26,18 @@ class DomainsQuery extends Component {
         this.setState({ hasError: false, error: undefined, result: undefined, selected: popularityKey, loading: true });
         getDomainsByPopularity(popularityKey, token)
             .then(
-                resolve => {
-                    return resolve.json();
+                result => {
+                    return result.response.json();
                 },
-                reject => {
-                    throw new Error("Error in request");
+                error => {
+                    if (error.status != 500) {
+                        throw new Error("Error in request");
+                    } else {
+                        throw new Error("Server error");
+                    }
                 }
             )
             .then(response => {
-                console.log('responsed_query:', response);
                 this.setState({ result: response, loading: false });
             },
             )

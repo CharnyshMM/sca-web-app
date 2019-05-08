@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
 
-import { doSearchByName } from '../../verbose_loaders';
+import { doSearchByName } from '../../utilities/verbose_loaders';
 import { createSearchLink } from '../../utilities/links_creators';
 
 import './SearchWithResults.css';

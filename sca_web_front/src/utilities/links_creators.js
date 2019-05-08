@@ -7,7 +7,7 @@ import {
     AUTHOR,
     DOMAIN,
     PUBLICATION
-} from '../routes_constants';
+} from './routes_constants';
 
 function buildQueryParametersList(name, val_list) {
     let query = '';

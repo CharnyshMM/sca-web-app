@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
 
-import { getAuthoritiesInDomainsList } from '../verbose_loaders';
+import { getAuthoritiesInDomainsList } from '../utilities/verbose_loaders';
 import { createAuthoritiesInDomainsLink, createSearchLink } from '../utilities/links_creators';
 import Spinner from '../ReusableComponents/Spinner';
 import AutocompleteInput from '../ReusableComponents/AutocompleteInput/AutocompleteInput';

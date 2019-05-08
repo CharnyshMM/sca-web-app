@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 
-import {getThemesList, getAuthorsList} from '../../../verbose_loaders';
+import {getThemesList, getAuthorsList} from '../../../utilities/verbose_loaders';
 import Filter from './Filter';
 
 

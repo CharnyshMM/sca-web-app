@@ -7,7 +7,7 @@ import {
     createAuthorPublicationsInDomainsLink
 } from '../utilities/links_creators';
 
-import { getAuthor } from '../verbose_loaders';
+import { getAuthor } from '../utilities/verbose_loaders';
 
 import './author.css';
 

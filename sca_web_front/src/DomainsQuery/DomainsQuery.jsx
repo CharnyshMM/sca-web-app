@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { getDomainsByPopularity } from '../verbose_loaders';
+import { getDomainsByPopularity } from '../utilities/verbose_loaders';
 import queryString from 'query-string';
 import { createAuthoritiesInDomainsLink, createDomainsPopularityLink, createDomainLink } from '../utilities/links_creators';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';

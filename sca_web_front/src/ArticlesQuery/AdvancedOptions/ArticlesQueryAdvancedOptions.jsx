@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { getDomainsList } from '../../verbose_loaders';
+import { getDomainsList } from '../../utilities/verbose_loaders';
 import DomainsFilter from './DomainsFilter/DomainsFilter';
 
 

@@ -17,7 +17,7 @@ import {
   createAuthoritiesInDomainsLink,
 } from '../utilities/links_creators';
 
-import { getAuthorGraph } from '../verbose_loaders';
+import { getAuthorGraph } from '../utilities/verbose_loaders';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 const GraphConfig = {

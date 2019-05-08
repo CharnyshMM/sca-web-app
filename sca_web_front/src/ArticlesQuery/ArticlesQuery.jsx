@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { getArticlesByKeywords } from '../verbose_loaders';
+import { getArticlesByKeywords } from '../utilities/verbose_loaders';
 import { createKeywordsQueryLink } from '../utilities/links_creators';
 import BeautifulSearchForm from '../ReusableComponents/BeautifulSearchForm/BeautifulSearchForm';
 import queryString from 'query-string';

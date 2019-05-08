@@ -15,7 +15,7 @@ import {
     createAuthorLink,
 } from '../utilities/links_creators';
 
-import { getDomain } from '../verbose_loaders';
+import { getDomain } from '../utilities/verbose_loaders';
 
 import './author.css';
 

@@ -21,7 +21,7 @@ import {
   createDomainLink,
 } from '../utilities/links_creators';
 
-import { getPublicationGraph } from '../verbose_loaders';
+import { getPublicationGraph } from '../utilities/verbose_loaders';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 const GraphConfig = {

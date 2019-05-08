@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Header from './Header';
 import Main from './Main';
 import AutocompleteContext from './AutocompleteContext';
-import { authorizeOnPythonBackend } from './verbose_loaders';
+import { authorizeOnPythonBackend } from './utilities/verbose_loaders';
 
 import './App.css';
 import ErrorBoundary from './ReusableComponents/ErrorBoundary';

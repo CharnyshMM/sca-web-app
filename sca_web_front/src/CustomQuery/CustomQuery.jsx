@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import CodeMirror from 'codemirror';
-import { runQueryOnPythonBackend } from '../verbose_loaders';
+import { runQueryOnPythonBackend } from '../utilities/verbose_loaders';
 
 import './CustomQuery.css';
 

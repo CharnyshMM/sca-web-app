@@ -7,7 +7,7 @@ import {
     createAuthoritiesInDomainsLink,
 } from '../utilities/links_creators';
 
-import { getPublication } from '../verbose_loaders';
+import { getPublication } from '../utilities/verbose_loaders';
 import HorizontalKeywordsList from '../ReusableComponents/HorizontalKeywordsList';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import GraphResultView from '../ReusableComponents/GraphResultView/GraphResultView';

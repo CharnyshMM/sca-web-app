@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getNeoStatus, getHBaseStatus } from '../loaders';
+import { getNeoStatus, getHBaseStatus } from '../utilities/verbose_loaders';
 
 
 class Status extends Component {
@@ -34,7 +34,7 @@ class Status extends Component {
         this.setState({neoStatusLoading: true});
         const token = window.sessionStorage.getItem("token");
         getNeoStatus(token)
-            .then(result=> result.json())
+            .then(result=> result.response.json())
             .then(res => {
                     console.log("result OK:", res);
                     this.setState({neoStatus: 

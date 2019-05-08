@@ -7,6 +7,9 @@ const SEARCH = "/search";
 const AUTHOR = "/author";
 const DOMAIN = "/domain";
 const PUBLICATION = "/publication";
+const CUSTOM_QUERY = "/custom-query";
+const STATUS = "/status";
+const TEST = "/test";
 
 export {
     AUTHORITIES_QUERY,
@@ -17,4 +20,7 @@ export {
     AUTHOR, 
     PUBLICATION, 
     DOMAIN,
+    CUSTOM_QUERY,
+    STATUS,
+    TEST
 }

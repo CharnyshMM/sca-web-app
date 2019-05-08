@@ -12,22 +12,31 @@ import Domain from './EntityViews/Domain';
 import Test from './Test/Test';
 import PublicationGraphView from './EntityViews/PublicationGraphView';
 import AuthorGraphView from './EntityViews/AuthorGraphView';
-
+import {
+  AUTHORITIES_QUERY, 
+  DOMAINS_POPULARITY_QUERY,
+  CUSTOM_QUERY,
+  SEARCH,
+  AUTHOR,
+  DOMAIN,
+  PUBLICATION,
+  STATUS,
+  TEST
+} from './utilities/routes_constants';
 
 const Main = () => (
   <main>
     <Switch>
       <Route exact path='/' component={Home}/>
-      <Route path='/search/' component={SearchWithResults} />
-      <Route path="/author/" component={AuthorGraphView}/>
-      <Route path="/domain/" component={Domain}/>
-      <Route path="/publication" component={PublicationGraphView}/>
-      <Route path='/authorities-query' component={AuthoritiesQuery}/>
-      <Route path='/domains-query' component={DomainsQuery}/>
-      <Route path='/articles-query' component={ArticlesQuery}/>
-      <Route path='/test' component={Test} />
-      <Route path='/custom-query' component={CustomQuery}/>
-      <Route path='/status' component={Status} />
+      <Route path={SEARCH} component={SearchWithResults} />
+      <Route path={AUTHOR} component={AuthorGraphView}/>
+      <Route path={DOMAIN} component={Domain}/>
+      <Route path={PUBLICATION} component={PublicationGraphView}/>
+      <Route path={AUTHORITIES_QUERY} component={AuthoritiesQuery}/>
+      <Route path={DOMAINS_POPULARITY_QUERY} component={DomainsQuery}/>
+      <Route path={TEST} component={Test} />
+      <Route path={CUSTOM_QUERY} component={CustomQuery}/>
+      <Route path={STATUS} component={Status} />
     </Switch>
   </main>
 );

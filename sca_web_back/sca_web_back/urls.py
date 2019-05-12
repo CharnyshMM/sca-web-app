@@ -21,14 +21,10 @@ from .sca_api_app.views import CustomQueryView, \
     IndexView, \
     login, \
     AuthoritiesQueryView, \
-    AuthorWithPublicationsInDomainsQuery, \
-    ArticlesQueryView, \
     PopularDomainsQueryView, \
     SearchView, \
     PublicationsSearchView, \
     AuthorsSearchView, \
-    GetPublicationView, \
-    GetAuthorView, \
     GetDomainView, \
     GetAllThemesView, \
     GetAllAuthorsView,\
@@ -42,14 +38,10 @@ urlpatterns = [
 
     path('query/', view=CustomQueryView.as_view(), name='query'),
     path('query/authorities/', view=AuthoritiesQueryView.as_view(), name='authorities_query'),
-    path('query/author/domains/', view=AuthorWithPublicationsInDomainsQuery.as_view(), name="author_in_domains_query"),
-    path('query/articles/', view=ArticlesQueryView.as_view(), name='articles_query'),
     path('query/domains_popularity/', view=PopularDomainsQueryView.as_view(), name='domains_popularity_query'),
     path('search/', view=SearchView.as_view(), name="search"),
     path('search/publications/', view=PublicationsSearchView.as_view(), name="publication_search"),
     path('search/authors/', view=AuthorsSearchView.as_view(), name="authors_search"),
-    path('publication/', view=GetPublicationView.as_view(), name="publication"),
-    path('author/', view=GetAuthorView.as_view(), name="author"),
     path('author/all/', view=GetAllAuthorsView.as_view(), name="all_authors"),
     path('domain/', view=GetDomainView.as_view(), name="domain"),
     path('domain/all/', view=GetAllThemesView.as_view(), name="all_themes"),

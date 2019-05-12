@@ -65,7 +65,7 @@ class NeoQuerier:
                     count(distinct p) as publications_count, 
                     count(distinct l) as links_count,
                     a 
-                WHERE ALL(domain_name in {lower_domains} WHERE domain_name in domains)
+                WHERE ALL(domain_name in {{wanted_domains}} WHERE domain_name in domains)
                 RETURN a as author,
                     publications_count,
                     links_count 
@@ -73,39 +73,8 @@ class NeoQuerier:
             """
 
         result = self.graph.run(
-            query,
+            query, {"wanted_domains": lower_domains}
         )
-        return result.data()
-
-    def get_author_with_publications_in_domains(self, author_name, domains_list):
-        domains_list = [d.lower() for d in domains_list]
-        query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
-            (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL}) 
-            WHERE a.name="{author_name}" AND r.probability > {self.THEME_RELATION_PROBABILITY}
-             WITH collect( toLower(d.name)) as domains, 
-            collect(distinct p) as pub, a,collect(distinct ID(p)) as pub_ids 
-            WHERE ALL(domain_name in {domains_list} WHERE domain_name in domains)
-            RETURN a, ID(a) as author_id, pub, pub_ids
-        """
-        print(query)
-        result = self.graph.run(query)
-        rd = result.data()
-        print(rd)
-        return rd
-
-    def get_articles_by_keywords(self, keywords_list):
-        keywords_list = [k.lower() for k in keywords_list]
-        query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
-             (p)-[r:{self.KEYWORDS_RELATION_LABEL}]-(d:{self.KEYWORD_PHRASE_NODE_LABEL}) 
-            WHERE EXISTS(a.name)
-            WITH collect(toLower(d.phrase)) as publ_keyphrases, collect(distinct p) as pub, a 
-            WHERE ALL(key in {keywords_list} WHERE key in publ_keyphrases) 
-            RETURN a, pub
-        """
-
-        result = self.graph.run(query, keywords_list=keywords_list)
         return result.data()
 
     def get_domains_by_popularity_index(self, popularity_index=0, higher=True):
@@ -254,105 +223,6 @@ class NeoQuerier:
             """
         query += return_part
         return self.graph.run(query).data()
-
-
-    def get_publication_with_details(self, publication_id):
-        query = f"""
-            MATCH (p:{self.PUBLICATION_NODE_LABEL})
-                where ID(p) = {publication_id}
-                OPTIONAL MATCH (p) -[:{self.LINKS_TO_RELATION_LABEL}]->(l_p)
-                OPTIONAL MATCH (p)-[:{self.WROTE_RELATION_LABEL}]-(a)
-                OPTIONAL MATCH (p)-[tr:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
-                WHERE tr.probability > {self.THEME_RELATION_PROBABILITY}
-                RETURN p as publication, 
-                collect(DISTINCT a) as authors,
-                collect(distinct ID(a)) as authors_ids,
-                collect(DISTINCT l_p) as linked_publications,
-                collect(DISTINCT ID(l_p)) as linked_publications_ids,
-                collect(DISTINCT t) as themes,
-                collect(DISTINCT ID(t)) as themes_ids
-        """
-
-        linked_publications_authors_query = f"""
-            MATCH (a:Author)-[a_p:WROTE]-(p:Publication)
-            WHERE ID(p)={publication_id}
-            MATCH (p)<-[l_p:LINKS_TO]-(another_p:Publication)
-            MATCH (another_p)-[ap_aa:WROTE]-(another_a:Author)
-            RETURN 
-                a as author, 
-                a_p,
-                p as publication, 
-                another_a as another_author,
-                COLLECT(DISTINCT another_p) as linked_publications,
-                COLLECT(DISTINCT ap_aa) as linked_publications_author_publication_links,
-                COLLECT(DISTINCT l_p) as citation_links
-            ORDER BY SIZE(linked_publications) DESC
-            LIMIT 10
-        """
-
-        result = self.graph.run(query).data()
-        linked_publications_authors = self.graph.run(linked_publications_authors_query).data()
-        # destructing linked_publications_authors into single long list with nodes & links
-        citation_graph = []
-
-        for entry in linked_publications_authors:
-            citation_graph.append(linked_publications_authors[0]["author"])
-            citation_graph.append(linked_publications_authors[0]["publication"])
-            citation_graph.append(linked_publications_authors[0]["a_p"])
-            citation_graph.append(entry["another_author"])
-            citation_graph += entry["linked_publications"]
-            citation_graph += entry["linked_publications_author_publication_links"]
-            citation_graph += entry["citation_links"]
-
-        print(citation_graph)
-        return [{ "general": result[0], "linked_publications_graph": citation_graph }]
-
-    def get_author_with_details(self, author_id):
-        author_info_query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})
-            WHERE ID(a) = {author_id}
-            RETURN a as author
-        """
-
-        major_domains_for_author_query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-            WHERE ID(a)={author_id}
-            MATCH (p)-[tr:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
-            WHERE tr.probability > {self.THEME_RELATION_PROBABILITY}
-            WITH COLLECT(t) as domains, a, p
-            RETURN collect(DISTINCT p) as publications_in_domains, domains
-            ORDER BY size(publications_in_domains) DESC
-            LIMIT 5
-        """
-
-        top_5_cited_publications_query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-            WHERE ID(a)={author_id}  
-            MATCH (p)<-[:{self.LINKS_TO_RELATION_LABEL}]-(another_p:{self.PUBLICATION_NODE_LABEL})
-            RETURN p as publication, ID(p) as publication_id, count(DISTINCT another_p) as links_count
-            ORDER BY links_count DESC
-            LIMIT 5
-        """
-
-        yearly_publishing_statistics_query = f"""
-            MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-            where ID(a)={author_id}
-            WITH collect(DISTINCT p) as publications
-            UNWIND publications as distinct_pub
-            RETURN collect(distinct_pub.year) as publication_years
-        """
-
-        author = self.graph.run(author_info_query).data()[0]["author"] # [0] because matching by ID still returns list
-        major_domains = self.graph.run(major_domains_for_author_query).data()
-        top_cited_publications = self.graph.run(top_5_cited_publications_query).data()
-        yearly_publishing_statistics = self.graph.run(yearly_publishing_statistics_query).data()
-
-        return {
-            "author": author,
-            "major_domains": major_domains,
-            "top_cited_publications": top_cited_publications,
-            "yearly_publishing_statistics": yearly_publishing_statistics
-        }
 
     def get_domain_with_details(self, domain_id):
         domain_and_publications_count_query = f"""

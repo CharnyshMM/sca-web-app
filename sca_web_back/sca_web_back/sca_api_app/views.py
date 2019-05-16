@@ -79,53 +79,6 @@ class AuthoritiesQueryView(APIView):
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class AuthorWithPublicationsInDomainsQuery(APIView):
-    renderer_classes = (JSONRenderer,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        domains_list = request.query_params.getlist('domain')
-        author_name = request.query_params.get('author', )
-        print(domains_list)
-        print(author_name)
-        if domains_list is None\
-                or len(domains_list) == 0 \
-                or author_name is None \
-                or author_name == "":
-            return Response(getErrorResponce("empty query - no domains specified"), status=HTTP_400_BAD_REQUEST)
-
-        try:
-            result = NeoQuerier().get_author_with_publications_in_domains(author_name, domains_list)
-            return Response(result)
-        except GraphError as e:
-            print(e)
-            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print(e)
-            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-class ArticlesQueryView(APIView):
-    renderer_classes = (JSONRenderer,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        keys_list = request.query_params.getlist('keyword')
-
-        if keys_list is None or len(keys_list) == 0:
-            return Response(getErrorResponce("empty query - no keywords specified"), status=HTTP_400_BAD_REQUEST)
-
-        try:
-            result = NeoQuerier().get_articles_by_keywords(keys_list)
-            return Response(result)
-        except GraphError as e:
-            print(e)
-            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print(e)
-            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class PopularDomainsQueryView(APIView):
     renderer_classes = (JSONRenderer,)
     permission_classes = (IsAuthenticated,)
@@ -272,28 +225,6 @@ class AuthorsSearchView(APIView):
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-class GetPublicationView(APIView):
-    renderer_classes = (MyJSONRenderer,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        try:
-            print(request.query_params.get("id"))
-            pid = int(request.query_params.get("id"))
-
-            nq = NeoQuerier()
-            return Response(nq.get_publication_with_details(pid)[0])
-        except ValueError as e:
-            print(e)
-            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
-        except GraphError as e:
-            print(e)
-            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print(e)
-            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
 class GetPublicationGraph(APIView):
     renderer_classes = (MyJSONRenderer,)
     permission_classes = (IsAuthenticated, )
@@ -325,28 +256,6 @@ class GetAuthorGraph(APIView):
             author_id = int(request.query_params.get("id"))
             nq = NeoQuerier()
             return Response(nq.get_author_graph(author_id))
-        except ValueError as e:
-            print(e)
-            return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)
-        except GraphError as e:
-            print(e)
-            return Response(getErrorResponce(str(e)), status=HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print(e)
-            return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-class GetAuthorView(APIView):
-    renderer_classes = (JSONRenderer,)
-    permission_classes = (IsAuthenticated,)
-
-    def get(self, request):
-        try:
-            print(request.query_params.get("id"))
-            pid = int(request.query_params.get("id"))
-            nq = NeoQuerier()
-            return Response(nq.get_author_with_details(pid))
         except ValueError as e:
             print(e)
             return Response(getErrorResponce("id not valid"), status=HTTP_400_BAD_REQUEST)

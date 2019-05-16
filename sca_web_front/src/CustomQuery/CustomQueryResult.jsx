@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 
 import GraphResultView from '../ReusableComponents/GraphResultView/GraphResultView';
 import CustomQueryTextResultView from './CustomQueryTextResultView';
-import { getUniqueNodesAndLinks, checkIfLinksAreValid } from '../ReusableComponents/GraphResultView/graph_unilities';
+import { getUniqueNodesAndLinks, checkIfGraphIsValid } from '../ReusableComponents/GraphResultView/graph_unilities';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import BeautifulSwitch from '../ReusableComponents/BeautifulSwitch/BeautifulSwitch';
 
@@ -28,8 +28,8 @@ class CustomQueryResult extends Component {
     render() {
 
         const [uniqueNodes, uniqueLinks, others] = getUniqueNodesAndLinks(this.props.result);
-        const graphViewModeAllowed = checkIfLinksAreValid(uniqueLinks, uniqueNodes);
-        console.log("allow grapht", graphViewModeAllowed);
+        const graphViewModeAllowed = checkIfGraphIsValid(uniqueLinks, uniqueNodes);
+        
         if (this.state.hasError) {
             return <ErrorAlert errorName="Error" errorMessage="Error message" />
         }

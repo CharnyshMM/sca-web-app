@@ -10,7 +10,6 @@ function getStringLabelForNode(neo_node) {
 }
 
 function getUniqueNodesAndLinks(data) {
-    console.log("data", data);
     const unique_nodes = {};
     const unique_links = {};
     const others = {};
@@ -55,7 +54,10 @@ function getUniqueNodesAndLinksPlainList(dataList) {
     return [unique_nodes, unique_links, others];
 }
 
-function checkIfLinksAreValid(unique_links, unique_nodes) {
+function checkIfGraphIsValid(unique_links, unique_nodes) {
+    if (Object.keys(unique_nodes).length === 0 && unique_nodes.constructor === Object) {
+        return false;
+    }
     for(const key in unique_links) {
         const node1 = unique_links[key].source;
         const node2 = unique_links[key].target;
@@ -105,7 +107,7 @@ function buildSimpleGraph(unique_nodes, unique_links) {
 export {
     buildSimpleGraph,
     getUniqueNodesAndLinks,
-    checkIfLinksAreValid,
+    checkIfGraphIsValid,
     getStringLabelForNode,
     getUniqueNodesAndLinksPlainList,
 }

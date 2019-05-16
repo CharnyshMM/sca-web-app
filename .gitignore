@@ -10,8 +10,9 @@ sca_web_back/sca_web_back/__pycache__/
 
 sca_web_back/sca_web_back/sca_api_app/__pycache__/
 
+# settings files
 sca_web_back/sca_web_back/sca_api_app/neo_config.py
-
+sca_web_back/settings.py 
 sca_web_back/sca_web_back/secret_config.py
 
 sca_web_back/db.sqlite3
@@ -31,7 +32,7 @@ sca_web_back/Scripts
 
 sca_web_front/node_modules/
 
-
+# urls_file
 sca_web_front/src/constant_urls.js
 
 

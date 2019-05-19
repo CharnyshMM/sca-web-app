@@ -17,7 +17,7 @@ class NeoQuerier:
     THEME_RELATION_LABEL = "THEME_RELATION"
     KEYWORDS_RELATION_LABEL = "KEYWORDS"
     LINKS_TO_RELATION_LABEL = "LINKS_TO"
-    THEME_RELATION_PROBABILITY = 0.02
+    THEME_RELATION_PROBABILITY = 0.1
 
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
@@ -59,7 +59,7 @@ class NeoQuerier:
         query = f"""
                 MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
                  (p)-[r:{self.THEME_RELATION_LABEL}]-(d:{self.THEME_NODE_LABEL})
-                WHERE r.probability > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name) 
+                WHERE toFloat(r.probability) > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name) 
                 OPTIONAL MATCH (p)<-[l:{self.LINKS_TO_RELATION_LABEL}]-()
                 WITH collect(DISTINCT toLower(d.name)) as domains, 
                     count(distinct p) as publications_count, 
@@ -80,10 +80,10 @@ class NeoQuerier:
     def get_domains_by_popularity_index(self, popularity_index=0, higher=True):
         yearly_dynamics_query = f"""
             MATCH (t:{self.THEME_NODE_LABEL})<-[t_r:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-                WHERE t_r.probability > {self.THEME_RELATION_PROBABILITY}
+                WHERE toFloat(t_r.probability) > {self.THEME_RELATION_PROBABILITY}
                 WITH COLLECT(DISTINCT p) as pubs, t
                 UNWIND pubs as distinct_pubs
-                WITH collect(distinct_pubs.year) as publications_years, t, pubs
+                WITH collect(toFloat(distinct_pubs.year)) as publications_years, t, pubs
                 RETURN t, ID(t) as t_id, publications_years, size(pubs) as publications_count
         """
 
@@ -122,11 +122,11 @@ class NeoQuerier:
                         or "{self.THEME_NODE_LABEL}" in LABELS(n)
                     )
                 OPTIONAL MATCH (n)-[r:{self.THEME_RELATION_LABEL}]->(t:Theme)
-                    WHERE r.probability > {self.THEME_RELATION_PROBABILITY}
+                    WHERE toFloat(r.probability) > {self.THEME_RELATION_PROBABILITY}
                 OPTIONAL MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(n)
                 OPTIONAL MATCH (n)-[:{self.WROTE_RELATION_LABEL}]->(p)
                 OPTIONAL MATCH (n)<-[t_r:{self.THEME_RELATION_LABEL}]-(t_p)
-                    WHERE t_r.probability > {self.THEME_RELATION_PROBABILITY}
+                    WHERE toFloat(t_r.probability) > {self.THEME_RELATION_PROBABILITY}
                 OPTIONAL MATCH (n)<-[:{self.LINKS_TO_RELATION_LABEL}]-(l_p:{self.PUBLICATION_NODE_LABEL})
                     WITH n, 
                         a,
@@ -163,7 +163,7 @@ class NeoQuerier:
     def find_publications(self, name, requested_themes_ids=None, requested_authors_ids=None, skip_n=0, limit_n=10):
         query = f"""
             MATCH (p:Publication)-[:WROTE]-(a:Author), (p)-[tr:THEME_RELATION]-(t:Theme)
-            WHERE EXISTS(p.name) and toLower(p.name) STARTS WITH "{name}" and tr.probability>0
+            WHERE EXISTS(p.name) and toLower(p.name) STARTS WITH "{name}" and toFloat(tr.probability)>{self.THEME_RELATION_PROBABILITY}
             WITH collect(DISTINCT t) as themes, collect(DISTINCT toLower(t.name)) as themes_names, p, 
                 collect(DISTINCT a) as authors, 
                 collect(DISTINCT toLower(a.name)) as author_names
@@ -194,7 +194,6 @@ class NeoQuerier:
 
         query += return_statement
 
-        print(query)
         return self.graph.run(query).data()
            
 
@@ -203,7 +202,7 @@ class NeoQuerier:
             MATCH (a:Author)-[:WROTE]-(p:Publication),
                 (p)-[tr:THEME_RELATION]-(t:Theme)
             WHERE toLower(a.name) STARTS WITH "{name}"
-                AND tr.probability > {self.THEME_RELATION_PROBABILITY}
+                AND toFloat(tr.probability) > {self.THEME_RELATION_PROBABILITY}
             WITH a, count(DISTINCT p) as author_pubs, collect(distinct toLower(t.name)) as themes
             """
         return_part = f"""
@@ -229,13 +228,13 @@ class NeoQuerier:
             MATCH (t:{self.THEME_NODE_LABEL})
             WHERE ID(t)={domain_id}
             OPTIONAL MATCH (t)-[tr:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-            WHERE tr.probability > {self.THEME_RELATION_PROBABILITY}
+            WHERE toFloat(tr.probability) > {self.THEME_RELATION_PROBABILITY}
             RETURN t as domain, count(p) as publications_count
         """
 
         top_10_cited_publications_query = f"""
             MATCH (t:{self.THEME_NODE_LABEL})-[tr:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-            WHERE ID(t)={domain_id} AND tr.probability>{self.THEME_RELATION_PROBABILITY}
+            WHERE ID(t)={domain_id} AND toFloat(tr.probability)>{self.THEME_RELATION_PROBABILITY}
             MATCH (p)<-[:{self.LINKS_TO_RELATION_LABEL}]-(another_p:{self.PUBLICATION_NODE_LABEL})
             RETURN p as publication, ID(p) as publication_id, count(DISTINCT another_p) as links_count
             ORDER BY links_count
@@ -246,7 +245,7 @@ class NeoQuerier:
         top_10_authors_in_domain_by_publications_count_query = f"""
             MATCH 
             (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})-[tr:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
-            WHERE ID(t)={domain_id} AND tr.probability > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name)
+            WHERE ID(t)={domain_id} AND toFloat(tr.probability) > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name)
             RETURN a as author, ID(a) as author_id, count(DISTINCT p) as publications_count
             ORDER BY publications_count
             DESC
@@ -255,10 +254,10 @@ class NeoQuerier:
 
         publications_yearly_dynamics_query = f"""
             MATCH (t:{self.THEME_NODE_LABEL})<-[t_r:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
-                WHERE ID(t) = {domain_id} and t_r.probability > {self.THEME_RELATION_PROBABILITY}
+                WHERE ID(t) = {domain_id} and toFloat(t_r.probability) > {self.THEME_RELATION_PROBABILITY}
                 WITH COLLECT(DISTINCT p) as pubs, t
                 UNWIND pubs as distinct_pubs
-                WITH collect(distinct_pubs.year) as publications_years
+                WITH collect(toFloat(distinct_pubs.year)) as publications_years
                 RETURN publications_years
         """
 
@@ -300,7 +299,7 @@ class NeoQuerier:
 
         publication_themes_query = f"""
             match (p:{self.PUBLICATION_NODE_LABEL})-[t_r:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
-            where ID(p)={publication_id} AND t_r.probability>{self.THEME_RELATION_PROBABILITY}
+            where ID(p)={publication_id} AND toFloat(t_r.probability)>{self.THEME_RELATION_PROBABILITY}
             return t_r as theme_relation, t as theme
         """
 
@@ -342,7 +341,7 @@ class NeoQuerier:
             match (p:Publication)-[w:WROTE]-(a:Author)
 	            WHERE ID(a)={author_id}
             optional match (p)-[t_r:THEME_RELATION]->(t:Theme)
-                WHERE t_r.probability>0.1
+                WHERE toFloat(t_r.probability)>{self.THEME_RELATION_PROBABILITY}
             optional match (p)-[out_r_r:LINKS_TO]->(:Publication)<-[out_author_wrote:WROTE]-(out_author:Author)
                 where EXISTS(out_author.name)
             optional match (p)<-[in_r_r:LINKS_TO]-(:Publication)<-[in_author_wrote:WROTE]-(in_author:Author)

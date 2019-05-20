@@ -292,8 +292,9 @@ class NeoQuerier:
 
     def get_publication_graph(self, publication_id):
         author_publication_query = f"""
-            match (p:{self.PUBLICATION_NODE_LABEL})-[p_a:{self.WROTE_RELATION_LABEL}]-(a:{self.AUTHOR_NODE_LABEL})
+            match (p:{self.PUBLICATION_NODE_LABEL})
             where ID(p)={publication_id}
+            optional match (p)-[p_a:{self.WROTE_RELATION_LABEL}]-(a:{self.AUTHOR_NODE_LABEL})
             return p, p_a, a
         """
 
@@ -318,7 +319,7 @@ class NeoQuerier:
         publication_referenses = self.graph.run(publication_referenses_query).data()[0]
         
         return {
-            "author": author_publication[0]["a"],
+            "authors": [entry["a"] for entry in author_publication],
             "publication": author_publication[0]["p"],
             "author_publication": NeoQuerier.separate_nodes_and_relationships_from_list(author_publication),
             "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
@@ -432,7 +433,8 @@ class NeoQuerier:
         relationships = {}
 
         for entry in graph_data_entry.values():
-            
+            if (entry is None):
+                continue
             if type(entry) == Node:
                 nodes[entry.identity] = entry
             else:

@@ -112,7 +112,7 @@ class NeoQuerier:
     def find_nodes_by_name(self, name, node_type=None, skip_n=0, limit_n=10):
         match_type = "MATCH (n:{}) "
         match = "MATCH (n) "
-
+        
         query = f"""
             WHERE (EXISTS(n.name) 
                     and toLower(n.name) STARTS WITH toLower("{name}")) 
@@ -162,8 +162,11 @@ class NeoQuerier:
 
     def find_publications(self, name, requested_themes_ids=None, requested_authors_ids=None, skip_n=0, limit_n=10):
         query = f"""
-            MATCH (p:Publication)-[:WROTE]-(a:Author), (p)-[tr:THEME_RELATION]-(t:Theme)
-            WHERE EXISTS(p.name) and toLower(p.name) STARTS WITH "{name}" and toFloat(tr.probability)>{self.THEME_RELATION_PROBABILITY}
+            MATCH (p:Publication)
+            WHERE EXISTS(p.name) and toLower(p.name) STARTS WITH "{name}"
+            optional match (p)-[:WROTE]-(a:Author)
+            optional match (p)-[tr:THEME_RELATION]-(t:Theme)
+            WHERE toFloat(tr.probability)>{self.THEME_RELATION_PROBABILITY}
             WITH collect(DISTINCT t) as themes, collect(DISTINCT toLower(t.name)) as themes_names, p, 
                 collect(DISTINCT a) as authors, 
                 collect(DISTINCT toLower(a.name)) as author_names

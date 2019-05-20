@@ -143,7 +143,7 @@ const doSearchByName = (name, limit, offset, token, filters, type=undefined) => 
     console.log(filters);
     
     
-    let query = `?search=${name}&limit=${limit}&offset=${offset}&type=${type}`;
+    let query = `?search=${encodeURIComponent(name)}&limit=${limit}&offset=${offset}&type=${type}`;
     switch(type){
         case "publication": {
             query  = PYTHON_BACKEND_API_PUBLICATIONS_SEARCH + query;

@@ -1,7 +1,7 @@
 import {
     PYTHON_BACKEND_API,
     PYTHON_BACKEND_API_NEO_STATUS,
-    HBASE_STATUS_PATH,
+    CASSANDRA_STATUS_PATH,
     PYTHON_BACKEND_API_AUTHORITIES_QUERY,
     PYTHON_BACKEND_API_ARTICLES_QUERY,
     PYTHON_BACKEND_API_DOMAINS_POPULARITY_QUERY,
@@ -123,8 +123,8 @@ const getNeoStatus = (token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, authOptions(token));
 };
 
-const getHBaseStatus = () => {
-    return getLoaderPromise(HBASE_STATUS_PATH);
+const getCassandraStatus = () => {
+    return getLoaderPromise(CASSANDRA_STATUS_PATH);
 }
 
 // const doSearchByName = (name, limit, offset, token, type=undefined) => {
@@ -211,7 +211,7 @@ export {
     runQueryOnPythonBackend,
     authorizeOnPythonBackend,
     getNeoStatus,
-    getHBaseStatus,
+    getCassandraStatus,
     getAuthoritiesInDomainsList,
     getArticlesByKeywords,
     getDomainsByPopularity,

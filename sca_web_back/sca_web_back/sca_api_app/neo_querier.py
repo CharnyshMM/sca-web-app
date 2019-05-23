@@ -327,8 +327,8 @@ class NeoQuerier:
             "author_publication": NeoQuerier.separate_nodes_and_relationships_from_list(author_publication),
             "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
             "publication_referenses": {
-               "outcoming": NeoQuerier.get_relationships_graph(publication_referenses["outcoming_references_relationships"], "end_node"),
-               "incoming": NeoQuerier.get_relationships_graph(publication_referenses["incoming_references_relationships"], "start_node")
+               "outcoming": NeoQuerier.get_relationships_graph(publication_referenses["outcoming_references_relationships"][:100], "end_node"),
+               "incoming": NeoQuerier.get_relationships_graph(publication_referenses["incoming_references_relationships"][:100], "start_node")
             }
         }
 

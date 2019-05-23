@@ -21,7 +21,7 @@ import {
   createDomainLink,
 } from '../utilities/links_creators';
 
-import { getPublicationGraph } from '../utilities/verbose_loaders';
+import { getPublicationGraph, authorizeOnPythonBackend } from '../utilities/verbose_loaders';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 
 const GraphConfig = {
@@ -178,7 +178,7 @@ class PublicationGraphView extends Component {
     }
     console.log(result);
     const publication = result["publication"];
-    const author = result["author"];
+    const authors = result["authors"];
     const themes = result["publication_themes"].nodes;
     const outcomingReferencesCount = Object.keys(result["publication_referenses"]["outcoming"].nodes).length;
     const incomingReferencesCount = Object.keys(result["publication_referenses"]["incoming"].nodes).length;
@@ -213,8 +213,15 @@ class PublicationGraphView extends Component {
             </summary>
 
             <ul>
+              
               <li>
-                by <a href={createAuthorLink(author["identity"])}>{author["name"]}</a>
+                by
+                {authors.map((v,i) => {
+                  if (!v) {
+                    return <a key={i} href="#"> Undefined author </a>
+                  }
+                  return <a key={v["identity"]} href={createAuthorLink(v["identity"])}> {v["name"]} </a>
+                })} 
               </li>
               <li>
                 year: <b>{publication["year"]}</b>

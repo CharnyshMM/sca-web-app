@@ -41,7 +41,7 @@ function createKeywordsQueryLink(keywords) {
 }
 
 function createSearchLink(name, type, filters) {
-    let query = `${SEARCH}?search=${name.toLowerCase()}&type=${type}`;
+    let query = `${SEARCH}?search=${encodeURIComponent(name.toLowerCase())}&type=${type}`;
 
     if (filters) {
         const themesFilter = buildQueryParametersList('theme',filters["themesFilter"]);

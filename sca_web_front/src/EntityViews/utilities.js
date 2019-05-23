@@ -171,12 +171,22 @@ function prepareAuthorGraph(result, referencesShowingMode) {
 function preparePublicationGraph(result, referencesShowingMode) {
   const NODE_SIZE = 500;
 
-  const authorNode = {
-    color: "red",
-    size: NODE_SIZE * 3,
-    href: createAuthorLink(result["author"]["id"]),
-    ...result["author"]
-  };
+  const authorsNodes = {};
+
+  for (const i in result["authors"]) {
+    const node = result["authors"][i];
+    if (!node){
+      continue
+    }
+    
+    authorsNodes[node["id"]] = {
+        color: "red",
+        size: NODE_SIZE * 3,
+        href: createAuthorLink(node["id"]),
+        ...node
+    };
+    
+  }
 
   const publicationNode = {
     color: "green",
@@ -226,8 +236,8 @@ function preparePublicationGraph(result, referencesShowingMode) {
   }
 
   const nodes = {
-    [authorNode["identity"]]: authorNode,
     [publicationNode["identity"]]: publicationNode,
+    ...authorsNodes,
     ...themesNodes,
     ...referencesNodes
   };

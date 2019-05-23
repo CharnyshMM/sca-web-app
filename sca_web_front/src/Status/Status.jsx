@@ -18,9 +18,8 @@ class Status extends Component {
         getCassandraStatus()
             .then(result => result.json()) // getting the response text
             .then(result => {
-                
+                console.log("cassandra result", result);
                 this.setState({cassandraStatus: {
-                    // {"publicationsCount":19526,"responsesCount":31162,"documentsCount":13138}
                     publicationsCount: result.publicationsCount,
                     responsesCount: result.responsesCount,
                     documentsCount: result.documentsCount

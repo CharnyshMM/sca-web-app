@@ -25,6 +25,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DEBUG = True
 
 ALLOWED_HOSTS = [
+ '*'
 ]
 
 
@@ -145,7 +146,9 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 10
 }
 
+CORS_ORIGIN_ALLOW_ALL = True
 
-CORS_ORIGIN_WHITELIST = (
-    "localhost:3000",
-)
+# CORS_ORIGIN_WHITELIST = (
+#    "localhost:3000",
+#    "172.20.225.129:3000",
+#)

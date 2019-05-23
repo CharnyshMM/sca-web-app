@@ -1,34 +1,36 @@
 import React, { Component } from 'react';
-import { getNeoStatus, getHBaseStatus } from '../utilities/verbose_loaders';
+import { getNeoStatus, getCassandraStatus } from '../utilities/verbose_loaders';
 
 
 class Status extends Component {
     constructor(props) {
         super(props);
         this.state = {
-           hBaseStatus: null,
+           cassandraStatus: null,
            neoStatus: null,
            neoStatusLoading: false,
-           hbaseStatusLoading: false,
+           cassandraStatusLoading: false,
         }
     }
 
     updateStatus() {
-        this.setState({hbaseStatusLoading: true});
-        getHBaseStatus()
+        this.setState({cassandraStatusLoading: true});
+        getCassandraStatus()
             .then(result => result.json()) // getting the response text
             .then(result => {
                 
-                this.setState({hBaseStatus: {
-                    responsesCount: result.responsesCount, // getting publications count from recieved text 
+                this.setState({cassandraStatus: {
+                    // {"publicationsCount":19526,"responsesCount":31162,"documentsCount":13138}
+                    publicationsCount: result.publicationsCount,
                     responsesCount: result.responsesCount,
+                    documentsCount: result.documentsCount
                 },
-                hbaseStatusLoading: false,
+                cassandraStatusLoading: false,
                 });
             },
                 error => {
                     console.log("fetch error")
-                    this.setState({hBaseStatus: undefined, hbaseStatusLoading: false,});
+                    this.setState({hBaseStatus: undefined, cassandraStatusLoading: false,});
             });
 
         this.setState({neoStatusLoading: true});
@@ -78,7 +80,7 @@ class Status extends Component {
             }
         }
 
-        const hbaseConnectionStatus = getStringStatus(this.state.hBaseStatus, this.state.hbaseStatusLoading);
+        const hbaseConnectionStatus = getStringStatus(this.state.cassandraStatus, this.state.cassandraStatusLoading);
         const neo4jConnectionStatus = getStringStatus(this.state.neoStatus, this.state.neoStatusLoading);
         return (
             <div className='container'>
@@ -95,7 +97,7 @@ class Status extends Component {
             <tbody>
                 <tr className="row">
                     <td className="col">
-                        HBase
+                        Cassandra
                     </td>
                     <td className="col">
                         {hbaseConnectionStatus}
@@ -104,12 +106,14 @@ class Status extends Component {
                     <td className="col">
                         <ul className="list-group">
                             <li className="list-group-item">
-                                Publications Count: {this.state.hBaseStatus ? this.state.hBaseStatus.publicationsCount : "-"}
+                                Publications Count: {this.state.cassandraStatus ? this.state.cassandraStatus.publicationsCount : "-"}
                             </li>
                             <li className="list-group-item">
-                                Responses Count: {this.state.hBaseStatus ? this.state.hBaseStatus.responsesCount : "-"}
+                                Responses Count: {this.state.cassandraStatus ? this.state.cassandraStatus.responsesCount : "-"}
                             </li>
-                            
+                            <li className="list-group-item">
+                                Responses Count: {this.state.cassandraStatus ? this.state.cassandraStatus.documentsCount : "-"}
+                            </li>
                         </ul>
                     </td>
                 </tr>

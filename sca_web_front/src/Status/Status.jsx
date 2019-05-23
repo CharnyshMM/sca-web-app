@@ -111,7 +111,7 @@ class Status extends Component {
                                 Responses Count: {this.state.cassandraStatus ? this.state.cassandraStatus.responsesCount : "-"}
                             </li>
                             <li className="list-group-item">
-                                Responses Count: {this.state.cassandraStatus ? this.state.cassandraStatus.documentsCount : "-"}
+                                Documents Count: {this.state.cassandraStatus ? this.state.cassandraStatus.documentsCount : "-"}
                             </li>
                         </ul>
                     </td>

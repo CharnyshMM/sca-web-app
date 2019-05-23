@@ -16,7 +16,7 @@ class Status extends Component {
     updateStatus() {
         this.setState({cassandraStatusLoading: true});
         getCassandraStatus()
-            .then(result => result.json()) // getting the response text
+            .then(result => result.response.json()) // getting the response text
             .then(result => {
                 console.log("cassandra result", result);
                 this.setState({cassandraStatus: {

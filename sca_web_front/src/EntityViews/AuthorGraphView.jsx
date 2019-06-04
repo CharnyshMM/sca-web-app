@@ -157,8 +157,22 @@ class AuthorGraphView extends Component {
     if (!result) {
       return <ErrorAlert errorName="404 - Not found" errorMessage="Sorry, didn't found that page" />;
     }
-
+    let hasIncomingRefs = Boolean(
+      result["top_publications"] &&
+       result["top_publications"].length &&
+       Object.keys(result["top_publications"][0]["references"]["incoming"]["nodes"]).length
+    );
+    let hasOutcomingRefs = Boolean(
+      result["top_publications"] &&
+       result["top_publications"].length > 0 &&
+       Object.keys(result["top_publications"][0]["references"]["outcoming"]["nodes"]).length
+    )
     
+    console.log(result["top_publications"])
+    console.log(Boolean(result["top_publications"] &&
+    result["top_publications"].length > 0));
+    
+
     const data = this.buildGraph(result, referencesShowingMode);
     const publicationsCount = result["publications_count"];
     const author = result["author"];
@@ -226,6 +240,7 @@ class AuthorGraphView extends Component {
                     Themes
                   </RadioLegendBlock>
                 </li>
+                {hasIncomingRefs && <React.Fragment>
                 <li>
                   <RadioLegendBlock 
                     color="pink" 
@@ -237,17 +252,7 @@ class AuthorGraphView extends Component {
                   </RadioLegendBlock>
                 </li>
                 <li>
-                  <RadioLegendBlock 
-                    color="pink" 
-                    id="showOutcomingReferencesAuthors"
-                    name="graph"
-                    value={referencesShowingMode == "showOutcomingReferencesAuthors"} 
-                    onChange={this.onReferencesRadioLegendChanged}>
-                    Authors whose publications where referenced by current author
-                  </RadioLegendBlock>
-                </li>
-                <li>
-                  <RadioLegendBlock 
+                <RadioLegendBlock 
                     color="lightblue" 
                     id="showIncomingReferencesPublications"
                     name="graph"
@@ -255,6 +260,21 @@ class AuthorGraphView extends Component {
                     onChange={this.onReferencesRadioLegendChanged}>
                     Incoming references publications
                   </RadioLegendBlock>
+                </li>
+                </React.Fragment>
+                }
+                {hasOutcomingRefs &&
+                <React.Fragment>
+                <li>
+                <RadioLegendBlock 
+                    color="pink" 
+                    id="showOutcomingReferencesAuthors"
+                    name="graph"
+                    value={referencesShowingMode == "showOutcomingReferencesAuthors"} 
+                    onChange={this.onReferencesRadioLegendChanged}>
+                    Authors whose publications where referenced by current author
+                  </RadioLegendBlock>
+                  
                 </li>
                 <li>
                   <RadioLegendBlock 
@@ -264,8 +284,10 @@ class AuthorGraphView extends Component {
                     onChange={this.onReferencesRadioLegendChanged}>
                     Outcoming references publications
                   </RadioLegendBlock>
+                  
                 </li>
-
+                </React.Fragment>
+                }
               </ul>
             </details>
           </EntityInfoItem>

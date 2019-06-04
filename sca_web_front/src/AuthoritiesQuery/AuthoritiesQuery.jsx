@@ -8,6 +8,7 @@ import AutocompleteInput from '../ReusableComponents/AutocompleteInput/Autocompl
 import AuthoritiesQueryResult from './AuthoritiesQueryResult';
 import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
+import { getThemesList } from '../utilities/verbose_loaders';
 
 class AuthoritiesQuery extends Component {
   state = {
@@ -15,18 +16,55 @@ class AuthoritiesQuery extends Component {
       domainInputValue: '',
       error: undefined,
       loading: false,
+      allThemes: []
   }
 
   componentDidMount() {
     const search = queryString.parse(this.props.location.search);
     let domains = search.domain;
     if (domains == undefined) {
+      this.loadThemesList();
       return;
     }
     if (!Array.isArray(domains)) {
       domains = [domains];
     }
     this.makeQuery(domains);
+    this.loadThemesList();
+  }
+
+  loadThemesList = () => {
+    const token = window.sessionStorage.getItem("token");
+    this.setState({themesLoading: true});
+    let status = 0;
+    getThemesList(token)
+    .then(
+      result => {
+        status = result.status;
+        return result.response.json();
+      },
+      error => {
+        status = error.status;
+        return status;
+      }
+    )
+    .then(
+      result => {
+        if (status == 200) {
+          this.setState({
+            allThemes: result.map(v => v["name"]),
+            themesLoading: false,
+          });
+          console.log(result);
+        } else {
+          throw Error(result.error);
+        }
+      }
+    )
+    .catch(e => {
+      this.setState({themesLoading: false});
+      console.log("ERROR:", e);
+    });
   }
 
   makeQuery = domains => {
@@ -112,11 +150,9 @@ class AuthoritiesQuery extends Component {
             </div>
             <div className="authorities_query__form__input">
             <AutocompleteInput 
-              suggestions={[
-                "Biology",
-                "Birds",
-                "Science"
-              ]} 
+              suggestions={
+                this.state.allThemes
+              } 
               onSubmit={this.addDomain}
               getName={v=>v}
               />

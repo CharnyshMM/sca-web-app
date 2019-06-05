@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Graph } from 'react-d3-graph';
 
-import { buildSimpleGraph } from './graph_unilities';
+import EntityGraph from './EntityGraph/EntityGraph';
 
 
 const GraphConfig = {
@@ -53,24 +53,30 @@ class FullscreenGraph extends Component {
     e.stopPropagation();
   }
   
+  nodeHintGenerator = node => {
+    let nodeHint = "";
+    if (node["name"]) {
+      nodeHint = `${node["labels"][0]}: ${node["name"]}`;
+    } else {
+      nodeHint = node["labels"];
+    }
 
+    if (node["href"]) {
+      return <span>
+        {nodeHint} 
+         <br/>
+         <i>click node for more info</i>
+        </span>
+    } else {
+      return <span>{nodeHint}</span>
+    }
+  }
   render() {
-    
-    const data = buildSimpleGraph(this.props.uniqueNodes, this.props.uniqueLinks);
     const height = window.innerHeight*0.9;
     const width = window.innerWidth*0.9;
         
     GraphConfig.height = height*0.9;
     GraphConfig.width = width*0.9;
-
-    const graph = (
-          <Graph
-            id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-            ref={this.graphRef}
-            data={data}
-            config={GraphConfig}
-            onClickedNode={this.onNodeClick}
-          />);
     
     return (
       <div onClick={this.onSideClick} style={OverlayDivStyle} title="click here to close">
@@ -79,7 +85,15 @@ class FullscreenGraph extends Component {
            onClick={this.onGraphClick} 
            style={{background: "white", height: "80%", width: "80%", margin: "5% 10%"}}
            >
-          {graph}
+          <EntityGraph 
+                graphConfig={GraphConfig}
+                graphObject={
+                  {nodes: this.props.uniqueNodes,
+                    links: this.props.uniqueLinks}
+                }
+                onNodeClick={this.onNodeClick}
+                hintExtractor={this.nodeHintGenerator}
+            />
         </div>
       </div>
     );

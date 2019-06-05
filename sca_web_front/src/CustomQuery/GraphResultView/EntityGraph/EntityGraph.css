@@ -1,0 +1,10 @@
+.fullscreen_graph {
+  position: absolute;
+}
+
+.fullscreen_graph__hint {
+  position: absolute;
+  z-index: 1000;
+  background: black;
+  color: white;
+}

@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
 import { Graph, Node } from 'react-d3-graph';
-import ErrorAlert from '../ErrorAlert';
+import ErrorAlert from '../../ReusableComponents/ErrorAlert';
 
-import { buildSimpleGraph } from './graph_unilities';
-import CustomQueryObjectTextView from '../ObjectTextView';
+import CustomQueryObjectTextView from '../../ReusableComponents/ObjectTextView';
 import FullScreenGraph from './FullscreenGraph';
 
 import './GraphResultView.css';
 
-
 const GraphConfig = {
-    
     node: {
         color: 'red',
-        
         highlightStrokeColor: 'blue',
         labelProperty: n => {
             return n.label;
@@ -25,7 +21,7 @@ const GraphConfig = {
     },
     nodeHighlightBehavior: true,
     
-    height: 400,
+    height: 450,
     width: 620,
     highlightDegree: 0,
     directed: true,
@@ -33,19 +29,14 @@ const GraphConfig = {
 };
 
 class GraphResultView extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            nodeInfo: undefined,
-            nodeInfoLock: false,
-            lastNodeClickedId: undefined,
-            hasError: false,
-            errorMessage: "",
-            isFullScreen: false,
-        };
-        this.graphRef = React.createRef();
+    state = {
+        nodeInfo: undefined,
+        nodeInfoLock: false,
+        lastNodeClickedId: undefined,
+        hasError: false,
+        errorMessage: "",
+        isFullScreen: false,
     }
-
 
     static getDerivedStateFromError(error) {
         // Update state so the next render will show the fallback UI.
@@ -61,12 +52,12 @@ class GraphResultView extends Component {
         if (nodeId === this.state.lastNodeClickedId) {
             this.setState({
                 nodeInfoLock: true,
-                nodeInfo: this.props.unique_nodes[nodeId],
+                nodeInfo: this.props.uniqueNodes[nodeId],
             });
             
         } else {
             this.setState({
-                nodeInfo: this.props.unique_nodes[nodeId],
+                nodeInfo: this.props.uniqueNodes[nodeId],
                 lastNodeClickedId: nodeId,
             });
         }   
@@ -92,6 +83,8 @@ class GraphResultView extends Component {
         this.setState({isFullScreen: !this.state.isFullScreen});
     }
 
+    
+
     render() {
         if (this.state.hasError) {
             return (<ErrorAlert errorName="Error" errorMessage={this.state.errorMessage} />);
@@ -99,25 +92,28 @@ class GraphResultView extends Component {
 
         if (this.state.isFullScreen) {
             return (<FullScreenGraph
-                      uniqueNodes={this.props.unique_nodes}
-                      uniqueLinks={this.props.unique_links}
+                      uniqueNodes={this.props.uniqueNodes}
+                      uniqueLinks={this.props.uniqueLinks}
                       onClick={this.onFullScreenClick}
                     />);
         }
         
         let graph = "";
-        const data =  buildSimpleGraph(this.props.unique_nodes, this.props.unique_links);
-        console.log(this.props.unique_nodes);
+        //const data =  buildSimpleGraph(this.props.unique_nodes, this.props.unique_links);
+        console.log("graph_result_View nodes",this.props.uniqueNodes);
         graph = (<Graph
             id="graph-id" // id is mandatory, if no id is defined rd3g will throw an error
-            ref={this.graphRef}
-            data={data}
+            data={
+                {nodes: Object.values(this.props.uniqueNodes),
+                links: Object.values(this.props.uniqueLinks)
+                }
+            }
             config={GraphConfig}
             onClickNode={this.onNodeClick}
             onMouseOutNode={this.onMouseOutNode}
         />);
         
-        return (
+        return (           
             <section className="container graph_container">
                 <div className="graph_container__graph">
                     <button 
@@ -125,7 +121,7 @@ class GraphResultView extends Component {
                         onClick={this.onFullScreenClick}
                         title="Click to enter fullscreen mode"
                         >
-                        X
+                        <span className="oi oi-zoom-in"> </span>
                     </button>
                     {graph}
                 </div>

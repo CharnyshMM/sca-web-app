@@ -11,44 +11,57 @@ import {
 import "./BeautifulChart.css";
 
 const SINGLE_COLUMN_WIDTH = 50;
-const MIN_COLUMNS_COUNT = 3;
+const MAX_VALUES_PER_COLUMN = 10;
 
 class BeautifulChart extends Component {
     state = {
-        currentColumnsCount: 10,
-        plusEnabled: true,
+        valuesPerGroup: 1,
+        plusEnabled: false,
         minusEnabled: true
     };
 
-    onPlusClick = () => {
-        const {currentColumnsCount} = this.state;
-        const maximum = this.props.data.length;
-        if (currentColumnsCount + 1 >= maximum) {
-            this.setState({currentColumnsCount: maximum, plusEnabled: false, minusEnabled: true});
-            return;
+    onMinusClick = () => {
+        const {valuesPerGroup} = this.state;
+        const length = this.props.data.length;
+        const columnsCount = Math.floor(length / (valuesPerGroup + 1));
+        if (columnsCount + (length % (valuesPerGroup + 1)) > 3) {
+            this.setState({
+                valuesPerGroup: valuesPerGroup + 1, 
+                plusEnabled: true
+            });
         } else {
-            this.setState({ currentColumnsCount: currentColumnsCount+1, minusEnabled: true });
+            this.setState({
+                plusEnabled: true,
+                minusEnabled: false
+            });
         }
+        
     }
 
-    onMinusClick = () => {
-        const {currentColumnsCount} = this.state;
-        const length = this.props.data.length;
-        if (currentColumnsCount - 1 <= length && currentColumnsCount-1 <= MIN_COLUMNS_COUNT) {
-            this.setState({currentColumnsCount: MIN_COLUMNS_COUNT, minusEnabled: false, plusEnabled: true});
-            return;
+    onPlusClick = () => {
+        const {valuesPerGroup} = this.state;
+        if (valuesPerGroup -1 > 1) {
+            this.setState({
+                valuesPerGroup: valuesPerGroup - 1,
+                minusEnabled: true
+            });
         } else {
-            this.setState({ currentColumnsCount: currentColumnsCount-1, plusEnabled: true });
+            this.setState({
+                valuesPerGroup: 1,
+                minusEnabled: true,
+                plusEnabled: false 
+            }); 
         }
     }
 
     render() {
         const { data } = this.props;
-        const { currentColumnsCount, plusEnabled, minusEnabled } = this.state;
+        const { valuesPerGroup, plusEnabled, minusEnabled } = this.state;
+        const currentColumnsCount = Math.floor(data.length / valuesPerGroup);
+        console.log("valuesPerGroup",valuesPerGroup);
         console.log("currentColumnsCount",currentColumnsCount);
-        const valuesPerGroup = Math.floor(data.length / currentColumnsCount);
-        console.log("valuesPerGroup",valuesPerGroup)
-        const valuesLeft = (data.length % currentColumnsCount);
+
+        const valuesLeft = (data.length % valuesPerGroup);
         console.log("valuesLeft",valuesLeft);
         const valueGroups = [];
         
@@ -58,15 +71,18 @@ class BeautifulChart extends Component {
             for (;j < valuesPerGroup; j++) {
                y = y + data[i+j].y; 
             }
-            x = `${x}-${data[i+j-1].x}`;
-            
+            if (x != data[i+j-1].x) {
+                x = `${x}-${data[i+j-1].x}`;
+            }
             valueGroups.push({x:x, y:y});
             i = i + valuesPerGroup;
         }
 
         if (valuesLeft > 0) {
+            const startX = data[data.length - valuesLeft].x;
+            const endX = data[data.length-1].x;
             const lastColumn = {
-                x: `${data[data.length - valuesLeft].x}-${data[data.length-1].x}`,
+                x: startX == endX ? startX : `${startX}-${endX}`,
                 y: 0
             };
             for (let i = data.length - valuesLeft; i < data.length; i++) {
@@ -78,6 +94,7 @@ class BeautifulChart extends Component {
         const chartWidth = SINGLE_COLUMN_WIDTH*valueGroups.length;
         return (
             <section className="beautiful_chart">
+                {/* <p>valuesPerGroup = {valuesPerGroup}, data.length= {data.length} valuesLeft= {valuesLeft}, length = {valueGroups.length}</p> */}
                 <button disabled={!plusEnabled} onClick={this.onPlusClick}>
                     <span className="oi oi-zoom-in"> </span>
                 </button>

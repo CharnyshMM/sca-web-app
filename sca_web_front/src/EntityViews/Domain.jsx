@@ -78,8 +78,7 @@ class Domain extends Component {
 
             const topAuthorsByPublicationsCount = this.state.result["top_10_authors_in_domain"].map((v,i)=>(
                 <li key={i}>
-                    <a href={createAuthorLink(v["author_id"])}>{v["author"]["name"]}</a>
-                     has <b>{v["publications_count"]} publications</b>
+                    <a href={createAuthorLink(v["author_id"])}>{v["author"]["name"]}</a> has <b>{v["publications_count"]} publications</b>
                 </li>
             ));
 
@@ -98,8 +97,7 @@ class Domain extends Component {
                     {topCitedPublications_listItems && topCitedPublications_listItems.length > 0 &&
                         <React.Fragment>
                             <h5 className="card-title">
-                                Most cited publications on 
-                                <b>{this.state.result["domain"]["name"]}</b>:
+                                Most cited publications on <b>{this.state.result["domain"]["name"]}</b>:
                             </h5>
                             <ul>
                                 {topCitedPublications_listItems}
@@ -108,8 +106,7 @@ class Domain extends Component {
                     }
                     {topAuthorsByPublicationsCount && topAuthorsByPublicationsCount.length > 0 && 
                         <React.Fragment>
-                            <h5>Authors who majors in 
-                                <b>{this.state.result["domain"]["name"]}</b>:
+                            <h5>Authors who majors in <b>{this.state.result["domain"]["name"]}</b>:
                             </h5>
                             <ul>
                                 {topAuthorsByPublicationsCount}

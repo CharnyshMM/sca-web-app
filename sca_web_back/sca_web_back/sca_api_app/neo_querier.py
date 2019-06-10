@@ -7,7 +7,7 @@ from .neo_config import neo_password, neo_user, neo_port, neo_host, neo_scheme
 
 
 class NeoQuerier:
-    REFERENCES_LIMIT = 30
+    REFERENCES_LIMIT = 50
     AUTHOR_NODE_LABEL = "Author"
     PUBLICATION_NODE_LABEL = "Publication"
     THEME_NODE_LABEL = "Theme"
@@ -17,7 +17,7 @@ class NeoQuerier:
     THEME_RELATION_LABEL = "THEME_RELATION"
     KEYWORDS_RELATION_LABEL = "KEYWORDS"
     LINKS_TO_RELATION_LABEL = "LINKS_TO"
-    THEME_RELATION_PROBABILITY = 0.1
+    THEME_RELATION_PROBABILITY = 0.4
 
     def __init__(self):
         self.graph = Graph(host=neo_host, port=neo_port, scheme=neo_scheme, user=neo_user, password=neo_password)
@@ -379,15 +379,16 @@ class NeoQuerier:
             incoming_authors_nodes = {}
             incoming_authors_links = {}
             
-            for wrote_relationship in entry["out_linked_publications_author_relations"]:
+            for wrote_relationship in entry["out_linked_publications_author_relations"][:NeoQuerier.REFERENCES_LIMIT]:
                 author = wrote_relationship.start_node
                 outcoming_authors_nodes[author.identity] = author
                 outcoming_authors_links[wrote_relationship.identity] = wrote_relationship
-            for wrote_relationship in entry["in_linked_publications_author_relations"]:
+            for wrote_relationship in entry["in_linked_publications_author_relations"][:NeoQuerier.REFERENCES_LIMIT]:
                 author = wrote_relationship.start_node
                 incoming_authors_nodes[author.identity] = author
                 incoming_authors_links[wrote_relationship.identity] = wrote_relationship
             
+			
             outcoming_references_graph["authors"] = {
                 "nodes": outcoming_authors_nodes,
                 "relationships": outcoming_authors_links

@@ -2,3 +2,10 @@
   overflow: auto;
   margin-bottom: 5%;
 }
+
+.beautiful_chart__hint {
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  padding: 2px;
+  border-radius: 5px;
+}

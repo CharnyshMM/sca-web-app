@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import AutocompleteInput from '../ReusableComponents/AutocompleteInput/AutocompleteInput';
+import BeautifulChart from '../ReusableComponents/BeautifulChart/BeautifulChart';
 
 
 class Test extends Component {
@@ -12,25 +12,9 @@ class Test extends Component {
 
   render() {
 
-    
+    const data = {}
     return (
       <section>
-        <AutocompleteInput
-          onSubmit={this.onSubmit}
-          suggestions={
-            [
-              "Computer science",
-              "Samsung Galaxy a8",
-              "Health",
-              "Brexit",
-              "Zelensky",
-              "Poroshenko",
-              "Biology",
-              "Psycology",
-            ]
-          }
-        />
-        
         
       </section>
     );

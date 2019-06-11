@@ -10,7 +10,7 @@ import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import { getThemesList } from '../utilities/verbose_loaders';
 
-const RESULTS_ON_PAGE_LIMIT = 100;
+const RESULTS_ON_PAGE_LIMIT = 20;
 
 class AuthoritiesQuery extends Component {
   state = {
@@ -35,7 +35,7 @@ class AuthoritiesQuery extends Component {
     if (!Array.isArray(domains)) {
       domains = [domains];
     }
-    this.makeQuery(domains);
+    this.makeQuery(domains, 0);
     this.loadThemesList();
   }
 

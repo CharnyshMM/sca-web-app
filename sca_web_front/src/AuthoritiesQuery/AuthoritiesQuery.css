@@ -56,3 +56,14 @@
   color: white;
   cursor: pointer;
 }
+
+.authorities_query__result {
+  text-align: center;
+  margin-bottom: 2%;
+}
+
+.authorities_query__result__more_button {
+  border: none;
+  font-size: 1.2em;
+  border-radius: 5px;
+}

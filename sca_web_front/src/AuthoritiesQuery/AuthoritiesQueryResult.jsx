@@ -65,7 +65,7 @@ class AuthoritiesQueryResult extends Component {
         };
 
         return (
-            <section>
+            <section className="authorities_query__result">
                 <div>
                     <BeautifulSelect 
                         label="Sort by "
@@ -87,7 +87,11 @@ class AuthoritiesQueryResult extends Component {
                     </tbody>
                 </table>
                 {mayBeMore && 
-                    <button onClick={onMoreClick}>More</button>
+                    <button 
+                        className="authorities_query__result__more_button"
+                        onClick={onMoreClick}>
+                            More
+                    </button>
                 }
             </section>
         );

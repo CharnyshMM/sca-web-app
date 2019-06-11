@@ -27,7 +27,7 @@ class AuthoritiesQueryResult extends Component {
     }
 
     render() {
-        const { result } = this.props;
+        const { result, mayBeMore, onMoreClick } = this.props;
         const { sortBy } = this.state;
 
         if (!result || result.length == 0) {
@@ -86,6 +86,9 @@ class AuthoritiesQueryResult extends Component {
                         {sortedMappedResult}
                     </tbody>
                 </table>
+                {mayBeMore && 
+                    <button onClick={onMoreClick}>More</button>
+                }
             </section>
         );
     }

@@ -97,9 +97,12 @@ const authorizeOnPythonBackend = function (username, password) {
     return getLoaderPromise(`${PYTHON_BACKEND_API}/login/`, requestOptions);
 };
 
-const getAuthoritiesInDomainsList = (domains_list, token) => {
+const getAuthoritiesInDomainsList = (domains_list, limit, offset, token) => {
     let query = buildQueryParametersList('domain', domains_list);
-    return getLoaderPromise(PYTHON_BACKEND_API_AUTHORITIES_QUERY + `?${query}`, authOptions(token));
+    return getLoaderPromise(
+        `${PYTHON_BACKEND_API_AUTHORITIES_QUERY}?${query}&limit=${limit}&offset=${offset}`, 
+        authOptions(token)
+    );
 };
 
 const getArticlesByKeywords = (keywords_list, token) => {

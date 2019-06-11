@@ -10,13 +10,19 @@ import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import { getThemesList } from '../utilities/verbose_loaders';
 
+const RESULTS_ON_PAGE_LIMIT = 100;
+
 class AuthoritiesQuery extends Component {
   state = {
       domains: [],
       domainInputValue: '',
       error: undefined,
       loading: false,
-      allThemes: []
+      offset: 0,
+      lastUpdateLength: 0,
+      mayBeMore: false,
+      allThemes: [],
+      result: []
   }
 
   componentDidMount() {
@@ -67,12 +73,12 @@ class AuthoritiesQuery extends Component {
     });
   }
 
-  makeQuery = domains => {
-    this.setState({ error: undefined, result: undefined, domains: domains, loading: true });
+  makeQuery = (domains, offset) => {
+    this.setState({ error: undefined, domains: domains, loading: true });
     const token = window.sessionStorage.getItem("token");
     let status = 0;
 
-    getAuthoritiesInDomainsList(domains, token)
+    getAuthoritiesInDomainsList(domains, RESULTS_ON_PAGE_LIMIT, offset, token)
       .then(result => {
         status = result.status;
         return result.response.json();
@@ -83,7 +89,17 @@ class AuthoritiesQuery extends Component {
         })
       .then(result => {
         if (status == 200) {
-          this.setState({ result: result, loading: false });
+          this.setState({ 
+            loading: false,
+            mayBeMore: true ,
+            offset: offset + result.length,
+            lastUpdateLength: result.length
+          });
+          if (offset != 0) {
+            this.setState(state => ({ result: state.result.concat(result)}));
+          } else {
+              this.setState({ result: result});
+          }
         } else {
           throw Error(result.error);
         }
@@ -120,8 +136,20 @@ class AuthoritiesQuery extends Component {
   handleSubmit = e => {
     e.preventDefault();
     this.props.history.push(createAuthoritiesInDomainsLink(this.state.domains));
-    this.makeQuery(this.state.domains);
+    this.makeQuery(this.state.domains, 0); // offset 0
   };
+
+
+  onMoreClick = () => {
+    const {domains, offset, lastUpdateLength} = this.state;
+    if (lastUpdateLength < RESULTS_ON_PAGE_LIMIT) {
+      this.setState({
+        mayBeMore: false
+      });
+      return;
+    }
+    this.makeQuery(domains, offset);
+  }
 
   onAuthorityClick = resultItem => {
     this.props.history.push(
@@ -133,7 +161,7 @@ class AuthoritiesQuery extends Component {
   }
 
   render() {
-
+    const {mayBeMore, domains, allThemes, error, loading, result} = this.state;
     return (
       <div className="container">
         <h1>Search for experts in particular domains</h1>
@@ -141,9 +169,14 @@ class AuthoritiesQuery extends Component {
         <div className="authorities_query__form">
             <div>
               <ul className="authorities_query__form__themes">
-                {this.state.domains.map((domain, i) => (
+                {domains.map((domain, i) => (
                   <li  key={i}>
-                    <button type="button" className="authorities_query__form__themes__item" onClick={() => this.removeDomain(i)}>{domain}</button>
+                    <button 
+                      type="button" 
+                      className="authorities_query__form__themes__item" 
+                      onClick={() => this.removeDomain(i)}>
+                      {domain}
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -151,7 +184,7 @@ class AuthoritiesQuery extends Component {
             <div className="authorities_query__form__input">
             <AutocompleteInput 
               suggestions={
-                this.state.allThemes
+                allThemes
               } 
               onSubmit={this.addDomain}
               getName={v=>v}
@@ -166,16 +199,21 @@ class AuthoritiesQuery extends Component {
           <p><small>Start typing theme name and autocomplete will help you. Click on theme to remove it from the list.</small></p>
           <button className="btn btn-primary" type="submit">Submit</button>
         </form>
-        {this.state.error && (
-          <ErrorAlert errorName={this.state.error.name} errorMessage={this.state.error.message} />
+        {error && (
+          <ErrorAlert errorName={error.name} errorMessage={error.message} />
         )}
 
-        {this.state.loading &&
+        {loading &&
           <Spinner />
         }
 
-        {this.state.result && 
-          <AuthoritiesQueryResult result={this.state.result} onItemClick={this.onAuthorityClick} />
+        {result && 
+          <AuthoritiesQueryResult 
+            result={result} 
+            onItemClick={this.onAuthorityClick} 
+            mayBeMore={mayBeMore}
+            onMoreClick={this.onMoreClick}
+            />
         }
       </div>
     );

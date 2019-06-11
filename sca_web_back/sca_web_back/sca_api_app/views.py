@@ -65,11 +65,14 @@ class AuthoritiesQueryView(APIView):
 
     def get(self, request):
         domains_list = request.query_params.getlist('domain')
+        offset = request.query_params.get("offset")
+        limit = request.query_params.get("limit")
+
         if domains_list is None\
                 or len(domains_list) == 0:
             return Response(getErrorResponce("empty query - no domains specified"), status=HTTP_400_BAD_REQUEST);
         try:
-            result = NeoQuerier().get_authorities_in_domains(domains_list)
+            result = NeoQuerier().get_authorities_in_domains(domains_list, offset, limit)
             return Response(result)
         except GraphError as e:
             print(e)

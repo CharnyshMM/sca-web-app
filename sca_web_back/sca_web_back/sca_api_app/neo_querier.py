@@ -54,7 +54,7 @@ class NeoQuerier:
         authors = self.graph.run(query).data()
         return authors
 
-    def get_authorities_in_domains(self, domains_list):
+    def get_authorities_in_domains(self, domains_list, offset, limit):
         lower_domains = [d.lower() for d in domains_list]   # that's important to send low_case domains name!
         query = f"""
                 MATCH (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL}),
@@ -69,7 +69,9 @@ class NeoQuerier:
                 RETURN a as author,
                     publications_count,
                     links_count 
-                ORDER BY publications_count DESC 
+                ORDER BY publications_count DESC
+                SKIP {offset}
+                LIMIT {limit}
             """
 
         result = self.graph.run(

@@ -23,7 +23,13 @@ class DomainsQuery extends Component {
 
     loadData = (popularityKey) => {
         const token = window.sessionStorage.getItem("token");
-        this.setState({ hasError: false, error: undefined, result: undefined, selected: popularityKey, loading: true });
+        this.setState({ 
+            hasError: false, 
+            error: undefined, 
+            result: undefined, 
+            selected: popularityKey, 
+            loading: true
+         });
         getDomainsByPopularity(popularityKey, token)
             .then(
                 result => {

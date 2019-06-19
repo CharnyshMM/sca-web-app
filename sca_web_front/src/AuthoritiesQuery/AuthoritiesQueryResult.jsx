@@ -27,12 +27,8 @@ class AuthoritiesQueryResult extends Component {
     }
 
     render() {
-        const { result, mayBeMore, onMoreClick } = this.props;
+        const { result, mayBeMore, onMoreClick, loading } = this.props;
         const { sortBy } = this.state;
-
-        if (!result || result.length == 0) {
-            return <ErrorAlert errorName="Not found" errorMessage="Sorry, no reliable results found for you :(" />
-        }
 
         const sortedMappedResult = result
             .sort((a, b) => {
@@ -86,7 +82,7 @@ class AuthoritiesQueryResult extends Component {
                         {sortedMappedResult}
                     </tbody>
                 </table>
-                {mayBeMore && 
+                {mayBeMore && !loading &&
                     <button 
                         className="authorities_query__result__more_button"
                         onClick={onMoreClick}>

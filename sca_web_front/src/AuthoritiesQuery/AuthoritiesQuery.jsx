@@ -10,7 +10,7 @@ import './AuthoritiesQuery.css';
 import ErrorAlert from '../ReusableComponents/ErrorAlert';
 import { getThemesList } from '../utilities/verbose_loaders';
 
-const RESULTS_ON_PAGE_LIMIT = 20;
+const RESULTS_ON_PAGE_LIMIT = 10;
 
 class AuthoritiesQuery extends Component {
   state = {
@@ -75,6 +75,9 @@ class AuthoritiesQuery extends Component {
 
   makeQuery = (domains, offset) => {
     this.setState({ error: undefined, domains: domains, loading: true });
+    if (offset === 0) {
+      this.setState({result: []});
+    }
     const token = window.sessionStorage.getItem("token");
     let status = 0;
 
@@ -107,7 +110,7 @@ class AuthoritiesQuery extends Component {
     )
       .catch(e => {
         this.setState({ error: e, loading: false });
-        console.log("ERROR:", e);
+        console.log("AQ   ERROR:", e);
       });
   }
 
@@ -165,7 +168,7 @@ class AuthoritiesQuery extends Component {
     return (
       <div className="container">
         <h1>Search for experts in particular domains</h1>
-        <form onSubmit={this.handleSubmit}>
+        <form>
         <div className="authorities_query__form">
             <div>
               <ul className="authorities_query__form__themes">
@@ -190,30 +193,29 @@ class AuthoritiesQuery extends Component {
               getName={v=>v}
               />
               </div>
-            {/* <div>
-              <button type="button" className="authorities_query__form__plus" onClick={() => this.addDomain()}>
-                <span className="oi oi-plus"></span>
-              </button>
-            </div> */}
+            
             </div>
           <p><small>Start typing theme name and autocomplete will help you. Click on theme to remove it from the list.</small></p>
-          <button className="btn btn-primary" type="submit">Submit</button>
+          <button onClick={this.handleSubmit} className="btn btn-primary">Submit</button>
         </form>
         {error && (
           <ErrorAlert errorName={error.name} errorMessage={error.message} />
         )}
 
-        {loading &&
-          <Spinner />
+        {result && result.length == 0 && domains && domains.length > 0 && 
+          <ErrorAlert errorName="Not found" errorMessage="Sorry, no reliable results found for you :(" />
         }
-
-        {result && 
+        {result && result.length > 0 && 
           <AuthoritiesQueryResult 
-            result={result} 
+            result={result}
+            loading={loading}
             onItemClick={this.onAuthorityClick} 
             mayBeMore={mayBeMore}
             onMoreClick={this.onMoreClick}
             />
+        }
+        {loading &&
+          <Spinner />
         }
       </div>
     );

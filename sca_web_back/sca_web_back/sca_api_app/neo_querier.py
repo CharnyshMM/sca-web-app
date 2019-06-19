@@ -281,7 +281,7 @@ class NeoQuerier:
         domain_dynamics = {}
 
         for year in publications_yearly_dynamics:
-            if year == 0 or year < 0:
+            if year < 1000 or year > 2019:
                 continue
             if year in domain_dynamics:
                 domain_dynamics[int(year)] += 1

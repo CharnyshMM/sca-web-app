@@ -135,7 +135,7 @@ class BeautifulChart extends Component {
                     </span>
                 }
                     <XYPlot 
-                        margin={{ bottom: 70 }}
+                        margin={{ left: 70, bottom: 70 }}
                         xType="ordinal" 
                         width={chartWidth} 
                         height={200}

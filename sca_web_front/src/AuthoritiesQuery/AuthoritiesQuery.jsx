@@ -202,7 +202,7 @@ class AuthoritiesQuery extends Component {
           <ErrorAlert errorName={error.name} errorMessage={error.message} />
         )}
 
-        {result && result.length == 0 && domains && domains.length > 0 && 
+        {result && result.length == 0 && domains && domains.length > 0 && !loading &&
           <ErrorAlert errorName="Not found" errorMessage="Sorry, no reliable results found for you :(" />
         }
         {result && result.length > 0 && 

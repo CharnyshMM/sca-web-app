@@ -165,7 +165,7 @@ class DomainsQuery extends Component {
                         </div>
                     </div>
                 }
-                {this.state.loading &&
+                {loading &&
                     <Spinner />
                 }
                 {sortedMappedResult}

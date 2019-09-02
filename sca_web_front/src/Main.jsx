@@ -5,7 +5,7 @@ import AuthoritiesQuery from './AuthoritiesQuery/AuthoritiesQuery';
 import DomainsQuery from './DomainsQuery/DomainsQuery';
 import ArticlesQuery from './ArticlesQuery/ArticlesQueryDeprecated';
 import CustomQuery from './CustomQuery/CustomQuery';
-import Status from './Status/Status';
+import Status from './AdminTools/Status/Status';
 import SearchWithResults from './Search/SearchWithResults/SearchWithResults';
 
 import Domain from './EntityViews/Domain';
@@ -23,6 +23,7 @@ import {
   STATUS,
   TEST
 } from './utilities/routes_constants';
+import AdminTools from './AdminTools/AdminTools';
 
 const Main = () => (
   <main>
@@ -36,7 +37,7 @@ const Main = () => (
       <Route path={DOMAINS_POPULARITY_QUERY} component={DomainsQuery}/>
       <Route path={TEST} component={Test} />
       <Route path={CUSTOM_QUERY} component={CustomQuery}/>
-      <Route path={STATUS} component={Status} />
+      <Route path={STATUS} component={AdminTools} />
     </Switch>
   </main>
 );

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { getNeoStatus, getCassandraStatus } from '../utilities/verbose_loaders';
+import { getNeoStatus, getCassandraStatus } from '../../utilities/verbose_loaders';
 
 
 class Status extends Component {

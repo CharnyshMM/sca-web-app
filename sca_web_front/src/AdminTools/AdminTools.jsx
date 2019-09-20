@@ -3,10 +3,12 @@ import React, {Component} from 'react';
 import Status from './Status/Status';
 import AdminToolsSideMenu from './AdminToolsSideMenu';
 import SideMenuPage from '../ReusableComponents/SideMenuPage/SideMenuPage';
+import {DB_STATUS_ID, BUS_THREADS_ID, COMPONENTS_IPS_ID} from './adminToolsIDs';
+import ComponentsIPAddresses from './ComponentsIPAddresses/ComponentsIPAddresses';
 
 class AdminTools extends Component {
   state = {
-    selectedTool: 'db_status'
+    selectedTool: DB_STATUS_ID
   }
 
   onSideMenuToolSelected = tool => {
@@ -18,10 +20,12 @@ class AdminTools extends Component {
     
     let toolPage = null;
     switch (selectedTool) {
-      case 'db_status': 
+      case DB_STATUS_ID: 
         toolPage = <Status />;
         break;
-      
+      case COMPONENTS_IPS_ID:
+        toolPage = <ComponentsIPAddresses />
+        break;
     }
     return (
       <SideMenuPage 

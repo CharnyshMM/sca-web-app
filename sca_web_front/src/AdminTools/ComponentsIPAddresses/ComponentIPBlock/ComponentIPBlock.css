@@ -1,0 +1,25 @@
+.component_ip_table_row {
+  display: grid;
+  grid-template-columns: 40% 40% 20%;
+  background: #e9ecef;
+  padding: 2%;
+  border-radius: 6px;
+  margin-bottom: 1%;
+}
+
+.component_ip_table_row input {
+  border: none;
+  background: white;
+  width: 15ex;
+  text-align: right;
+}
+
+.component_ip_table_row input:read-only {
+  background: inherit;
+  border: none
+}
+
+.component_ip_table_row input:focus {
+  outline: none;
+}
+

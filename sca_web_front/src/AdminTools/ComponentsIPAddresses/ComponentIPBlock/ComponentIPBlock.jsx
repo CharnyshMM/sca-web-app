@@ -2,7 +2,7 @@ import React, { useState, Fragment } from 'react';
 
 import './ComponentIPBlock.css';
 
-import PingBlock, {PING_STATUS_PINGING} from '../PingBlock';
+import PingBlock, {PING_STATUS_PINGING, PING_STATUS_OK} from '../PingBlock';
 import LinkLikeButton from '../../../ReusableComponents/LinkLikeButton/LinkLikeButton';
 import { COMPONENT_NAMES } from '../component_ids';
 
@@ -40,7 +40,7 @@ const ComponentIPTableRow = ({ component, onAddressChanged }) => {
   }
 
   return (
-    <div className="component_ip_table_row">
+    <div className="component_ip_table component_ip_table_row">
       <span><b>{name}</b></span>
       <div>
         <input
@@ -50,9 +50,21 @@ const ComponentIPTableRow = ({ component, onAddressChanged }) => {
           placeholder={address} />
         {controls}
       </div>
-      <PingBlock status={PING_STATUS_PINGING} />
+      <PingBlock status={PING_STATUS_OK} />
     </div>
   );
 };
 
+
+const ComponentsIpsTableHeader = () => (
+  <div className="component_ip_table component_ip_table_header">
+      <span>Component</span>
+      <span>Address</span>
+      <span>Ping</span>
+    </div>
+)
+
 export default ComponentIPTableRow;
+export {
+  ComponentsIpsTableHeader
+};

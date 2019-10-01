@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 
-import Status from './Status/Status';
-import AdminToolsSideMenu from './AdminToolsSideMenu';
 import SideMenuPage from '../ReusableComponents/SideMenuPage/SideMenuPage';
-import {DB_STATUS_ID, BUS_THREADS_ID, COMPONENTS_IPS_ID} from './adminToolsIDs';
+import AdminToolsSideMenu from './AdminToolsSideMenu';
 import ComponentsIPAddresses from './ComponentsIPAddresses/ComponentsIPAddresses';
+import ProcessesAndThreads from './ProcessesAndThreads/ProcessesAndThreads';
+import Status from './Status/Status';
+import {DB_STATUS_ID, PROCESSES_ID, COMPONENTS_IPS_ID} from './adminToolsIDs';
+
 
 class AdminTools extends Component {
   state = {
@@ -26,6 +28,8 @@ class AdminTools extends Component {
       case COMPONENTS_IPS_ID:
         toolPage = <ComponentsIPAddresses />
         break;
+      case PROCESSES_ID:
+        toolPage = <ProcessesAndThreads />
     }
     return (
       <SideMenuPage 

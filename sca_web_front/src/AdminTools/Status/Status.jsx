@@ -11,11 +11,14 @@ class Status extends Component {
            neoStatusLoading: false,
            cassandraStatusLoading: false,
         }
+        this.abortController = new window.AbortController();
     }
+
+    
 
     updateStatus() {
         this.setState({cassandraStatusLoading: true});
-        getCassandraStatus()
+        getCassandraStatus(this.abortController.signal)
             .then(result => result.response.json()) // getting the response text
             .then(result => {
                 console.log("cassandra result", result);
@@ -28,13 +31,14 @@ class Status extends Component {
                 });
             },
                 error => {
+                    if (error.name === 'AbortError') { return; } 
                     console.log("fetch error")
                     this.setState({hBaseStatus: undefined, cassandraStatusLoading: false,});
             });
 
         this.setState({neoStatusLoading: true});
         const token = window.sessionStorage.getItem("token");
-        getNeoStatus(token)
+        getNeoStatus(token, this.abortController.signal)
             .then(result=> result.response.json())
             .then(res => {
                     console.log("result OK:", res);
@@ -47,14 +51,19 @@ class Status extends Component {
                         neoStatusLoading: false,    
                     });
                 },
-                  err => {
-                      console.log("err : ", err);
+                  error => {
+                      if (error.name === 'AbortError') { return; } 
+                      console.log("err : ", error);
                       this.setState({neoStatus: undefined, neoStatusLoading: false,}); 
             });
     }
 
     componentDidMount() {
         this.updateStatus();
+    }
+
+    componentWillUnmount() {
+        this.abortController.abort();
     }
 
     render() {

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 
 import { getComponentsIPs } from '../../utilities/verbose_loaders';
-import ComponentIPBlock from './ComponentIPBlock/ComponentIPBlock';
+import ComponentIPBlock, {ComponentsIpsTableHeader} from './ComponentIPBlock/ComponentIPBlock';
 import BulletsFreeList from '../../ReusableComponents/BulletsFreeList';
 
 
@@ -71,6 +71,7 @@ class ComponentsIPAddresses extends Component {
     return (
       <section>
         <h3>Components IP addresses</h3>
+        <ComponentsIpsTableHeader />
         <BulletsFreeList>
           {ips_data["addresses"].map((component,i) => 
             <li key={`component${i}IP`}>

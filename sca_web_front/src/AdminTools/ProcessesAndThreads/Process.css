@@ -1,0 +1,35 @@
+.process {
+  display: grid;
+  grid-template-columns: 10% 50% 30% 10%;
+}
+
+.process_tableheader {
+  background: inherit;
+  font-weight: 900;
+  padding: 1% 2%;
+}
+
+.process_tablerow {
+  background: whitesmoke;
+  padding: 2%;
+  border-radius: 6px;
+  margin: 1% 0;
+  font-size: 1.1em;
+}
+
+.threads_list {
+  position: relative;
+  left: 58%;
+  width: 42%;
+}
+
+.threads_list__item {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  background: whitesmoke;
+  padding: 1%;
+  border-radius: 6px;
+  margin-bottom: 1%;
+}

@@ -1,10 +1,20 @@
-.component_ip_table_row {
+.component_ip_table {
   display: grid;
   grid-template-columns: 40% 40% 20%;
-  background: #e9ecef;
+}
+
+.component_ip_table_row {
+  background: whitesmoke;
   padding: 2%;
   border-radius: 6px;
   margin-bottom: 1%;
+  font-size: 1.1em;
+}
+
+.component_ip_table_header {
+  background: inherit;
+  font-weight: 900;
+  padding: 1% 2%;
 }
 
 .component_ip_table_row input {

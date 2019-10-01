@@ -15,7 +15,8 @@ import {
     PYTHON_BACKEND_API_PUBLICATION_GRAPH,
     PYTHON_BACKEND_API_AUTHOR_GRAPH,
     PYTHON_BACKEND_API_PUBLICATIONS_SEARCH,
-    PYTHON_BACKEND_API_AUTHORS_SEARCH
+    PYTHON_BACKEND_API_AUTHORS_SEARCH,
+    CONTROL_COMPONENT_API_IPS
 } from './constant_urls';
 
 // ========================================================================
@@ -122,12 +123,12 @@ const getAuthorPublicationsInDomains = (author_name, domains_list, token) => {
     return getLoaderPromise(`${PYTHON_BACKEND_API_AUTHOR_PUBLICATIONS_IN_DOMAINS_QUERY}?${query}`, authOptions(token))
 };
 
-const getNeoStatus = (token) => {
-    return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, authOptions(token));
+const getNeoStatus = (token, signal=null) => {
+    return getLoaderPromise(PYTHON_BACKEND_API_NEO_STATUS, {...authOptions(token), 'signal': signal});
 };
 
-const getCassandraStatus = () => {
-    return getLoaderPromise(CASSANDRA_STATUS_PATH);
+const getCassandraStatus = (signal=null) => {
+    return getLoaderPromise(CASSANDRA_STATUS_PATH, {'signal': signal});
 }
 
 // const doSearchByName = (name, limit, offset, token, type=undefined) => {
@@ -209,6 +210,10 @@ const getAuthorsList = (token) => {
     return getLoaderPromise(PYTHON_BACKEND_API_ALL_AUTHORS, authOptions(token));
 }
 
+const getComponentsIPs = () => {
+    return getLoaderPromise(CONTROL_COMPONENT_API_IPS);
+}
+
 export {
     getLoaderPromise,
     runQueryOnPythonBackend,
@@ -226,5 +231,6 @@ export {
     getThemesList,
     getAuthorsList,
     getPublicationGraph,
-    getAuthorGraph
+    getAuthorGraph,
+    getComponentsIPs
 };

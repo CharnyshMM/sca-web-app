@@ -4,6 +4,7 @@
 
 from py2neo import Graph, Node
 from .neo_config import neo_password, neo_user, neo_port, neo_host, neo_scheme
+from .reduced_models import ReducedPublication
 
 
 class NeoQuerier:
@@ -241,7 +242,7 @@ class NeoQuerier:
             MATCH (t:{self.THEME_NODE_LABEL})-[tr:{self.THEME_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})
             WHERE ID(t)={domain_id} AND toFloat(tr.probability)>{self.THEME_RELATION_PROBABILITY}
             MATCH (p)<-[:{self.LINKS_TO_RELATION_LABEL}]-(another_p:{self.PUBLICATION_NODE_LABEL})
-            RETURN p as publication, ID(p) as publication_id, count(DISTINCT another_p) as links_count
+            RETURN {{name: p.name, year: p.year}} as publication, ID(p) as publication_id, count(DISTINCT another_p) as links_count
             ORDER BY links_count
             DESC
             LIMIT 10
@@ -251,7 +252,7 @@ class NeoQuerier:
             MATCH 
             (a:{self.AUTHOR_NODE_LABEL})-[:{self.WROTE_RELATION_LABEL}]-(p:{self.PUBLICATION_NODE_LABEL})-[tr:{self.THEME_RELATION_LABEL}]-(t:{self.THEME_NODE_LABEL})
             WHERE ID(t)={domain_id} AND toFloat(tr.probability) > {self.THEME_RELATION_PROBABILITY} AND EXISTS(a.name)
-            RETURN a as author, ID(a) as author_id, count(DISTINCT p) as publications_count
+            RETURN {{name: a.name}} as author, ID(a) as author_id, count(DISTINCT p) as publications_count
             ORDER BY publications_count
             DESC
             LIMIT 10
@@ -329,8 +330,8 @@ class NeoQuerier:
             "author_publication": NeoQuerier.separate_nodes_and_relationships_from_list(author_publication),
             "publication_themes": NeoQuerier.separate_nodes_and_relationships_from_list(publication_themes),
             "publication_referenses": {
-               "outcoming": NeoQuerier.get_relationships_graph(publication_referenses["outcoming_references_relationships"][:100], "end_node"),
-               "incoming": NeoQuerier.get_relationships_graph(publication_referenses["incoming_references_relationships"][:100], "start_node")
+               "outcoming": NeoQuerier.get_relationships_graph(publication_referenses["outcoming_references_relationships"][:100], "end_node", ReducedPublication),
+               "incoming": NeoQuerier.get_relationships_graph(publication_referenses["incoming_references_relationships"][:100], "start_node", ReducedPublication)
             }
         }
 
@@ -369,11 +370,14 @@ class NeoQuerier:
         for entry in publications_relations_and_themes:
             outcoming_references_graph = NeoQuerier.get_relationships_graph(
                 entry["outcoming_references_relations"][:NeoQuerier.REFERENCES_LIMIT], 
-                "end_node"
+                "end_node",
+                ReducedPublication
                 )
             incoming_references_graph = NeoQuerier.get_relationships_graph(
                 entry["incoming_references_relations"][:NeoQuerier.REFERENCES_LIMIT], 
-                "start_node")
+                "start_node",
+                ReducedPublication
+                )
             themes_graph = NeoQuerier.get_relationships_graph(entry["themes_relations"], "end_node")
 
             outcoming_authors_nodes = {}
@@ -448,14 +452,17 @@ class NeoQuerier:
         return nodes, relationships
 
     @staticmethod
-    def get_relationships_graph(relationships_list, attribute_name):
+    def get_relationships_graph(relationships_list, attribute_name, redused_class=None):
         nodes = {}
         relationships = {}
         for relationship in relationships_list:
             rel_id = f"{relationship.start_node.identity}>{relationship.end_node.identity}"
             relationships[rel_id] = relationship
             node = getattr(relationship, attribute_name)
-            nodes[node.identity] = node
+            if redused_class is None:
+                nodes[node.identity] = node
+            else:
+                nodes[node.identity] = redused_class(node)
         return {
             "nodes": nodes,
             "relationships": relationships

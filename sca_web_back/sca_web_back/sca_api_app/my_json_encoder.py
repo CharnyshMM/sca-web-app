@@ -3,6 +3,7 @@
 import re
 
 import py2neo
+from .reduced_models import ReducedPublication
 
 try:
     from _json import encode_basestring_ascii as c_encode_basestring_ascii
@@ -199,6 +200,10 @@ class MyJSONEncoder(object):
                 return JSONEncoder.default(self, o)
 
         """
+        if isinstance(o, ReducedPublication):
+            return dict(o)
+        
+
         raise TypeError(f'Object of type {o.__class__.__name__} '
                         f'is not JSON serializable')
 

@@ -43,12 +43,15 @@ class App extends Component {
 
   onLoginClick = e => {
     e.preventDefault();
-    this.setState({ isAdmin: false, authorized: false });
+    this.setState({ isAdmin: false, authorized: false, error: undefined });
     let status = 0;
     authorizeOnPythonBackend(this.state.user, this.state.password)
       .then(result => {
         status = result.status;
         return result.response.json();
+      },
+      error => {
+        status = error.status;
       }
       )
       .then(
@@ -62,7 +65,7 @@ class App extends Component {
       .catch(e => {
         this.setState({ error: e, authorized: false, isAdmin: false });
         console.log("ERROR:", e);
-        if (status == 404) {
+        if (status == 400) {
           alert("Cannot authorize you with these credentials");
         } else {
           alert("Server error, sorry");

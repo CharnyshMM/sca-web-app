@@ -1,5 +1,5 @@
 def get_cassandra_status():
   return {
-    "publications": 45032,
-    "responces": 99803
+    "publicationsCount": 45032,
+    "responsesCount": 99803
   }

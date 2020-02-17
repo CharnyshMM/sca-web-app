@@ -53,6 +53,7 @@ class Status extends Component {
                         responsesCount: res.cassandraStatus.responsesCount,
                     },
                     neoStatusLoading: false,
+                    cassandraStatusLoading: false
                 });
             },
                 error => {
@@ -123,9 +124,7 @@ class Status extends Component {
                                     <li className="list-group-item">
                                         Responses Count: {this.state.cassandraStatus ? this.state.cassandraStatus.responsesCount : "-"}
                                     </li>
-                                    <li className="list-group-item">
-                                        Documents Count: {this.state.cassandraStatus ? this.state.cassandraStatus.documentsCount : "-"}
-                                    </li>
+                                    
                                 </ul>
                             </td>
                         </tr>

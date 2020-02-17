@@ -51,7 +51,7 @@ class GetStatusView(APIView):
     def get(self, request):
         try:
             nodes_count = NeoQuerier().get_nodes_count()
-            authors_count = NeoQuerier().get_nodes_count(NeoQuerier.AUTHOR_NODE_LABEL)
+            authors_count =NeoQuerier().get_nodes_count(NeoQuerier.AUTHOR_NODE_LABEL)
             publications_count = NeoQuerier().get_nodes_count(NeoQuerier.PUBLICATION_NODE_LABEL)
             cassandraStatus = get_cassandra_status()
         except Exception as e:

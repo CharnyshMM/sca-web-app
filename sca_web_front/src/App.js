@@ -52,6 +52,8 @@ class App extends Component {
       },
       error => {
         status = error.status;
+        console.log('some error');
+        throw Error();
       }
       )
       .then(
@@ -60,12 +62,15 @@ class App extends Component {
           window.sessionStorage.setItem("isAuthorized", true);
           window.sessionStorage.setItem("isAdmin", response.is_admin);
           this.setState({authorized: true});
+        },
+        err => {
+          throw(err);
         }
       )
       .catch(e => {
         this.setState({ error: e, authorized: false, isAdmin: false });
         console.log("ERROR:", e);
-        if (status == 400) {
+        if (status == 404) {
           alert("Cannot authorize you with these credentials");
         } else {
           alert("Server error, sorry");

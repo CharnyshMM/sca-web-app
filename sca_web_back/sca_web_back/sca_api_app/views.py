@@ -13,6 +13,7 @@ from rest_framework.views import APIView
 from rest_framework.status import HTTP_400_BAD_REQUEST, HTTP_500_INTERNAL_SERVER_ERROR, HTTP_404_NOT_FOUND, HTTP_200_OK
 from .neo_querier import NeoQuerier
 from .my_json_encoder import MyJSONEncoder
+from .cassandra_helper import get_cassandra_status
 
 CUSTOM_QUERY_REQUEST_PARAMETER = "query"
 
@@ -52,11 +53,19 @@ class GetStatusView(APIView):
             nodes_count = NeoQuerier().get_nodes_count()
             authors_count = NeoQuerier().get_nodes_count(NeoQuerier.AUTHOR_NODE_LABEL)
             publications_count = NeoQuerier().get_nodes_count(NeoQuerier.PUBLICATION_NODE_LABEL)
+            cassandraStatus = get_cassandra_status()
         except Exception as e:
             print(e)
             return Response(getErrorResponce("internal error"), status=HTTP_500_INTERNAL_SERVER_ERROR)
         print("result:", nodes_count)
-        return Response({"nodesCount": nodes_count, "authorsCount": authors_count, "publicationsCount": publications_count})
+        return Response({
+            "neoStatus": {
+                "nodesCount": nodes_count, 
+                "authorsCount": authors_count, 
+                "publicationsCount": publications_count
+                }, 
+            "cassandraStatus": cassandraStatus
+            })
 
 
 class AuthoritiesQueryView(APIView):
@@ -304,7 +313,7 @@ def login(request):
     user = authenticate(username=username, password=password)
     if not user:
         return Response({'error': 'Invalid Credentials'},
-                        status=HTTP_404_NOT_FOUND)
+                        status=HTTP_400_BAD_REQUEST)
     token, _ = Token.objects.get_or_create(user=user)
 
     return Response({'token': token.key, 'is_admin': user.is_superuser},

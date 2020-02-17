@@ -1,6 +1,6 @@
 const CASSANDRA_STATUS_PATH = "http://172.20.225.7:8080/v1/state/";
 
-const PYTHON_BACKEND_API = "http://127.0.0.1:8000";
+const PYTHON_BACKEND_API = "http://fe32276e.ngrok.io/";
 const PYTHON_BACKEND_API_CUSTOM_QUERY = `${PYTHON_BACKEND_API}/query/`;
 const PYTHON_BACKEND_API_NEO_STATUS = `${PYTHON_BACKEND_API}/status/`;
 const PYTHON_BACKEND_API_AUTHORITIES_QUERY = `${PYTHON_BACKEND_API}/query/authorities/`;

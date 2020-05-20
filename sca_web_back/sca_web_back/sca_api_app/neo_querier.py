@@ -423,6 +423,17 @@ class NeoQuerier:
         return result
 
 
+    def get_domain_tokens(self, domain_id):
+        query = f"""
+        match (t:{self.THEME_NODE_LABEL})-[r]-(p:{self.PUBLICATION_NODE_LABEL}), (p)-[]-(tt:{self.KEYWORD_PHRASE_NODE_LABEL})
+        where ID(t) = {domain_id} AND toFloat(r.probability) > 0.3
+        return distinct tt as token, count(tt) as entries_count
+        order by entries_count desc
+        limit 110;
+        """
+        print(query)
+        return self.graph.run(query).data()
+
     @staticmethod
     def separate_nodes_and_relationships_from_list(graph_data_list):
         nodes = {}

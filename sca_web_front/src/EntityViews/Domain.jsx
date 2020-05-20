@@ -54,7 +54,6 @@ class Domain extends Component {
                         .then(
 
                             r => {
-                                console.log('r', r);
                                 this.setState({
                                     tokens: r.tokens
                                 })
@@ -88,7 +87,7 @@ class Domain extends Component {
             }
         */
         const { result, loading, error, tokens } = this.state;
-        console.log(tokens);
+
         let content = null;
         if (result) {
 

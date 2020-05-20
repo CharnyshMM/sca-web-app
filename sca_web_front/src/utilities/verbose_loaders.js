@@ -16,7 +16,8 @@ import {
     PYTHON_BACKEND_API_AUTHOR_GRAPH,
     PYTHON_BACKEND_API_PUBLICATIONS_SEARCH,
     PYTHON_BACKEND_API_AUTHORS_SEARCH,
-    CONTROL_COMPONENT_API_IPS
+    CONTROL_COMPONENT_API_IPS,
+    PYTHON_BACKEND_API_DOMAIN_TOKENS
 } from './constant_urls';
 
 // ========================================================================
@@ -105,6 +106,10 @@ const getAuthoritiesInDomainsList = (domains_list, limit, offset, token) => {
         authOptions(token)
     );
 };
+
+const getDomainTokens = (domain_id, token) => {
+    return getLoaderPromise(`${PYTHON_BACKEND_API_DOMAIN_TOKENS}?domain_id=${domain_id}`, authOptions(token))
+}
 
 const getArticlesByKeywords = (keywords_list, token) => {
     let query = buildQueryParametersList('keyword', keywords_list);
@@ -232,5 +237,6 @@ export {
     getAuthorsList,
     getPublicationGraph,
     getAuthorGraph,
-    getComponentsIPs
+    getComponentsIPs,
+    getDomainTokens
 };

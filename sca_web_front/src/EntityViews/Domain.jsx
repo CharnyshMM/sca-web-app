@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import queryString from 'query-string';
-
+import { TagCloud } from 'react-tagcloud';
 import BeautifulChart from '../ReusableComponents/BeautifulChart/BeautifulChart';
 
 import {
@@ -8,11 +8,10 @@ import {
     createAuthorLink,
 } from '../utilities/links_creators';
 
-import { getDomain } from '../utilities/verbose_loaders';
+import { getDomain, getDomainTokens } from '../utilities/verbose_loaders';
 
 import './author.css';
 import Spinner from '../ReusableComponents/Spinner';
-
 
 class Domain extends Component {
     constructor(props) {
@@ -25,7 +24,7 @@ class Domain extends Component {
     }
 
     componentDidMount() {
-        this.setState({loading: true, error: undefined});
+        this.setState({ loading: true, error: undefined });
         const token = window.sessionStorage.getItem("token")
         const queryStr = queryString.parse(this.props.location.search);
         let status = 0;
@@ -46,18 +45,32 @@ class Domain extends Component {
                         throw new Error(response.error);
                     }
                     console.log('responsed:', response);
-                    this.setState({ 
+                    this.setState({
                         result: response,
-                        loading: true 
+                        loading: true
                     });
+                    return getDomainTokens(queryStr.domain, token)
+                        .then(rr => rr.response.json())
+                        .then(
+
+                            r => {
+                                console.log('r', r);
+                                this.setState({
+                                    tokens: r.tokens
+                                })
+                            }
+                        ).catch(
+                            e => {
+                                console.error(e);
+                            });
                 },
-        )
+            )
             .catch(
                 e => {
                     this.setState({
-                         error: e,
-                         loading: true
-                        });
+                        error: e,
+                        loading: true
+                    });
                     console.log("ERROR:", e);
                 }
             );
@@ -74,35 +87,47 @@ class Domain extends Component {
                 "top_10_cited_publications": top_10_cited_publications
             }
         */
-        const {result, loading, error} = this.state;
-
+        const { result, loading, error, tokens } = this.state;
+        console.log(tokens);
         let content = null;
         if (result) {
 
-            const topCitedPublications_listItems = result["top_10_cited_publications"].map((p,i) => (
+            const topCitedPublications_listItems = result["top_10_cited_publications"].map((p, i) => (
                 <li key={i}>
                     <a href={createPublicationLink(p["publication_id"])}> {p["publication"]["name"]} ({p["publication"]["year"]})</a>
                 </li>
             ));
 
-            const topAuthorsByPublicationsCount = result["top_10_authors_in_domain"].map((v,i)=>(
+            const topAuthorsByPublicationsCount = result["top_10_authors_in_domain"].map((v, i) => (
                 <li key={i}>
                     <a href={createAuthorLink(v["author_id"])}>{v["author"]["name"]}</a> has <b>{v["publications_count"]} publications</b>
                 </li>
             ));
 
+            const tokensCloud = tokens && tokens.length > 0 && (
+                <div style={{margin: "24px 0px"}}>
+                    <h5>Tokens</h5>
+                    <div style={{ textAlign: 'center' }}>
+                        <TagCloud
+                            minSize={12}
+                            maxSize={35}
+                            tags={tokens.map(t => ({ value: t.token.name, count: t.entries_count }))}
+                        />
+                    </div>
+                </div>)
+
             const yearlyDynamicsChart = Object.keys(result["yearly_dynamics"])
                 .map(year => ({
-                    x:year,
-                    y:result["yearly_dynamics"][year]
+                    x: year,
+                    y: result["yearly_dynamics"][year]
                 }));
             console.log(yearlyDynamicsChart);
             content = (
                 <section className="container">
                     <h1>{result["domain"]["name"]}</h1>
-                   
+
                     <p>{result["publications_count"]} publications</p>
-                    
+
                     {topCitedPublications_listItems && topCitedPublications_listItems.length > 0 &&
                         <React.Fragment>
                             <h5 className="card-title">
@@ -113,7 +138,7 @@ class Domain extends Component {
                             </ul>
                         </React.Fragment>
                     }
-                    {topAuthorsByPublicationsCount && topAuthorsByPublicationsCount.length > 0 && 
+                    {topAuthorsByPublicationsCount && topAuthorsByPublicationsCount.length > 0 &&
                         <React.Fragment>
                             <h5>Authors who majors in <b>{result["domain"]["name"]}</b>:
                             </h5>
@@ -122,6 +147,8 @@ class Domain extends Component {
                             </ul>
                         </React.Fragment>
                     }
+
+                    {tokensCloud || ''}
                     <div>
                         <h5>Publications dynamics</h5>
                         <BeautifulChart data={yearlyDynamicsChart} />

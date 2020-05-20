@@ -46,7 +46,7 @@ urlpatterns = [
     path('author/all/', view=GetAllAuthorsView.as_view(), name="all_authors"),
     path('domain/', view=GetDomainView.as_view(), name="domain"),
     path('domain/all/', view=GetAllThemesView.as_view(), name="all_themes"),
-    path('domain/tokens', view=DomainTokensView.as_view(), name="domain_tokens"),
+    path('domain/tokens/', view=DomainTokensView.as_view(), name="domain_tokens"),
     path('publicationgraph/', view=GetPublicationGraph.as_view(), name="publicationgraph"),
     path('authorgraph/', view=GetAuthorGraph.as_view(), name="authorgraph"),
 
